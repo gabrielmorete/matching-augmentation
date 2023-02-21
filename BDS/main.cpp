@@ -1,3 +1,14 @@
+/*
+	Matching Augmentation problem pack
+		- Linear Relaxation
+		- Integer Solution
+		- BDS Approximation Algorithm 
+
+	
+	Author : Gabriel Morete
+*/
+
+
 #include <iostream>
 #include <vector>
 #include <array>
@@ -10,16 +21,16 @@
 using namespace std;
 using namespace lemon;  
 
-typedef long long int ll;
-
+// Safe handling doubles
 const double EPS = 1e-8;
 int sign(double x) { return (x > EPS) - (x < -EPS); }
 
 
 /*
 	Conventions
-		- On lemon, graphs are 0 indexed;
-		- Graph is simple
+		- Input is 1-indexed
+		- On lemon, graphs are 0-indexed;
+		- Graph is simple, for now
 */
 
 
@@ -41,6 +52,9 @@ void ReadInput(){
 	int n, m;
 	cin>>n>>m;
 	
+	assert(n >= 3);
+	assert(m >= n);
+
 	_n = n;
 	_m = m;
 
@@ -96,17 +110,17 @@ class MinimumCut: public GRBCallback {
 						int u = G.id(G.u(e));
 						int v = G.id(G.v(e));
 
-						capacity[e] = x[v][u];
+						capacity[e] = x[v][u]; // Using LP Value as capacities
 					}
 
 
+					// Build Gomory-Hu Tree
 					GomoryHu<ListGraph, ListGraph::EdgeMap<double> > GMH(G,capacity);
 					GMH.run();	                
 
-					double min_val = 3;
+
 					ListGraph::Node min_v = G.nodeFromId(0);
 					ListGraph::Node min_u = G.nodeFromId(1);
-
 					for (ListGraph::NodeIt v(G); v != INVALID; ++v)
 						for (ListGraph::NodeIt u(G); u != INVALID; ++u){
 							if (GMH.minCutValue(v, u) < GMH.minCutValue(min_v, min_u)){
@@ -115,9 +129,12 @@ class MinimumCut: public GRBCallback {
 							}
 					}
 
-					if (sign(GMH.minCutValue(min_v, min_u)) < 0) { // Min cut < 2
+					// Vertices min_u, min_v have the minimum st-cut
+
+					if (sign(GMH.minCutValue(min_v, min_u) - 2.0) < 0) { // Min cut < 2
 						GRBLinExpr expr = 0;
 						
+						// All all edges of the global min cut as a contraint.
 						for (GomoryHu<ListGraph, ListGraph::EdgeMap<double> >::MinCutEdgeIt e(GMH, min_v, min_u); e != INVALID; ++e){
 							int u = G.id(G.u(e));
 							int v = G.id(G.v(e));				
@@ -127,32 +144,33 @@ class MinimumCut: public GRBCallback {
 
 						addLazy(expr >= 2);
 					}
-			}		
-
-			} catch (GRBException e) {
+				}		
+			} 
+			catch (GRBException e){
 				cout << "Error number: " << e.getErrorCode() << endl;
 				cout << e.getMessage() << endl;
-			} catch (...) {
+			} 
+			catch (...){
 				cout << "Error during callback" << endl;
 			}
-		
-	}
+		}
 };
 
+/*
+	This function returns a optimum integer solution to MAP.
+	If no solution is found, it returns a all -1 edge map.
+*/
+void IntegerSolution(ListGraph::EdgeMap<int> &IntSol){
 
+	for (ListGraph::EdgeIt e(G); e != INVALID; ++e) 
+		IntSol[e] = -1;	
 
-
-
-
-// This function receivs a graph and returns a optmal fractional solution
-void IntegerSolution(){
 	try {
-		
 		int n = countNodes(G);
 
 		// Create an environment
 		GRBEnv env = GRBEnv(true);
-		env.set("LogFile", "Integer.log");
+		env.set("LogFile", "MAPInteger.log");
 		env.start();
 
 		// Create an empty model
@@ -165,18 +183,20 @@ void IntegerSolution(){
 			vars[i] = new GRBVar[n];
 		
 
+		// Create all variables. Maybe not needed
 		for (int i = 0; i < n; i++)
-			for (int j = 0; j < i; j++){
-				// vars[i][j] = model.addVar(0.0, 0.0, 0.0, GRB_BINARY, "x_" + to_string(i) + "_" + to_string(j));
-				// vars[j][i] = vars[i][j];
+			for (int j = 0; j <= i; j++){
+				vars[i][j] = model.addVar(0.0, 0.0, 0.0, GRB_BINARY, "x_" + to_string(i) + "_" + to_string(j));
+				vars[j][i] = vars[i][j];
 			}    
 
+		// Setting the correct UB and OBJ.	
 		for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
 			int u = G.id(G.u(e));
 			int v = G.id(G.v(e));
 
-			// vars[u][v].set(GRB_DoubleAttr_UB, 1);
-			// vars[u][v].set(GRB_DoubleAttr_Obj, cost[e]);
+			vars[u][v].set(GRB_DoubleAttr_UB, 1);
+			vars[u][v].set(GRB_DoubleAttr_Obj, cost[e]);
 		}
 
 		// Add \delta(v) >= 2, constraints
@@ -188,18 +208,41 @@ void IntegerSolution(){
 			
 			model.addConstr(expr >= 2, "cut2_" + to_string(i));
 		}
+
+		// Set callback function
+    	MinimumCut cb = MinimumCut(vars, n);
+    	model.setCallback(&cb);
 		
 		// Optimize model
 		model.optimize();
 
-		// cout << x.get(GRB_StringAttr_VarName) << " "
-		//  << x.get(GRB_DoubleAttr_X) << endl;
-		// cout << y.get(GRB_StringAttr_VarName) << " "
-		//  << y.get(GRB_DoubleAttr_X) << endl;
-		// cout << z.get(GRB_StringAttr_VarName) << " "
-		//  << z.get(GRB_DoubleAttr_X) << endl;
+		if (model.get(GRB_IntAttr_SolCount) > 0){
+			cout << "Obj: " << model.get(GRB_DoubleAttr_ObjVal) << endl;
 
-		cout << "Obj: " << model.get(GRB_DoubleAttr_ObjVal) << endl;
+			double **sol = new double*[n];
+			for (int i = 0; i < n; i++)
+				sol[i] = model.get(GRB_DoubleAttr_X, vars[i], n);
+
+			for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
+				int u = G.id(G.u(e));
+				int v = G.id(G.v(e));
+
+				if (sol[u][v] > 0.5)
+					IntSol[e] = 1;
+				else
+					IntSol[e] = 0;
+
+				// cout<<u + 1<<' '<<v + 1<<' '<<abs(sol[u][v])<<endl;
+			}
+
+			for (int i = 0; i < n; i++)
+				delete[] sol[i];
+			delete[] sol;
+		}
+
+		for (int i = 0; i < n; i++)
+			delete[] vars[i];
+		delete[] vars;
 
 	} catch(GRBException e) {
 		cout << "Error code = " << e.getErrorCode() << endl;
@@ -207,7 +250,6 @@ void IntegerSolution(){
 	} catch(...) {
 		cout << "Exception during optimization" << endl;
 	}
-
 }
 
 
@@ -215,4 +257,16 @@ void IntegerSolution(){
 
 signed main(){
 	ReadInput();
+
+	ListGraph::EdgeMap<int> IntSol(G);
+	IntegerSolution(IntSol);
+
+	for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
+		int u = G.id(G.u(e));
+		int v = G.id(G.v(e));
+
+		if (IntSol[e])
+			cout<<u + 1<<' '<<v + 1<<endl;
+	}
+
 }

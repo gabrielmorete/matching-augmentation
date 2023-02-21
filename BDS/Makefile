@@ -12,7 +12,7 @@ CPPLIB   = -L $(PATH)/lib -lgurobi_c++ -lgurobi100
 
 
 % : %.cpp
-	$(CPP) $(CARGS) -o $@ $< -I$(INC) $(CPPLIB) -lm
+	$(CPP) $(CARGS) -o $@ $< -I$(INC) $(CPPLIB) -lm -lemon
 
 # clean:
 # 	rm -rf *.o *_c *_c++ *.class *.log *.rlp *.lp *.bas *.ilp *.mps *.prm *.dSYM; \
