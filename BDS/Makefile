@@ -1,12 +1,13 @@
 # Makefile
-# Gurobi is installed in. 
+# Gurobi is installed in.
 # /Library/gurobi1001/macos_universal2/include/
 
 
 PLATFORM = macos_universal2
 PATH	 = /Library/gurobi1001/macos_universal2
-INC      = $(PATH)/include/	
+INC      = $(PATH)/include/
 CPP      = g++
+STD      = -std=c++17
 CARGS    = -m64 -g
 CPPLIB   = -L $(PATH)/lib -lgurobi_c++ -lgurobi100
 
