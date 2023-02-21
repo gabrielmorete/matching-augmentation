@@ -1,0 +1,495 @@
+Set parameter Username
+Set parameter LogFile to value "MAPInteger.log"
+Academic license - for non-commercial use only - expires 2024-02-09
+Set parameter LazyConstraints to value 1
+Gurobi Optimizer version 10.0.1 build v10.0.1rc0 (mac64[x86])
+
+CPU model: Intel(R) Core(TM) i5-4278U CPU @ 2.60GHz
+Thread count: 2 physical cores, 4 logical processors, using up to 4 threads
+
+Optimize a model with 26 rows, 351 columns and 676 nonzeros
+Model fingerprint: 0xacfe5a2b
+Variable types: 0 continuous, 351 integer (351 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [2e+00, 2e+00]
+Min cut val1
+Min cut val1
+Min cut val1
+Min cut val1
+Presolve removed 0 rows and 307 columns
+Presolve time: 0.00s
+Presolved: 26 rows, 44 columns, 88 nonzeros
+Variable types: 0 continuous, 44 integer (44 binary)
+Min cut val0
+Min cut val2
+Found heuristic solution: objective 31.0000000
+Min cut val2
+Found heuristic solution: objective 30.0000000
+
+Root relaxation: objective 1.300000e+01, 31 iterations, 0.00 seconds (0.00 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0   13.00000    0    6   30.00000   13.00000  56.7%     -    0s
+Min cut val1
+Min cut val0
+Min cut val1
+Min cut val1
+Min cut val1
+Min cut val1
+Min cut val1
+Min cut val1
+Min cut val2
+H    0     0                      26.0000000   13.00000  50.0%     -    0s
+     0     0   14.50000    0   25   26.00000   14.50000  44.2%     -    0s
+Min cut val1
+Min cut val0
+     0     0   15.57500    0   26   26.00000   15.57500  40.1%     -    0s
+Min cut val1
+Min cut val1
+Min cut val2
+H    0     0                      20.0000000   15.57500  22.1%     -    0s
+     0     0   15.68889    0   28   20.00000   15.68889  21.6%     -    0s
+     0     0   15.75000    0   26   20.00000   15.75000  21.2%     -    0s
+Min cut val1
+Min cut val2
+H    0     0                      19.0000000   15.75000  17.1%     -    0s
+     0     0   16.25000    0   23   19.00000   16.25000  14.5%     -    0s
+Min cut val1
+     0     0   16.25000    0   28   19.00000   16.25000  14.5%     -    0s
+     0     0   16.25000    0   26   19.00000   16.25000  14.5%     -    0s
+     0     2   16.25000    0   23   19.00000   16.25000  14.5%     -    0s
+Min cut val1
+
+Cutting planes:
+  Gomory: 2
+  Clique: 1
+  MIR: 8
+  Zero half: 2
+  Lazy constraints: 16
+
+Explored 596 nodes (1426 simplex iterations) in 0.10 seconds (0.01 work units)
+Thread count was 4 (of 4 available processors)
+
+Solution count 5: 19 20 26 ... 31
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.900000000000e+01, best bound 1.900000000000e+01, gap 0.0000%
+
+User-callback calls 1410, time in user-callback 0.03 sec
+Obj: 19
+Set parameter Username
+Set parameter LogFile to value "MAPFractional.log"
+Academic license - for non-commercial use only - expires 2024-02-09
+Set parameter Method to value 0
+Gurobi Optimizer version 10.0.1 build v10.0.1rc0 (mac64[x86])
+
+CPU model: Intel(R) Core(TM) i5-4278U CPU @ 2.60GHz
+Thread count: 2 physical cores, 4 logical processors, using up to 4 threads
+
+Optimize a model with 26 rows, 351 columns and 676 nonzeros
+Model fingerprint: 0x86beaead
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [2e+00, 2e+00]
+Presolve removed 0 rows and 320 columns
+Presolve time: 0.00s
+Presolved: 26 rows, 31 columns, 62 nonzeros
+
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+       0    2.4000000e+01   0.000000e+00   2.400000e+01      0s
+      34    1.3000000e+01   0.000000e+00   0.000000e+00      0s
+
+Solved in 34 iterations and 0.00 seconds (0.00 work units)
+Optimal objective  1.300000000e+01
+Gurobi Optimizer version 10.0.1 build v10.0.1rc0 (mac64[x86])
+
+CPU model: Intel(R) Core(TM) i5-4278U CPU @ 2.60GHz
+Thread count: 2 physical cores, 4 logical processors, using up to 4 threads
+
+Optimize a model with 27 rows, 351 columns and 680 nonzeros
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [2e+00, 2e+00]
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+       0    1.3000000e+01   1.000000e+00   4.999997e+06      0s
+       2    1.3000000e+01   0.000000e+00   0.000000e+00      0s
+
+Solved in 2 iterations and 0.00 seconds (0.00 work units)
+Optimal objective  1.300000000e+01
+Gurobi Optimizer version 10.0.1 build v10.0.1rc0 (mac64[x86])
+
+CPU model: Intel(R) Core(TM) i5-4278U CPU @ 2.60GHz
+Thread count: 2 physical cores, 4 logical processors, using up to 4 threads
+
+Optimize a model with 28 rows, 351 columns and 684 nonzeros
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [2e+00, 2e+00]
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+       0    1.3000000e+01   1.000000e+00   4.999997e+06      0s
+       2    1.3500000e+01   0.000000e+00   0.000000e+00      0s
+
+Solved in 2 iterations and 0.00 seconds (0.00 work units)
+Optimal objective  1.350000000e+01
+Gurobi Optimizer version 10.0.1 build v10.0.1rc0 (mac64[x86])
+
+CPU model: Intel(R) Core(TM) i5-4278U CPU @ 2.60GHz
+Thread count: 2 physical cores, 4 logical processors, using up to 4 threads
+
+Optimize a model with 29 rows, 351 columns and 688 nonzeros
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [2e+00, 2e+00]
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+       0    1.3500000e+01   1.000000e+00   5.999999e+06      0s
+       1    1.3500000e+01   0.000000e+00   0.000000e+00      0s
+
+Solved in 1 iterations and 0.00 seconds (0.00 work units)
+Optimal objective  1.350000000e+01
+Gurobi Optimizer version 10.0.1 build v10.0.1rc0 (mac64[x86])
+
+CPU model: Intel(R) Core(TM) i5-4278U CPU @ 2.60GHz
+Thread count: 2 physical cores, 4 logical processors, using up to 4 threads
+
+Optimize a model with 30 rows, 351 columns and 692 nonzeros
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [2e+00, 2e+00]
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+       0    1.3500000e+01   1.000000e+00   5.999996e+06      0s
+       1    1.3500000e+01   0.000000e+00   0.000000e+00      0s
+
+Solved in 1 iterations and 0.00 seconds (0.00 work units)
+Optimal objective  1.350000000e+01
+Gurobi Optimizer version 10.0.1 build v10.0.1rc0 (mac64[x86])
+
+CPU model: Intel(R) Core(TM) i5-4278U CPU @ 2.60GHz
+Thread count: 2 physical cores, 4 logical processors, using up to 4 threads
+
+Optimize a model with 31 rows, 351 columns and 696 nonzeros
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [2e+00, 2e+00]
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+       0    1.3500000e+01   1.000000e+00   9.999995e+06      0s
+       2    1.3750000e+01   0.000000e+00   0.000000e+00      0s
+
+Solved in 2 iterations and 0.00 seconds (0.00 work units)
+Optimal objective  1.375000000e+01
+Gurobi Optimizer version 10.0.1 build v10.0.1rc0 (mac64[x86])
+
+CPU model: Intel(R) Core(TM) i5-4278U CPU @ 2.60GHz
+Thread count: 2 physical cores, 4 logical processors, using up to 4 threads
+
+Optimize a model with 32 rows, 351 columns and 700 nonzeros
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [2e+00, 2e+00]
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+       0    1.3750000e+01   1.000000e+00   5.999996e+06      0s
+       2    1.4000000e+01   0.000000e+00   0.000000e+00      0s
+
+Solved in 2 iterations and 0.00 seconds (0.00 work units)
+Optimal objective  1.400000000e+01
+Gurobi Optimizer version 10.0.1 build v10.0.1rc0 (mac64[x86])
+
+CPU model: Intel(R) Core(TM) i5-4278U CPU @ 2.60GHz
+Thread count: 2 physical cores, 4 logical processors, using up to 4 threads
+
+Optimize a model with 33 rows, 351 columns and 704 nonzeros
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [2e+00, 2e+00]
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+       0    1.4000000e+01   1.000000e+00   5.999998e+06      0s
+       1    1.4125000e+01   0.000000e+00   0.000000e+00      0s
+
+Solved in 1 iterations and 0.00 seconds (0.00 work units)
+Optimal objective  1.412500000e+01
+Gurobi Optimizer version 10.0.1 build v10.0.1rc0 (mac64[x86])
+
+CPU model: Intel(R) Core(TM) i5-4278U CPU @ 2.60GHz
+Thread count: 2 physical cores, 4 logical processors, using up to 4 threads
+
+Optimize a model with 34 rows, 351 columns and 708 nonzeros
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [2e+00, 2e+00]
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+       0    1.4125000e+01   1.000000e+00   3.999997e+06      0s
+       2    1.4625000e+01   0.000000e+00   0.000000e+00      0s
+
+Solved in 2 iterations and 0.00 seconds (0.00 work units)
+Optimal objective  1.462500000e+01
+Gurobi Optimizer version 10.0.1 build v10.0.1rc0 (mac64[x86])
+
+CPU model: Intel(R) Core(TM) i5-4278U CPU @ 2.60GHz
+Thread count: 2 physical cores, 4 logical processors, using up to 4 threads
+
+Optimize a model with 35 rows, 351 columns and 712 nonzeros
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [2e+00, 2e+00]
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+       0    1.4625000e+01   1.000000e+00   6.999995e+06      0s
+       2    1.4687500e+01   0.000000e+00   0.000000e+00      0s
+
+Solved in 2 iterations and 0.00 seconds (0.00 work units)
+Optimal objective  1.468750000e+01
+Gurobi Optimizer version 10.0.1 build v10.0.1rc0 (mac64[x86])
+
+CPU model: Intel(R) Core(TM) i5-4278U CPU @ 2.60GHz
+Thread count: 2 physical cores, 4 logical processors, using up to 4 threads
+
+Optimize a model with 36 rows, 351 columns and 716 nonzeros
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [2e+00, 2e+00]
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+       0    1.4687500e+01   5.000000e-01   4.999996e+06      0s
+       1    1.4781250e+01   0.000000e+00   0.000000e+00      0s
+
+Solved in 1 iterations and 0.00 seconds (0.00 work units)
+Optimal objective  1.478125000e+01
+Obj: 14.7812
+BDS tree
+18 25
+21 <-- 26
+21 22
+23 <-- 25
+19 24
+26 <-- 24
+20 23
+24 <-- 23
+11 40
+20 <-- 22
+15 26
+17 <-- 21
+10 41
+18 <-- 20
+16 17
+21 <-- 19
+9 42
+16 <-- 18
+12 39
+22 <-- 17
+8 43
+14 <-- 16
+13 14
+17 <-- 15
+7 44
+12 <-- 14
+27 38
+17 <-- 13
+6 45
+10 <-- 12
+28 29
+13 <-- 11
+5 46
+8 <-- 10
+30 37
+13 <-- 9
+4 47
+6 <-- 8
+31 32
+9 <-- 7
+3 48
+4 <-- 6
+33 36
+9 <-- 5
+2 49
+2 <-- 4
+34 35
+5 <-- 3
+1 50
+1 <-- 2
+0 51
+1 <-- 1
+considering edge 1 6 to cover node 2
+ Transition 2 8
+considering edge 6 7 to cover node 8
+ Transition 8 5
+considering edge 10 5 to cover node 5
+ Transition 5 3
+considering edge 4 3 to cover node 3
+Foud New Solution to 3 4 3
+considering edge 2 3 to cover node 3
+Foud New Solution to 5 10 5
+considering edge 4 3 to cover node 5
+Foud New Solution to 5 4 3
+considering edge 2 3 to cover node 5
+considering edge 1 5 to cover node 5
+ Transition 5 3
+ Transition 8 11
+considering edge 12 11 to cover node 11
+Foud New Solution to 11 12 11
+considering edge 10 11 to cover node 11
+ Transition 8 15
+considering edge 16 15 to cover node 15
+Foud New Solution to 15 16 15
+considering edge 14 15 to cover node 15
+ Transition 8 21
+considering edge 22 24 to cover node 21
+ Transition 21 23
+considering edge 26 25 to cover node 23
+Foud New Solution to 23 26 25
+considering edge 22 23 to cover node 23
+ Transition 23 25
+considering edge 26 25 to cover node 25
+Foud New Solution to 25 26 25
+considering edge 21 25 to cover node 25
+considering edge 21 25 to cover node 23
+ Transition 21 19
+considering edge 20 19 to cover node 19
+Foud New Solution to 19 20 19
+considering edge 18 19 to cover node 19
+Foud New Solution to 21 22 24
+considering edge 22 23 to cover node 21
+ Transition 21 25
+ Transition 21 19
+considering edge 20 19 to cover node 21
+ Transition 21 26
+considering edge 22 24 to cover node 26
+ Transition 26 23
+Foud New Solution to 26 22 24
+considering edge 22 23 to cover node 26
+ Transition 26 25
+considering edge 21 25 to cover node 26
+Foud New Solution to 26 21 25
+Foud New Solution to 21 20 19
+considering edge 18 19 to cover node 21
+ Transition 21 26
+Foud New Solution to 8 6 7
+considering edge 4 3 to cover node 8
+ Transition 8 7
+considering edge 8 7 to cover node 7
+Foud New Solution to 7 8 7
+considering edge 6 7 to cover node 7
+ Transition 8 11
+ Transition 8 15
+ Transition 8 21
+considering edge 2 3 to cover node 8
+ Transition 8 7
+ Transition 8 11
+ Transition 8 15
+ Transition 8 21
+considering edge 1 5 to cover node 8
+ Transition 8 3
+ Transition 8 7
+ Transition 8 11
+ Transition 8 15
+ Transition 8 21
+Foud New Solution to 2 1 6
+considering edge 1 5 to cover node 2
+ Transition 2 3
+ Transition 2 7
+ Transition 2 11
+ Transition 2 15
+ Transition 2 21
+Recovering Solution Node 2  Edge 1 6
+Recovering Solution Node 8  Edge 6 7
+Recovering Solution Node 5  Edge 4 3
+Recovering Solution Node 11  Edge 12 11
+Recovering Solution Node 15  Edge 16 15
+Recovering Solution Node 21  Edge 20 19
+Recovering Solution Node 26  Edge 21 25
+25 1
+24 1
+23 -1
+22 1
+21 -1
+20 2
+19 -1
+18 1
+17 -1
+16 -1
+15 -1
+14 1
+13 -1
+12 -1
+11 -1
+10 1
+9 -1
+8 -1
+7 6
+6 1
+5 -1
+4 1
+3 -1
+2 1
+1 7
+0 -1
+25 26 0.328125 1 0
+24 26 1 1 1
+23 25 1 1 1
+23 24 0.671875 1 1
+22 24 0.328125 0 0
+22 23 0.328125 1 0
+21 26 0.671875 1 1
+21 25 0.671875 0 1
+20 22 1 1 1
+19 21 1 1 1
+19 20 0.34375 1 1
+18 20 0.65625 1 1
+18 19 0.65625 0 0
+17 22 0.34375 1 1
+17 21 0.34375 0 1
+16 18 1 1 1
+15 17 1 1 1
+15 16 0.3125 0 1
+14 16 0.6875 1 1
+14 15 0.6875 1 0
+13 18 0.3125 0 0
+13 17 0.3125 0 1
+12 14 1 1 1
+11 13 1 1 1
+11 12 0.375 1 1
+10 12 0.625 1 1
+10 11 0.625 0 0
+9 14 0.375 1 0
+9 13 0.375 1 1
+8 10 1 1 1
+7 9 1 1 1
+7 8 0.25 0 0
+6 8 0.75 1 1
+6 7 0.75 1 1
+5 10 0.25 1 0
+5 9 0.25 0 1
+4 6 1 1 1
+3 5 1 1 1
+3 4 0.5 1 1
+2 4 0.5 1 1
+2 3 0.5 0 0
+1 6 0.5 0 1
+1 5 0.5 1 0
+1 2 1 1 1
+Cost Fractional 14.7812
+Cost Integral 19
+Cost BDS 19
