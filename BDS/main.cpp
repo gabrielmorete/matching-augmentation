@@ -252,6 +252,98 @@ void IntegerSolution(ListGraph::EdgeMap<int> &IntSol){
 	}
 }
 
+/*
+	This function returns a optimum fractional solution to MAP.
+	If no solution is found, it returns a all -1 edge map.
+*/
+void FractionalSolution(ListGraph::EdgeMap<double> &FracSol){
+
+	for (ListGraph::EdgeIt e(G); e != INVALID; ++e) 
+		FracSol[e] = -1;	
+
+	try {
+		int n = countNodes(G);
+
+		// Create an environment
+		GRBEnv env = GRBEnv(true);
+		env.set("LogFile", "MAPFractional.log");
+		env.start();
+
+		// Create an empty model
+		GRBModel model = GRBModel(env);
+		model.set(GRB_IntParam_LazyConstraints, 1);
+		
+		GRBVar **vars = NULL;
+		vars = new GRBVar*[n];
+		for (int i = 0; i < n; i++)
+			vars[i] = new GRBVar[n];
+		
+
+		// Create all variables. Maybe not needed
+		for (int i = 0; i < n; i++)
+			for (int j = 0; j <= i; j++){
+				vars[i][j] = model.addVar(0.0, 0.0, 0.0, GRB_CONTINUOUS, "x_" + to_string(i) + "_" + to_string(j));
+				vars[j][i] = vars[i][j];
+			}    
+
+		// Setting the correct UB and OBJ.	
+		for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
+			int u = G.id(G.u(e));
+			int v = G.id(G.v(e));
+
+			vars[u][v].set(GRB_DoubleAttr_UB, 1);
+			vars[u][v].set(GRB_DoubleAttr_Obj, cost[e]);
+		}
+
+		// Add \delta(v) >= 2, constraints
+		for (int i = 0; i < n; i++){
+			
+			GRBLinExpr expr = 0;
+			for (int j = 0; j < n; j++)
+				expr += vars[i][j];
+			
+			model.addConstr(expr >= 2, "cut2_" + to_string(i));
+		}
+
+		// Set callback function
+    	MinimumCut cb = MinimumCut(vars, n);
+    	model.setCallback(&cb);
+		
+		// Optimize model
+		model.optimize();
+
+		if (model.get(GRB_IntAttr_SolCount) > 0){
+			cout << "Obj: " << model.get(GRB_DoubleAttr_ObjVal) << endl;
+
+			double **sol = new double*[n];
+			for (int i = 0; i < n; i++)
+				sol[i] = model.get(GRB_DoubleAttr_X, vars[i], n);
+
+			for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
+				int u = G.id(G.u(e));
+				int v = G.id(G.v(e));
+
+				FracSol[e] = sol[u][v];
+
+				// cout<<u + 1<<' '<<v + 1<<' '<<abs(sol[u][v])<<endl;
+			}
+
+			for (int i = 0; i < n; i++)
+				delete[] sol[i];
+			delete[] sol;
+		}
+
+		for (int i = 0; i < n; i++)
+			delete[] vars[i];
+		delete[] vars;
+
+	} catch(GRBException e) {
+		cout << "Error code = " << e.getErrorCode() << endl;
+		cout << e.getMessage() << endl;
+	} catch(...) {
+		cout << "Exception during optimization" << endl;
+	}
+}
 
 
 
@@ -261,12 +353,14 @@ signed main(){
 	ListGraph::EdgeMap<int> IntSol(G);
 	IntegerSolution(IntSol);
 
+	ListGraph::EdgeMap<double> FracSol(G);
+	FractionalSolution(FracSol);
+
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
 		int u = G.id(G.u(e));
 		int v = G.id(G.v(e));
 
-		if (IntSol[e])
-			cout<<u + 1<<' '<<v + 1<<endl;
+		cout<<u + 1<<' '<<v + 1<<' '<<IntSol[e]<<' '<<FracSol[e]<<endl;
 	}
 
 }
