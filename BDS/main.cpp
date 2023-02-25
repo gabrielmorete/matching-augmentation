@@ -30,16 +30,15 @@ typedef ListGraph::EdgeIt EdgeIt;
 // typedef ListGraph::EdgeMap<int> EdgeMap<int>;
 // typedef ListGraph::EdgeMap<double> EdgeMap<double>;
 
+
 // Safe handling doubles
-const double EPS = 1e-8;
+const double EPS = 1e-3;
 int sign(double x) { return (x > EPS) - (x < -EPS); }
 
 
 /*
 	Conventions
-		- Input is 1-indexed
-		- On lemon, graphs are 0-indexed;
-		- Graph is simple, for now
+		- Graphs are 0-indexed and simple;
 */
 
 
@@ -53,11 +52,14 @@ vector< array<int, 3> > _edges;
 
 
 /*
-	This function reads the Graph. The input format will be
-	n m       number of nodes, edges
-	a b c     edge bertween a, b with cost c
+	This function reads the Graph from Stdio. Graph is 1-indexed
+	The input format will be
+		n m       number of nodes, edges
+		a_1 b_1 c_1     edge bertween a_1, b_1 with cost c_1
+		...
+		a_m b_m c_m 
 */
-void ReadInput(){
+void ReadStdioInput(){
 	int n, m;
 	cin>>n>>m;
 	
@@ -70,7 +72,7 @@ void ReadInput(){
 	for (int i = 0; i < n; i++){
 		ListGraph::Node v = G.addNode();
 		if (G.id(v) != i)
-			cout<<"Error : node don't match id"<<endl;
+			cout<<"Error : vertex don't match id"<<endl;
 		assert(G.id(v) == i);
 	}
 
@@ -89,25 +91,24 @@ void ReadInput(){
 }
 
 /*
-	This function receiv a LP solution and retuns the edges
-	of a global minimum cut ans its value.
+	This function receives a LP solution and retuns the edges
+	of a global minimum cut and its value.
 */
 pair<double, vector<Edge> > FindMinCut(double **sol){
 	int n = countNodes(G);
 	ListGraph::EdgeMap<double> capacity(G);
 
-	// Find minimum cut
+	// Build EdgeMap of capacities
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
 		int u = G.id(G.u(e));
 		int v = G.id(G.v(e));
 
-		capacity[e] = sol[v][u]; // Using current solution value value as capacities
+		capacity[e] = sol[v][u]; // Using current solution as capacity
 	}
 
 	// Build Gomory-Hu Tree
 	GomoryHu<ListGraph, ListGraph::EdgeMap<double> > GMH(G,capacity);
 	GMH.run();	                
-
 
 	ListGraph::Node min_v = G.nodeFromId(0);
 	ListGraph::Node min_u = G.nodeFromId(1);
@@ -144,7 +145,12 @@ class MinimumCut: public GRBCallback {
 	protected:
 		void callback(){
 			try {
-				if (where == GRB_CB_MIPSOL){ // Found a solution
+				if (where == GRB_CB_MIPSOL){
+					// Solver found an integral optimal solution for the
+					// current formulation, must check if if there is a
+					// minimum cut with value < 2
+					// Since the solution is integral, one could just
+					// search for bridges.
 
 					double *x[n];
 					for (int i = 0; i < n; i++)
@@ -163,7 +169,6 @@ class MinimumCut: public GRBCallback {
 					// Build Gomory-Hu Tree
 					GomoryHu<ListGraph, ListGraph::EdgeMap<double> > GMH(G,capacity);
 					GMH.run();	                
-
 
 					ListGraph::Node min_v = G.nodeFromId(0);
 					ListGraph::Node min_u = G.nodeFromId(1);
@@ -204,6 +209,76 @@ class MinimumCut: public GRBCallback {
 			}
 		}
 };
+
+/*
+	This is the separator function for the MIP. 
+	If the solution is not a 2ECSS it adds a cut
+*/
+// class MinimumCut: public GRBCallback {
+// 	public:
+// 		GRBVar** vars;
+// 		int n;
+// 		MinimumCut(GRBVar** xvars, int xn){
+// 			vars = xvars;
+// 			n = xn;
+// 		}
+// 	protected:
+// 		void callback(){
+// 			try {
+// 				if (where == GRB_CB_MIPSOL){
+// 					// Solver found an integral optimal solution for the
+// 					// current formulation, must check if if there is a
+// 					// bridge or a cut.
+
+// 					double *x[n];
+// 					for (int i = 0; i < n; i++)
+// 						x[i] = getSolution(vars[i], n);
+
+// 					ListGraph::EdgeMap<bool> in_sol(G);
+					
+// 					for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
+// 						int u = G.id(G.u(e));
+// 						int v = G.id(G.v(e));
+
+// 						if (x[v][u] > 0.5)
+// 							in_sol[e] = 1;
+// 					}
+
+// 					ListGraph::NodeMap<bool> ones(G, 1);
+// 					ListGraph H = SubGraph(G, ones, in_sol);
+// 					// H is a spanning subgraph with all edges in the solution
+
+// 					if (biEdgeConnected(H) == 0){ // Not 2ECSS, must add a cut 
+// 						ListGraph::NodeMap<int> ebcc(G);
+// 						biEdgeConnectedComponents(G, ebcc);
+
+// 						GRBLinExpr expr = 0;
+	
+// 						for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
+// 							ListGraph::Node u = G.u(e);
+// 							ListGraph::Node v = G.v(e);
+							
+// 							if (ebcc[u] == 0 and ebcc[v] != 0)
+// 								expr += vars[G.id(u)][G.id(v)];
+					
+// 							if (ebcc[v] == 0 and ebcc[u] != 0)
+// 								expr += vars[G.id(v)][G.id(u)];
+// 						}
+
+// 						addLazy(expr >= 2);
+// 					}
+// 			} 
+// 			catch (GRBException e){
+// 				cout << "Error number: " << e.getErrorCode() << endl;
+// 				cout << e.getMessage() << endl;
+// 			} 
+// 			catch (...){
+// 				cout << "Error during callback" << endl;
+// 			}
+// 		}
+// };
+
+
 
 /*
 	This function returns a optimum integer solution to MAP.
