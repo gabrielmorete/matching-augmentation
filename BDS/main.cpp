@@ -17,6 +17,7 @@
 #include "/Library/gurobi1001/macos_universal2/include/gurobi_c++.h"
 #include <lemon/list_graph.h>
 #include <lemon/gomory_hu.h>
+#include <lemon/adaptors.h>
 
 using namespace std;
 using namespace lemon;
