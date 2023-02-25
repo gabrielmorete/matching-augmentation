@@ -299,7 +299,7 @@ void IntegerSolution(ListGraph::EdgeMap<int> &IntSol){
 
 		// Create an empty model
 		GRBModel model = GRBModel(env);
-		model.set(GRB_IntParam_LazyConstraints, 1);
+		model.set(GRB_IntParam_LazyConstraints, 1); // Allow callback constraints
 		
 		GRBVar **vars = NULL;
 		vars = new GRBVar*[n];
@@ -307,7 +307,7 @@ void IntegerSolution(ListGraph::EdgeMap<int> &IntSol){
 			vars[i] = new GRBVar[n];
 		
 
-		// Create all variables. Maybe not needed
+		// Create all variables. Optimize here
 		for (int i = 0; i < n; i++)
 			for (int j = 0; j <= i; j++){
 				vars[i][j] = model.addVar(0.0, 0.0, 0.0, GRB_BINARY, "x_" + to_string(i) + "_" + to_string(j));
@@ -340,6 +340,7 @@ void IntegerSolution(ListGraph::EdgeMap<int> &IntSol){
 		// Optimize model
 		model.optimize();
 
+		// Found optimal solution
 		if (model.get(GRB_IntAttr_SolCount) > 0){
 			cout << "Obj: " << model.get(GRB_DoubleAttr_ObjVal) << endl;
 
@@ -442,7 +443,7 @@ void FractionalSolution(ListGraph::EdgeMap<double> &FracSol){
 
 			pair<double, vector<Edge> > min_cut = FindMinCut(sol);
 
-			// iF min_cut.fist < 2, need to add constraint
+			// If min_cut.fist < 2, need to add constraint
 			if (sign(min_cut.first - 2.0) < 0) { // Min cut < 2
 				GRBLinExpr expr = 0;
 				
