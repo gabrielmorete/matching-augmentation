@@ -1,15 +1,22 @@
-#include "bits/stdc++.h"
+#include <iostream>
+#include <fstream>
 #include <filesystem>
 #include <lemon/list_graph.h>
 #include <lemon/nauty_reader.h>
 
-
 using namespace std;
 using namespace lemon;
+
+// Safe handling doubles
+const double EPS = 1e-3;
+int sign(double x) { return (x > EPS) - (x < -EPS); }
+
 
 ListGraph G;
 ListGraph::EdgeMap<int> cost(G);
 
+bool __found_feasible;
+int __cur_graph_id;
 ofstream g_out, log_out;
 
 /*
@@ -19,19 +26,80 @@ ofstream g_out, log_out;
 	file.
 */
 void SolveCurrentMatching(int matching_id){
-	g_out << matching_id << ": ";
+	ListGraph::EdgeMap<int> IntSol(G);
+	// IntegerSolution(IntSol);
 
-	bool first = 1;
-	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
-		if (cost[e] == 0){
-			if (!first)
-				g_out << ", ";
+	ListGraph::EdgeMap<double> FracSol(G);
+	// FractionalSolution(FracSol);
 
-			g_out << G.id(G.u(e)) << " " << G.id(G.v(e));
-			first = 0;
+	ListGraph::EdgeMap<int> BDSSol(G);
+	// BDSAlgorithm(FracSol, BDSSol);
+
+	int cost_Int = 0;
+	int cost_BDS = 0;
+	double cost_Frac = 0;
+
+	for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
+		int u = G.id(G.u(e));
+		int v = G.id(G.v(e));
+
+		cost_Int +=  IntSol[e] * cost[e];
+		cost_Frac +=  FracSol[e] * cost[e];
+		cost_BDS +=  BDSSol[e] * cost[e];
+
+		// cout<<u + 1<<' '<<v + 1<<' '<<FracSol[e]<<' '<<IntSol[e]<<' '<<BDSSol[e]<<endl;
+	}
+
+	// Found a feasible example, print to file
+	if (sign(3.0 * cost_Int - 4.0 * cost_Frac) >= 0 or sign(3.0 * cost_BDS - 4.0 * cost_Frac) >= 0){
+		if (__found_feasible == 0){ // First feasible example found
+			// create file "g"+cnt
+			g_out.open(to_string(countNodes(G)) + "/g" + to_string(__cur_graph_id));
+			
+			g_out << countNodes(G) <<' ' << countEdges(G) << endl << endl;
+			
+			for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+				g_out << G.id(G.u(e)) << ' ' << G.id(G.v(e)) << endl;
+			
+			g_out << "----------" << endl << endl;
 		}
 
-	g_out<<endl;	
+		__found_feasible = 1;
+
+		g_out << matching_id << ": ";
+
+		bool first = 1;
+		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+			if (cost[e] == 0){
+				if (!first)
+					g_out << ", ";
+
+				g_out << G.id(G.u(e)) << " " << G.id(G.v(e));
+				first = 0;
+			}
+
+		g_out<<endl;	
+
+		g_out << "Frc :" << cost_Frac << " | ";
+		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+			g_out << FracSol[e] << ' ';
+		g_out << endl;
+
+		g_out << "Int :" << cost_Int << " | ";
+		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+			g_out << IntSol[e] << ' ';
+		g_out << endl;
+
+		g_out << "BDS :" << cost_BDS << " | ";
+		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+			g_out << BDSSol[e] << ' ';
+		g_out << endl << endl;
+
+		// Generate entry in the log file
+		log_out << "Found feasible example g" << __cur_graph_id << " matching id " << matching_id << endl;
+		log_out << "Int/Frc = " << (double) cost_Int/cost_Frac << " BDS/Frc = " << cost_BDS/cost_Frac << endl;
+		log_out << endl;
+	}
 }
 
 
@@ -80,7 +148,8 @@ void SolveAllMatchings(){
 	int total_matchings = 1, m = countEdges(G);
 	FindAllMatchings(0, m, total_matchings, matched);
 
-	g_out << endl << "Number of matchings : " << total_matchings << endl;
+	if (__found_feasible == 1)
+		g_out << "Number of matchings : " << total_matchings << endl;
 }
 
 
@@ -110,31 +179,22 @@ void RunNautyInput(){
 				break;
 			}
 
-		if (ok){
-			// create file "g"+cnt
-			g_out.open(to_string(n) + "/g" + to_string(cnt));
-
-			g_out << n <<' ' << m << endl << endl;
-
-			for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
-				g_out << G.id(G.u(e)) << ' ' << G.id(G.v(e)) << endl;
-
-			g_out << "----------" << endl << endl;
-		}	
-
+		/* 
+			Since the input data is massive, we will one write a file if
+			there is some feasible solution.
+		*/
+		__found_feasible = 0;
+		__cur_graph_id = cnt;
 
 		SolveAllMatchings();
 		cnt++;
 
-		g_out.close();
+		if (__found_feasible)
+			g_out.close();
 	}
 
 	log_out.close();
 }
-
-
-
-
 
 
 signed main(){
