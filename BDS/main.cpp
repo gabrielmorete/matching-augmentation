@@ -18,6 +18,7 @@
 #include <lemon/list_graph.h>
 #include <lemon/gomory_hu.h>
 #include <lemon/adaptors.h>
+#include <lemon/connectivity.h>
 
 using namespace std;
 using namespace lemon;
@@ -714,16 +715,22 @@ void BDSAlgorithm(ListGraph::EdgeMap<double> &FracSol, ListGraph::EdgeMap<int> &
 	UpLinkAugmentation(BDSSol, parent, in, out);
 
 
+
+
+
 	// Sanity check, checks is BDS returned a feasible solution
 	ListGraph::NodeMap<bool> ones(G, 1);
-	H = SubGraph(G, ones, BDSSol);
+	ListGraph::EdgeMap<bool> BoolBDSSol(G, 0);
+	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+		BoolBDSSol[e] = BDSSol[e];
+	SubGraph<ListGraph> H(G, ones, BoolBDSSol);
 
 	assert(biEdgeConnected(H) == 1);
 }
 
 
 signed main(){
-	ReadInput();
+	ReadStdioInput();
 
 	ListGraph::EdgeMap<int> IntSol(G);
 	IntegerSolution(IntSol);
