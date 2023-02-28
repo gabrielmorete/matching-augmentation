@@ -16,6 +16,8 @@
 #include <array>
 #include <cassert>
 #include <string>
+#include <set>
+#include <algorithm>
 #include "/Library/gurobi1001/macos_universal2/include/gurobi_c++.h"
 #include <lemon/list_graph.h>
 #include <lemon/gomory_hu.h>
@@ -52,65 +54,18 @@ ListGraph G; // Declare global Graph
 ListGraph::EdgeMap<int> cost(G); // Cost of the edges
 
 
-// I will also save the input information
-int _n, _m;
-vector< array<int, 3> > _edges;
 
-
-/*
-	This function reads the Graph from Stdio. Graph is 1-indexed
-	The input format will be
-		n m       number of nodes, edges
-		a_1 b_1 c_1     edge bertween a_1, b_1 with cost c_1
-		...
-		a_m b_m c_m 
-*/
-void ReadStdioInput(){
-	int n, m;
-	cin>>n>>m;
-	
-	assert(n >= 3);
-	assert(m >= n);
-
-	_n = n;
-	_m = m;
-
-	for (int i = 0; i < n; i++){
-		ListGraph::Node v = G.addNode();
-		if (G.id(v) != i)
-			cout<<"Error : vertex don't match id"<<endl;
-		assert(G.id(v) == i);
-	}
-
-	for (int i = 0; i < m; i++){
-		int a, b, c;
-		cin>>a>>b>>c;
-
-		a--; // 0-indexed
-		b--; 
-
-		// _edges.push_back({a, b, c});
-
-		ListGraph::Edge e = G.addEdge(G.nodeFromId(a), G.nodeFromId(b));
-		cost[e] = c;
-	}
-}
 
 /*
 	This function receives a LP solution and retuns the edges
 	of a global minimum cut and its value.
 */
-pair<double, vector<Edge> > FindMinCut(double **sol){
-	int n = countNodes(G);
+pair<double, vector<Edge> > FindMinCut(double *sol, int n, int m){
 	ListGraph::EdgeMap<double> capacity(G);
 
 	// Build EdgeMap of capacities
-	for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
-		int u = G.id(G.u(e));
-		int v = G.id(G.v(e));
-
-		capacity[e] = sol[v][u]; // Using current solution as capacity
-	}
+	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+		capacity[e] = sol[G.id(e)]; // Using current solution as capacity
 
 	// Build Gomory-Hu Tree
 	GomoryHu<ListGraph, ListGraph::EdgeMap<double> > GMH(G,capacity);
@@ -126,27 +81,26 @@ pair<double, vector<Edge> > FindMinCut(double **sol){
 			}
 	}
 
-
 	vector<Edge> min_cut;
-
 	for (GomoryHu<ListGraph, ListGraph::EdgeMap<double> >::MinCutEdgeIt e(GMH, min_v, min_u); e != INVALID; ++e)
 		min_cut.push_back(e);
 	
 	return make_pair(GMH.minCutValue(min_v, min_u), min_cut);
 }
 
-
 /*
 	This is the separator function for the MIP. 
-	If there is a cut with value < 2 we will add this cut to the constraints.
+	If the solution is not a 2ECSS it adds a cut
+	separating one 2ECC.
 */
 class MinimumCut: public GRBCallback {
 	public:
-		GRBVar** vars;
-		int n;
-		MinimumCut(GRBVar** xvars, int xn){
+		GRBVar* vars;
+		int n, m;
+		MinimumCut(GRBVar* xvars, int xn, int xm){
 			vars = xvars;
 			n = xn;
+			m = xm;
 		}
 	protected:
 		void callback(){
@@ -154,57 +108,51 @@ class MinimumCut: public GRBCallback {
 				if (where == GRB_CB_MIPSOL){
 					// Solver found an integral optimal solution for the
 					// current formulation, must check if if there is a
-					// minimum cut with value < 2
-					// Since the solution is integral, one could just
-					// search for bridges.
+					// bridge or a cut.
 
-					double *x[n];
-					for (int i = 0; i < n; i++)
-						x[i] = getSolution(vars[i], n);
+					double *x = getSolution(vars, m);
 
-					ListGraph::EdgeMap<double> capacity(G);
+					ListGraph::EdgeMap<bool> in_sol(G);
 					
 					for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
+						int id = G.id(e);
 						int u = G.id(G.u(e));
 						int v = G.id(G.v(e));
 
-						capacity[e] = x[v][u]; // Using LP Value as capacities
+						if (x[id] > 0.5)
+							in_sol[e] = 1;
 					}
 
+					ListGraph::NodeMap<bool> ones(G, 1); // Must be spanning
+					// H is a spanning subgraph with all edges in the solution
+					SubGraph<ListGraph> H(G, ones, in_sol);
 
-					// Build Gomory-Hu Tree
-					GomoryHu<ListGraph, ListGraph::EdgeMap<double> > GMH(G,capacity);
-					GMH.run();	                
+					ListGraph::NodeMap<int> ebcc(G, -1);
+					biEdgeConnectedComponents(H, ebcc);
 
-					ListGraph::Node min_v = G.nodeFromId(0);
-					ListGraph::Node min_u = G.nodeFromId(1);
+					int ncmp = 0;
 					for (ListGraph::NodeIt v(G); v != INVALID; ++v)
-						for (ListGraph::NodeIt u(G); u != INVALID; ++u){
-							if (GMH.minCutValue(v, u) < GMH.minCutValue(min_v, min_u)){
-								min_v = v;
-								min_u = u;
-							}
-					}
+						ncmp = max(ncmp, ebcc[v]);
 
-					// Vertices min_u, min_v have the minimum st-cut
-
-					// cout<<"Min cut val"<< GMH.minCutValue(min_v, min_u) << endl;
-
-
-					if (sign(GMH.minCutValue(min_v, min_u) - 2.0) < 0) { // Min cut < 2
+					if (ncmp > 0){ // Not 2ECSS, must add a cut 
+	
+						// The cut will be all edges crossing the cut of the ebcc with id 0
 						GRBLinExpr expr = 0;
-						
-						// All all edges of the global min cut as a contraint.
-						for (GomoryHu<ListGraph, ListGraph::EdgeMap<double> >::MinCutEdgeIt e(GMH, min_v, min_u); e != INVALID; ++e){
-							int u = G.id(G.u(e));
-							int v = G.id(G.v(e));				
+	
+						for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
+							ListGraph::Node u = G.u(e);
+							ListGraph::Node v = G.v(e);
 							
-							expr += vars[u][v];
+							if (ebcc[u] == 0 and ebcc[v] != 0)
+								expr += vars[G.id(e)];
+					
+							if (ebcc[v] == 0 and ebcc[u] != 0)
+								expr += vars[G.id(e)];
 						}
 
 						addLazy(expr >= 2);
 					}
-				}		
+				}	
 			} 
 			catch (GRBException e){
 				cout << "Error number: " << e.getErrorCode() << endl;
@@ -217,76 +165,6 @@ class MinimumCut: public GRBCallback {
 };
 
 /*
-	This is the separator function for the MIP. 
-	If the solution is not a 2ECSS it adds a cut
-*/
-// class MinimumCut: public GRBCallback {
-// 	public:
-// 		GRBVar** vars;
-// 		int n;
-// 		MinimumCut(GRBVar** xvars, int xn){
-// 			vars = xvars;
-// 			n = xn;
-// 		}
-// 	protected:
-// 		void callback(){
-// 			try {
-// 				if (where == GRB_CB_MIPSOL){
-// 					// Solver found an integral optimal solution for the
-// 					// current formulation, must check if if there is a
-// 					// bridge or a cut.
-
-// 					double *x[n];
-// 					for (int i = 0; i < n; i++)
-// 						x[i] = getSolution(vars[i], n);
-
-// 					ListGraph::EdgeMap<bool> in_sol(G);
-					
-// 					for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
-// 						int u = G.id(G.u(e));
-// 						int v = G.id(G.v(e));
-
-// 						if (x[v][u] > 0.5)
-// 							in_sol[e] = 1;
-// 					}
-
-// 					ListGraph::NodeMap<bool> ones(G, 1);
-// 					ListGraph H = SubGraph(G, ones, in_sol);
-// 					// H is a spanning subgraph with all edges in the solution
-
-// 					if (biEdgeConnected(H) == 0){ // Not 2ECSS, must add a cut 
-// 						ListGraph::NodeMap<int> ebcc(G);
-// 						biEdgeConnectedComponents(G, ebcc);
-
-// 						GRBLinExpr expr = 0;
-	
-// 						for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
-// 							ListGraph::Node u = G.u(e);
-// 							ListGraph::Node v = G.v(e);
-							
-// 							if (ebcc[u] == 0 and ebcc[v] != 0)
-// 								expr += vars[G.id(u)][G.id(v)];
-					
-// 							if (ebcc[v] == 0 and ebcc[u] != 0)
-// 								expr += vars[G.id(v)][G.id(u)];
-// 						}
-
-// 						addLazy(expr >= 2);
-// 					}
-// 			} 
-// 			catch (GRBException e){
-// 				cout << "Error number: " << e.getErrorCode() << endl;
-// 				cout << e.getMessage() << endl;
-// 			} 
-// 			catch (...){
-// 				cout << "Error during callback" << endl;
-// 			}
-// 		}
-// };
-
-
-
-/*
 	This function returns a optimum integer solution to MAP.
 	If no solution is found, it returns a all -1 edge map.
 */
@@ -297,6 +175,7 @@ void IntegerSolution(ListGraph::EdgeMap<int> &IntSol){
 
 	try {
 		int n = countNodes(G);
+		int m = countEdges(G);
 
 		// Create an environment
 		GRBEnv env = GRBEnv(true);
@@ -308,40 +187,35 @@ void IntegerSolution(ListGraph::EdgeMap<int> &IntSol){
 		GRBModel model = GRBModel(env);
 		model.set(GRB_IntParam_LazyConstraints, 1); // Allow callback constraints
 		
-		GRBVar **vars = NULL;
-		vars = new GRBVar*[n];
-		for (int i = 0; i < n; i++)
-			vars[i] = new GRBVar[n];
-		
-
-		// Create all variables. Optimize here
-		for (int i = 0; i < n; i++)
-			for (int j = 0; j <= i; j++){
-				vars[i][j] = model.addVar(0.0, 0.0, 0.0, GRB_BINARY, "x_" + to_string(i) + "_" + to_string(j));
-				vars[j][i] = vars[i][j];
-			}    
+		GRBVar vars[m];
+		int node_u[m], node_v[m];
 
 		// Setting the correct UB and OBJ.	
 		for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
 			int u = G.id(G.u(e));
 			int v = G.id(G.v(e));
-
-			vars[u][v].set(GRB_DoubleAttr_UB, 1);
-			vars[u][v].set(GRB_DoubleAttr_Obj, cost[e]);
+			vars[G.id(e)] = model.addVar(0.0, 1.0, cost[e], GRB_BINARY, "x_" + to_string(u) + "_" + to_string(v));
+			node_u[G.id(e)] = u;
+			node_v[G.id(e)] = v;
 		}
 
 		// Add \delta(v) >= 2, constraints
-		for (int i = 0; i < n; i++){
-			
-			GRBLinExpr expr = 0;
-			for (int j = 0; j < n; j++)
-				expr += vars[i][j];
-			
-			model.addConstr(expr >= 2, "cut2_" + to_string(i));
+		GRBLinExpr deg2[n];
+		for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
+			int id = G.id(e);
+			int u = G.id(G.u(e));
+			int v = G.id(G.v(e));
+
+			deg2[u] += vars[id];
+			deg2[v] += vars[id];
+
 		}
 
+		for (int v = 0; v < n; v++)
+			model.addConstr(deg2[v] >= 2, "deg2_" + to_string(v));
+
 		// Set callback function
-    	MinimumCut cb = MinimumCut(vars, n);
+    	MinimumCut cb = MinimumCut(vars, n, m);
     	model.setCallback(&cb);
 		
 		// Optimize model
@@ -351,30 +225,23 @@ void IntegerSolution(ListGraph::EdgeMap<int> &IntSol){
 		if (model.get(GRB_IntAttr_SolCount) > 0){
 			// cout << "Obj: " << model.get(GRB_DoubleAttr_ObjVal) << endl;
 
-			double **sol = new double*[n];
-			for (int i = 0; i < n; i++)
-				sol[i] = model.get(GRB_DoubleAttr_X, vars[i], n);
+			double *sol = model.get(GRB_DoubleAttr_X, vars, m);
 
 			for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
+				int id = G.id(e);
 				int u = G.id(G.u(e));
 				int v = G.id(G.v(e));
 
-				if (sol[u][v] > 0.5)
+				if (sol[id] > 0.5)
 					IntSol[e] = 1;
 				else
 					IntSol[e] = 0;
-
 				// cout<<u + 1<<' '<<v + 1<<' '<<abs(sol[u][v])<<endl;
+
+				// Sanity check
+				assert((node_u[id] == u) and (node_v[id]) == v);
 			}
-
-			for (int i = 0; i < n; i++)
-				delete[] sol[i];
-			delete[] sol;
 		}
-
-		for (int i = 0; i < n; i++)
-			delete[] vars[i];
-		delete[] vars;
 
 	} catch(GRBException e) {
 		cout << "Error code = " << e.getErrorCode() << endl;
@@ -389,12 +256,12 @@ void IntegerSolution(ListGraph::EdgeMap<int> &IntSol){
 	If no solution is found, it returns a all -1 edge map.
 */
 void FractionalSolution(ListGraph::EdgeMap<double> &FracSol){
-
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e) 
 		FracSol[e] = -1;	
 
 	try {
 		int n = countNodes(G);
+		int m = countEdges(G);
 
 		// Create an environment
 		GRBEnv env = GRBEnv(true);
@@ -407,49 +274,42 @@ void FractionalSolution(ListGraph::EdgeMap<double> &FracSol){
 		model.set(GRB_IntParam_Method, 0); // Forcing Primal Simplex Method
 		// Important, since fractional solution must be an Extreme Point
 		
-		GRBVar **vars = NULL;
-		vars = new GRBVar*[n];
-		for (int i = 0; i < n; i++)
-			vars[i] = new GRBVar[n];
 		
-
-		// Create all variables. Maybe not needed
-		for (int i = 0; i < n; i++)
-			for (int j = 0; j <= i; j++){
-				vars[i][j] = model.addVar(0.0, 0.0, 0.0, GRB_CONTINUOUS, "x_" + to_string(i) + "_" + to_string(j));
-				vars[j][i] = vars[i][j];
-			}    
+		GRBVar vars[m];
+		int node_u[m], node_v[m];
 
 		// Setting the correct UB and OBJ.	
 		for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
 			int u = G.id(G.u(e));
 			int v = G.id(G.v(e));
-
-			vars[u][v].set(GRB_DoubleAttr_UB, 1);
-			vars[u][v].set(GRB_DoubleAttr_Obj, cost[e]);
+			vars[G.id(e)] = model.addVar(0.0, 1.0, cost[e], GRB_CONTINUOUS, "x_" + to_string(u) + "_" + to_string(v));
+			node_u[G.id(e)] = u;
+			node_v[G.id(e)] = v;
 		}
 
 		// Add \delta(v) >= 2, constraints
-		for (int i = 0; i < n; i++){
-			
-			GRBLinExpr expr = 0;
-			for (int j = 0; j < n; j++)
-				expr += vars[i][j];
-			
-			model.addConstr(expr >= 2, "cut2_" + to_string(i));
+		GRBLinExpr deg2[n];
+		for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
+			int id = G.id(e);
+			int u = G.id(G.u(e));
+			int v = G.id(G.v(e));
+
+			deg2[u] += vars[id];
+			deg2[v] += vars[id];
+
 		}
-		
+
+		for (int v = 0; v < n; v++)
+			model.addConstr(deg2[v] >= 2, "deg2_" + to_string(v));
+
 		// Optimize model
 		model.optimize();
 
 		bool found_feasible = 0;
 		while (model.get(GRB_IntAttr_SolCount) > 0 and !found_feasible){
 		
-			double **sol = new double*[n];
-			for (int i = 0; i < n; i++)
-				sol[i] = model.get(GRB_DoubleAttr_X, vars[i], n);
-
-			pair<double, vector<Edge> > min_cut = FindMinCut(sol);
+			double *sol = model.get(GRB_DoubleAttr_X, vars, m);
+			pair<double, vector<Edge> > min_cut = FindMinCut(sol, n, m);
 
 			// If min_cut.fist < 2, need to add constraint
 			if (sign(min_cut.first - 2.0) < 0) { // Min cut < 2
@@ -457,10 +317,12 @@ void FractionalSolution(ListGraph::EdgeMap<double> &FracSol){
 				
 				// All all edges of the global min cut as a contraint.
 				for (Edge e : min_cut.second){
+					int id = G.id(e);
 					int u = G.id(G.u(e));
 					int v = G.id(G.v(e));				
 					
-					expr += vars[u][v];
+					expr += vars[id];
+					assert((node_u[id] == u) and (node_v[id]) == v); // Sanity check
 				}
 
 				model.addConstr(expr >= 2);
@@ -470,25 +332,20 @@ void FractionalSolution(ListGraph::EdgeMap<double> &FracSol){
 				// Found a feasible opt
 				// cout << "Obj: " << model.get(GRB_DoubleAttr_ObjVal) << endl;
 
-				double **sol = new double*[n];
-				for (int i = 0; i < n; i++)
-					sol[i] = model.get(GRB_DoubleAttr_X, vars[i], n);
-
 				for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
+					int id = G.id(e);
 					int u = G.id(G.u(e));
 					int v = G.id(G.v(e));
 
-					FracSol[e] = sol[u][v];
-					// cout<<u<<' '<<v<<' '<<sol[u][v]
-				}
+					FracSol[e] = sol[id]; 
 
+					// cout<<u + 1<<' '<<v + 1<<' '<<abs(sol[u][v])<<endl;
+
+					assert((node_u[id] == u) and (node_v[id]) == v); // Sanity check
+				}
+			
 				found_feasible = 1;
 			}
-
-
-			for (int i = 0; i < n; i++)
-				delete[] sol[i];
-			delete[] sol;
 		}
 
 
@@ -508,52 +365,49 @@ void FractionalSolution(ListGraph::EdgeMap<double> &FracSol){
 	
 	O(n^2)
 */
-vector< vector<Node> > tree_adj;
 void BDSDFS(ListGraph::Node v, 
-	ListGraph::NodeMap<int> &parent, 
+	ListGraph::NodeMap<ListGraph::Node> &parent, 
 	ListGraph::EdgeMap<double> &FracSol, 
-	ListGraph::EdgeMap<int> &BDSSol,
+	ListGraph::EdgeMap<bool> &BDSSol,
 	int &clk,
 	ListGraph::NodeMap<int> &in,
 	ListGraph::NodeMap<int> &out){
 
 	in[v] = clk++;
-	int next_arc_id = -1;
-
+	
+	bool found_next = 0;
 	do {
-		next_arc_id = -1;
+		ListGraph::Arc next_arc;
+
+		found_next = 0;
 
 		// Here we iterate through the arcs leaving node v.
-		for (ListGraph::OutArcIt e(G, v); e != INVALID; ++e){
-			ListGraph::Node u = G.target(e);
+		for (ListGraph::OutArcIt a(G, v); a != INVALID; ++a){
+			ListGraph::Node u = G.target(a);
 
-			if (parent[u] == -1){
+			if (parent[u] == u and G.id(u) != 0){ // Unvisited non root node
 
-				if ((next_arc_id == -1) or (cost[e] == 0))
-					next_arc_id = G.id(e);
-				
-				else {
-					ListGraph::Arc f = G.arcFromId(next_arc_id);
-					if (cost[f] == 1 and FracSol[f] < FracSol[e])
-						next_arc_id = G.id(e);
+				if ((!found_next) or (cost[a] == 0)){
+					found_next = 1;
+					next_arc = a;
 				}
-
+				
+				else if (cost[next_arc] == 1 and FracSol[next_arc] < FracSol[a])
+						next_arc = a;
 			}
 		}
 
-		if (next_arc_id != -1){
-			ListGraph::Arc f = G.arcFromId(next_arc_id);
-			BDSSol[f] = 1;
+		if (found_next){
+			BDSSol[next_arc] = 1;
 			
-			ListGraph::Node u = G.target(f);
+			ListGraph::Node u = G.target(next_arc);
 
-			parent[u] = G.id(v);
-			tree_adj[G.id(v)].push_back(u);
+			parent[u] = v;
 
 			BDSDFS(u, parent, FracSol, BDSSol, clk, in, out);
 		}
 
-	} while (next_arc_id != -1);
+	} while (found_next);
 
 	out[v] = clk++;
 }
@@ -580,10 +434,11 @@ bool Dec(Node u, Node v, ListGraph::NodeMap<int> &in, ListGraph::NodeMap<int> &o
 */
 int UpLinkDP(Node v, ListGraph::NodeMap<int> &memo, 
 	ListGraph::NodeMap<Edge> &dp_edge, 
-	ListGraph::NodeMap<int> &parent, 
+	ListGraph::NodeMap<ListGraph::Node> &parent, 
 	ListGraph::NodeMap<int> &in, 
 	ListGraph::NodeMap<int> &out,
-	ListGraph::EdgeMap<int> &BDSSol){
+	ListGraph::EdgeMap<bool> &BDSSol,
+	SubGraph<ListGraph> &T){
 	
 	if (memo[v] != -1)
 		return memo[v];
@@ -606,16 +461,19 @@ int UpLinkDP(Node v, ListGraph::NodeMap<int> &memo,
 
 				int subtree_cost = 0;
 
-				Node h = w, lst = w, p = G.nodeFromId(parent[v]);
+				Node h = w, lst = w, p = parent[v];
 				while (h != p){
-					for (Node y : tree_adj[G.id(h)])
-						if (y != lst){
+					for (SubGraph<ListGraph>::OutArcIt a(T, h); a != INVALID; ++a){
+						ListGraph::Node y = T.target(a);
+
+						if (y != lst and y != parent[h]){
 							// cout<<" Transition "<<G.id(v) + 1<<' '<<G.id(y) + 1<<endl;
-							subtree_cost += UpLinkDP(y, memo, dp_edge, parent, in, out, BDSSol);
+							subtree_cost += UpLinkDP(y, memo, dp_edge, parent, in, out, BDSSol, T);
 						}
+					}	
 
 					lst = h;
-					h = G.nodeFromId(parent[h]);
+					h = parent[h];
 				}
 
 				if (subtree_cost + cost[e] < memo[v]){
@@ -636,10 +494,12 @@ int UpLinkDP(Node v, ListGraph::NodeMap<int> &memo,
 */
 void RecoverUpLinkSol(Node v,
 	ListGraph::NodeMap<Edge> &dp_edge, 
-	ListGraph::NodeMap<int> &parent, 
+	ListGraph::NodeMap<ListGraph::Node> &parent, 
 	ListGraph::NodeMap<int> &in, 
 	ListGraph::NodeMap<int> &out,
-	ListGraph::EdgeMap<int> &BDSSol){
+	ListGraph::EdgeMap<bool> &BDSSol,
+	SubGraph<ListGraph> &T){
+
 
 	Edge e = dp_edge[v];
 	BDSSol[e] = 1;
@@ -653,29 +513,33 @@ void RecoverUpLinkSol(Node v,
 
 	// cout<<"Recovering Solution Node "<<G.id(v) + 1<<' '<<" Edge "<<G.id(u) + 1<<' '<<G.id(w) + 1<<endl;
 
-	Node p = G.nodeFromId(parent[v]), lst = w;
+	Node p = parent[v], lst = w;
 	while (w != p){
-		for (Node y : tree_adj[G.id(w)])
-			if (y != lst)
-				RecoverUpLinkSol(y, dp_edge, parent, in, out, BDSSol);
+		for (SubGraph<ListGraph>::OutArcIt a(T, w); a != INVALID; ++a){
+			ListGraph::Node y = T.target(a);
 
+			if (y != lst and y != parent[w])
+				RecoverUpLinkSol(y, dp_edge, parent, in, out, BDSSol, T);
+		}
+			
 		lst = w;
-		w = G.nodeFromId(parent[w]);
+		w = parent[w];
 	}
 }
 
 void UpLinkAugmentation(
-	ListGraph::EdgeMap<int> &BDSSol,
-	ListGraph::NodeMap<int> &parent, 
+	SubGraph<ListGraph> &T,
+	ListGraph::EdgeMap<bool> &BDSSol,
+	ListGraph::NodeMap<ListGraph::Node> &parent, 
 	ListGraph::NodeMap<int> &in,
 	ListGraph::NodeMap<int> &out){
 
 	ListGraph::NodeMap<int> memo(G, -1); 
 	ListGraph::NodeMap<Edge> dp_edge(G); 
 
-	for (Node v : tree_adj[0]){
-		UpLinkDP(v, memo, dp_edge, parent, in, out, BDSSol);
-		RecoverUpLinkSol(v, dp_edge, parent, in, out, BDSSol);
+	for (SubGraph<ListGraph>::OutArcIt a(T, G.nodeFromId(0)); a != INVALID; ++a){
+		UpLinkDP(T.target(a), memo, dp_edge, parent, in, out, BDSSol, T);
+		RecoverUpLinkSol(T.target(a), dp_edge, parent, in, out, BDSSol, T);
 	}
 }
 
@@ -685,18 +549,17 @@ void UpLinkAugmentation(
 
 	O(n^2|L|)
 */
-void BDSAlgorithm(ListGraph::EdgeMap<double> &FracSol, ListGraph::EdgeMap<int> &BDSSol){
+void BDSAlgorithm(ListGraph::EdgeMap<double> &FracSol, ListGraph::EdgeMap<bool> &BDSSol){
 	int n = countNodes(G);
 
 	// Step 1, find a DFS Tree
-	tree_adj.resize(n);
-	for (int i = 0; i < n; i++)
-		tree_adj[i].clear();
+	ListGraph::NodeMap<ListGraph::Node> parent(G);
+	ListGraph::NodeMap<int> in(G), out(G); 
 
-	ListGraph::NodeMap<int> parent(G, -1), in(G), out(G); 
+	for (ListGraph::NodeIt v(G); v != INVALID; ++v)
+		parent[v] = v;
 
 	int cnt = 0;
-	parent[G.nodeFromId(0)] = 0;
 	BDSDFS(G.nodeFromId(0), parent, FracSol, BDSSol, cnt, in, out);
 
 	// cout<<"BDS tree"<<endl;
@@ -705,16 +568,26 @@ void BDSAlgorithm(ListGraph::EdgeMap<double> &FracSol, ListGraph::EdgeMap<int> &
 	// }
 
 
+
+
+	ListGraph::NodeMap<bool> ones(G, 1); // Subgraph must be spanning
+
+	ListGraph::EdgeMap<bool> tree_edges(G); // Graph adaptor changes with edge map
+	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+		tree_edges[e] = BDSSol[e];
+
+	// Build DFS Tree
+	SubGraph<ListGraph> T(G, ones, tree_edges);
+	
+	assert(biEdgeConnected(G) == 1);
+	assert(connected(T) == 1);
+
+
 	// Step 2, uplink only augmentation
-	UpLinkAugmentation(BDSSol, parent, in, out);
+	UpLinkAugmentation(T, BDSSol, parent, in, out);
 
 	// Sanity check, checks is BDS returned a feasible solution
-	ListGraph::NodeMap<bool> ones(G, 1);
-	ListGraph::EdgeMap<bool> BoolBDSSol(G, 0);
-	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
-		BoolBDSSol[e] = BDSSol[e];
-	SubGraph<ListGraph> H(G, ones, BoolBDSSol);
-
+	SubGraph<ListGraph> H(G, ones, BDSSol);
 	assert(biEdgeConnected(H) == 1);
 }
 
@@ -741,7 +614,7 @@ void SolveCurrentMatching(int matching_id){
 	ListGraph::EdgeMap<double> FracSol(G);
 	FractionalSolution(FracSol);
 
-	ListGraph::EdgeMap<int> BDSSol(G);
+	ListGraph::EdgeMap<bool> BDSSol(G);
 	BDSAlgorithm(FracSol, BDSSol);
 
 	int cost_Int = 0;
@@ -754,13 +627,17 @@ void SolveCurrentMatching(int matching_id){
 
 		cost_Int +=  IntSol[e] * cost[e];
 		cost_Frac +=  FracSol[e] * cost[e];
-		cost_BDS +=  BDSSol[e] * cost[e];
+		cost_BDS +=  (int)BDSSol[e] * cost[e];
 
 		// cout<<u + 1<<' '<<v + 1<<' '<<FracSol[e]<<' '<<IntSol[e]<<' '<<BDSSol[e]<<endl;
 	}
 
-	// Found a feasible example, print to file
-	if (sign(3.0 * cost_Int - 4.0 * cost_Frac) >= 0 or sign(3.0 * cost_BDS - 4.0 * cost_Frac) >= 0){
+	/* 
+		Found a feasible example, print to file
+			- IP gap must be at least 4/3
+			- BDS gap must be better than 4/3
+	*/
+	if (sign(3.0 * cost_Int - 4.0 * cost_Frac) >= 0 or sign(3.0 * cost_BDS - 4.0 * cost_Frac) > 0){
 		if (__found_feasible == 0){ // First feasible example found
 			// create file "g"+cnt
 			g_out.open(to_string(countNodes(G)) + "/g" + to_string(__cur_graph_id));
@@ -887,7 +764,13 @@ void RunNautyInput(){
 				ok = 0;
 				break;
 			}
+		// Next loop makes shure that lemon graph edge indexing is consistent
+		set<int> q;
+		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+			q.insert(G.id(e));
 
+		assert(q.size() == m);
+		assert(*q.rbegin() == m - 1);
 		/* 
 			Since the input data is massive, we will one write a file if
 			there is some feasible solution.
@@ -913,6 +796,57 @@ signed main(){
 
 }
 
+// // I will also save the input information
+// int _n, _m;
+// vector< array<int, 3> > _edges;
+
+
+/*
+	This function reads the Graph from Stdio. Graph is 1-indexed
+	The input format will be
+		n m       number of nodes, edges
+		a_1 b_1 c_1     edge bertween a_1, b_1 with cost c_1
+		...
+		a_m b_m c_m 
+*/
+// void ReadStdioInput(){
+// 	int n, m;
+// 	cin>>n>>m;
+	
+// 	assert(n >= 3);
+// 	assert(m >= n);
+
+// 	_n = n;
+// 	_m = m;
+
+// 	for (int i = 0; i < n; i++){
+// 		ListGraph::Node v = G.addNode();
+// 		if (G.id(v) != i)
+// 			cout<<"Error : vertex don't match id"<<endl;
+// 		assert(G.id(v) == i);
+// 	}
+
+// 	for (int i = 0; i < m; i++){
+// 		int a, b, c;
+// 		cin>>a>>b>>c;
+
+// 		// a--; // 0-indexed
+// 		// b--; 
+
+// 		// _edges.push_back({a, b, c});
+
+// 		ListGraph::Edge e = G.addEdge(G.nodeFromId(a), G.nodeFromId(b));
+// 		cost[e] = c;
+// 	}
+
+// 	set<int> q;
+// 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+// 		q.insert(G.id(e));
+
+// 	assert(q.size() == m);
+// 	assert(*q.rbegin() == m - 1);
+// }
+
 
 
 // signed main(){
@@ -924,7 +858,7 @@ signed main(){
 // 	ListGraph::EdgeMap<double> FracSol(G);
 // 	FractionalSolution(FracSol);
 
-// 	ListGraph::EdgeMap<int> BDSSol(G);
+// 	ListGraph::EdgeMap<bool> BDSSol(G);
 // 	BDSAlgorithm(FracSol, BDSSol);
 
 
