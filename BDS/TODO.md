@@ -5,4 +5,5 @@
 * change tree_adj to use a adaptor
 * change parent array to be Node, initialize parent[v] = v, update child of root before calling the dfs.
 * add compiler optimizations to the makefile
-* merge nauty file and solver
+* ~~merge nauty file and solver~~
+* split in libraries
