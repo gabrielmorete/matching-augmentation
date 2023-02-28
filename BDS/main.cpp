@@ -10,6 +10,8 @@
 
 
 #include <iostream>
+#include <fstream>
+#include <filesystem>
 #include <vector>
 #include <array>
 #include <cassert>
@@ -19,6 +21,8 @@
 #include <lemon/gomory_hu.h>
 #include <lemon/adaptors.h>
 #include <lemon/connectivity.h>
+#include <lemon/nauty_reader.h>
+
 
 using namespace std;
 using namespace lemon;
@@ -184,7 +188,7 @@ class MinimumCut: public GRBCallback {
 
 					// Vertices min_u, min_v have the minimum st-cut
 
-					cout<<"Min cut val"<< GMH.minCutValue(min_v, min_u) << endl;
+					// cout<<"Min cut val"<< GMH.minCutValue(min_v, min_u) << endl;
 
 
 					if (sign(GMH.minCutValue(min_v, min_u) - 2.0) < 0) { // Min cut < 2
@@ -297,6 +301,7 @@ void IntegerSolution(ListGraph::EdgeMap<int> &IntSol){
 		// Create an environment
 		GRBEnv env = GRBEnv(true);
 		env.set("LogFile", "MAPInteger.log");
+		env.set(GRB_IntParam_OutputFlag, 0);
 		env.start();
 
 		// Create an empty model
@@ -344,7 +349,7 @@ void IntegerSolution(ListGraph::EdgeMap<int> &IntSol){
 
 		// Found optimal solution
 		if (model.get(GRB_IntAttr_SolCount) > 0){
-			cout << "Obj: " << model.get(GRB_DoubleAttr_ObjVal) << endl;
+			// cout << "Obj: " << model.get(GRB_DoubleAttr_ObjVal) << endl;
 
 			double **sol = new double*[n];
 			for (int i = 0; i < n; i++)
@@ -394,6 +399,7 @@ void FractionalSolution(ListGraph::EdgeMap<double> &FracSol){
 		// Create an environment
 		GRBEnv env = GRBEnv(true);
 		env.set("LogFile", "MAPFractional.log");
+		env.set(GRB_IntParam_OutputFlag, 0);
 		env.start();
 
 		// Create an empty model
@@ -462,7 +468,7 @@ void FractionalSolution(ListGraph::EdgeMap<double> &FracSol){
 			}
 			else{
 				// Found a feasible opt
-				cout << "Obj: " << model.get(GRB_DoubleAttr_ObjVal) << endl;
+				// cout << "Obj: " << model.get(GRB_DoubleAttr_ObjVal) << endl;
 
 				double **sol = new double*[n];
 				for (int i = 0; i < n; i++)
@@ -671,17 +677,6 @@ void UpLinkAugmentation(
 		UpLinkDP(v, memo, dp_edge, parent, in, out, BDSSol);
 		RecoverUpLinkSol(v, dp_edge, parent, in, out, BDSSol);
 	}
-
-	// for (NodeIt v(G); v != INVALID; ++v){
-	// 	Edge e = dp_edge[v];
-
-	// 	cout<<memo[v]<<' '<<G.id(G.u(e))<<' '<<G.id(G.v(e))<<endl;
-
-	// }
-
-	
-	// for (NodeIt v(G); v != INVALID; ++v)
-	// 	cout<<G.id(v)<<' '<<memo[v]<<endl;
 }
 
 /*
@@ -706,17 +701,12 @@ void BDSAlgorithm(ListGraph::EdgeMap<double> &FracSol, ListGraph::EdgeMap<int> &
 
 	// cout<<"BDS tree"<<endl;
 	// for (NodeIt v(G); v != INVALID; ++v){
-	//	// cout<<in[v]<<' '<<out[v]<<endl;
 	// 	cout<<parent[v] + 1<<" <-- "<<G.id(v) + 1<<endl;
 	// }
 
 
 	// Step 2, uplink only augmentation
 	UpLinkAugmentation(BDSSol, parent, in, out);
-
-
-
-
 
 	// Sanity check, checks is BDS returned a feasible solution
 	ListGraph::NodeMap<bool> ones(G, 1);
@@ -729,9 +719,22 @@ void BDSAlgorithm(ListGraph::EdgeMap<double> &FracSol, ListGraph::EdgeMap<int> &
 }
 
 
-signed main(){
-	ReadStdioInput();
+/*
+	Nauty Reader
+*/
 
+
+bool __found_feasible;
+int __cur_graph_id;
+ofstream g_out, log_out;
+
+/*
+	This function calls the LP, IP and BDS algorithms to
+	solve the MAP problem and compares their outputs.
+	If the output satisfies the requerements, it writes a
+	file.
+*/
+void SolveCurrentMatching(int matching_id){
 	ListGraph::EdgeMap<int> IntSol(G);
 	IntegerSolution(IntSol);
 
@@ -740,7 +743,6 @@ signed main(){
 
 	ListGraph::EdgeMap<int> BDSSol(G);
 	BDSAlgorithm(FracSol, BDSSol);
-
 
 	int cost_Int = 0;
 	int cost_BDS = 0;
@@ -754,10 +756,194 @@ signed main(){
 		cost_Frac +=  FracSol[e] * cost[e];
 		cost_BDS +=  BDSSol[e] * cost[e];
 
-		cout<<u + 1<<' '<<v + 1<<' '<<FracSol[e]<<' '<<IntSol[e]<<' '<<BDSSol[e]<<endl;
+		// cout<<u + 1<<' '<<v + 1<<' '<<FracSol[e]<<' '<<IntSol[e]<<' '<<BDSSol[e]<<endl;
 	}
 
-	cout<<"Cost Fractional "<<cost_Frac<<endl;
-	cout<<"Cost Integral "<<cost_Int<<endl;
-	cout<<"Cost BDS "<<cost_BDS<<endl;
+	// Found a feasible example, print to file
+	if (sign(3.0 * cost_Int - 4.0 * cost_Frac) >= 0 or sign(3.0 * cost_BDS - 4.0 * cost_Frac) >= 0){
+		if (__found_feasible == 0){ // First feasible example found
+			// create file "g"+cnt
+			g_out.open(to_string(countNodes(G)) + "/g" + to_string(__cur_graph_id));
+			
+			g_out << countNodes(G) <<' ' << countEdges(G) << endl << endl;
+			
+			for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+				g_out << G.id(G.u(e)) << ' ' << G.id(G.v(e)) << endl;
+			
+			g_out << "----------" << endl << endl;
+		}
+
+		__found_feasible = 1;
+
+		g_out << matching_id << ": ";
+
+		bool first = 1;
+		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+			if (cost[e] == 0){
+				if (!first)
+					g_out << ", ";
+
+				g_out << G.id(G.u(e)) << " " << G.id(G.v(e));
+				first = 0;
+			}
+
+		g_out<<endl;	
+
+		g_out << "Frc: " << cost_Frac << " | ";
+		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+			g_out << FracSol[e] << ' ';
+		g_out << endl;
+
+		g_out << "Int: " << cost_Int << " | ";
+		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+			g_out << IntSol[e] << ' ';
+		g_out << endl;
+
+		g_out << "BDS: " << cost_BDS << " | ";
+		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+			g_out << BDSSol[e] << ' ';
+		g_out << endl << endl;
+
+		// Generate entry in the log file
+		log_out << "Found feasible example g" << __cur_graph_id << " matching id " << matching_id << endl;
+		log_out << "Int/Frc = " << (double) cost_Int/cost_Frac << " BDS/Frc = " << cost_BDS/cost_Frac << endl;
+		log_out << endl;
+	}
 }
+
+
+/*
+	Backtracking algorithm to find all matchings of G.
+	Matched edges are marked with cost 0 on the global
+	EdgeMap cost. The running time is exponential
+*/
+void FindAllMatchings(int e_id, int &m, int &total_matchings, ListGraph::NodeMap<bool> &matched){
+	if (e_id >= m){
+		SolveCurrentMatching(total_matchings);
+		return;
+	}
+
+	// Case 1 : won't add edge e_id to the matching
+	FindAllMatchings(e_id + 1, m, total_matchings, matched); 
+
+	// Case 2 : if possible, will add e_id to the matching
+	ListGraph::Edge e = G.edgeFromId(e_id);
+	if ((matched[G.u(e)] == 0) and (matched[G.v(e)] == 0)){ // May add e_id
+		
+		matched[G.u(e)] = 1;
+		matched[G.v(e)] = 1;
+		cost[e] = 0;
+		total_matchings++;
+
+		FindAllMatchings(e_id + 1, m, total_matchings, matched);
+
+		matched[G.u(e)] = 0;
+		matched[G.v(e)] = 0;
+		cost[e] = 1;
+	}
+}
+
+
+/*
+	Wrapper function for the matching backtrackig algorithm.
+*/
+void SolveAllMatchings(){
+	// Initialize all edges to be heavy
+	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+		cost[e] = 1;
+
+	ListGraph::NodeMap<bool> matched(G);
+
+	int total_matchings = 1, m = countEdges(G);
+	FindAllMatchings(0, m, total_matchings, matched);
+
+	if (__found_feasible == 1)
+		g_out << "Number of matchings : " << total_matchings << endl;
+}
+
+
+
+/*
+	This functions receiv nauty's geng output from stdin(may modify this),
+	build a LEMON graph and the log files, and calls the function
+	that iterates through all matchings.
+*/
+void RunNautyInput(){
+	int cnt = 1;
+	while (readNautyGraph(G, cin)){
+		int n = countNodes(G);
+		int m = countEdges(G);
+
+		if (cnt == 1){ // Create folder to log files, create log stream
+			filesystem::create_directory("./" + to_string(n));
+			log_out.open(to_string(n) + "/log");
+		}	
+
+		// Next loop makes shure that lemon graph is consistent with the algorithm input
+		int nvtx = n - 1, ok = 1;
+		for (ListGraph::NodeIt v(G); v != INVALID; ++v)
+			if (G.id(v) != nvtx--){
+				cout << "Found inconsistency regarding vertex indexing -- Skip graph number " << cnt << endl;
+				ok = 0;
+				break;
+			}
+
+		/* 
+			Since the input data is massive, we will one write a file if
+			there is some feasible solution.
+		*/
+		__found_feasible = 0;
+		__cur_graph_id = cnt;
+
+		SolveAllMatchings();
+		cnt++;
+
+		if (__found_feasible)
+			g_out.close();
+	}
+
+	log_out.close();
+}
+
+
+signed main(){
+	ListGraph G;
+
+	RunNautyInput();
+
+}
+
+
+
+// signed main(){
+// 	ReadStdioInput();
+
+// 	ListGraph::EdgeMap<int> IntSol(G);
+// 	IntegerSolution(IntSol);
+
+// 	ListGraph::EdgeMap<double> FracSol(G);
+// 	FractionalSolution(FracSol);
+
+// 	ListGraph::EdgeMap<int> BDSSol(G);
+// 	BDSAlgorithm(FracSol, BDSSol);
+
+
+// 	int cost_Int = 0;
+// 	int cost_BDS = 0;
+// 	double cost_Frac = 0;
+
+// 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
+// 		int u = G.id(G.u(e));
+// 		int v = G.id(G.v(e));
+
+// 		cost_Int +=  IntSol[e] * cost[e];
+// 		cost_Frac +=  FracSol[e] * cost[e];
+// 		cost_BDS +=  BDSSol[e] * cost[e];
+
+// 		cout<<u + 1<<' '<<v + 1<<' '<<FracSol[e]<<' '<<IntSol[e]<<' '<<BDSSol[e]<<endl;
+// 	}
+
+// 	cout<<"Cost Fractional "<<cost_Frac<<endl;
+// 	cout<<"Cost Integral "<<cost_Int<<endl;
+// 	cout<<"Cost BDS "<<cost_BDS<<endl;
+// }
