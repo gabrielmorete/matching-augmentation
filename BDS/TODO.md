@@ -4,8 +4,11 @@
 * ~~change dfs to stop using edge id and use flags~~
 * ~~change tree_adj to use a adaptor~~
 * ~~change parent array to be Node, initialize parent[v] = v~~
-* add compiler optimizations to the makefile
+* ~~add compiler optimizations to the makefile~~
 * ~~merge nauty file and solver~~
 * split in libraries
 * ~~use tarjan algorithm as a MIP separator~~
-* add a call to last processed geng line
+* ~~add a call to last processed geng line~~
+* optmize backtracking
+* make the DFS linear
+* make the DP O(nL)
