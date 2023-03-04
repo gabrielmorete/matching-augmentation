@@ -9,6 +9,4 @@
 * split in libraries
 * ~~use tarjan algorithm as a MIP separator~~
 * ~~add a call to last processed geng line~~
-* optmize backtracking
-* make the DFS linear
-* make the DP O(nL)
+* add new IP gap strategy
