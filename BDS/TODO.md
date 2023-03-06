@@ -10,3 +10,4 @@
 * ~~use tarjan algorithm as a MIP separator~~
 * ~~add a call to last processed geng line~~
 * add new IP gap strategy
+* supress solver output
