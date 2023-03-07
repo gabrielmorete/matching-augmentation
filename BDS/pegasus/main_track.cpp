@@ -335,18 +335,18 @@ void SolveMapInstance(
 
 	do {
 		FractionalSolution(FracSol);
-	} while (tries_cnt < 3 and sign(FracSol[0]) == -1);
+	} while (tries_cnt < 3 and sign(FracSol[G.edgeFromId(0)]) == -1);
 
-	if (sign(FracSol[0]) == -1)
+	if (sign(FracSol[G.edgeFromId(0)]]) == -1)
 		return;
 
 	tries_cnt = 0;
 
 	do {
 		IntegerSolution(IntSol);
-	} while (tries_cnt < 3 and IntSol[0] == -1);
+	} while (tries_cnt < 3 and IntSol[G.edgeFromId(0)]] == -1);
 
-	if (IntSol[0] == -1)
+	if (IntSol[G.edgeFromId(0)]] == -1)
 		return;
 
 	BDSAlgorithm(FracSol, BDSSol);
