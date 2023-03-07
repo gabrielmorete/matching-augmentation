@@ -44,10 +44,10 @@ void SolveCurrentMatching(int matching_id){
 
 	/* 
 		Found a feasible example, print to file
-			- IP gap must be at least 7/5
+			- IP gap must be at least 6/5
 			- BDS gap must be better than 4/3
 	*/
-	if (sign(5.0 * cost_Int - 7.0 * cost_Frac) >= 0 or sign(3.0 * cost_BDS - 4.0 * cost_Frac) > 0){
+	if (sign(5.0 * cost_Int - 6.0 * cost_Frac) >= 0 or sign(3.0 * cost_BDS - 4.0 * cost_Frac) > 0){
 		if (__found_feasible == 0){ // First matching found for this graph
 			// create file "g"+cnt
 			g_out.open(to_string(countNodes(G)) + "/g" + to_string(__cur_graph_id));
