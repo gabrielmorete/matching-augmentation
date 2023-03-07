@@ -13,3 +13,6 @@
 * supress solver output
 * check fractional solver
 * add inconsistency checker and counter (3 tries -> report to log)
+* check memory comsuption
+	* ~~no memoryleaks (valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=valgrind-out.txt)~~
+	
