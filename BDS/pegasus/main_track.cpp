@@ -325,13 +325,24 @@ void FractionalSolution(ListGraph::EdgeMap<double> &FracSol){
 
 
 signed main(int argc, char *argv[]){
-	if (argc == 0)
-		RunNautyInput();
-	else{
-		if (argv[1] == "-verbose" or (argc > 1 and  (argv[2] == "-verbose")))
+	bool stdio = 0;
+	for (int i = 1; i <= argc; i++){
+		string s = argv[i];
+		if (s == "-verbose")
 			__verbose_mode = 1;
-		dbg(__verbose_mode);
-		RunStdioInput();
+		else if (s == "-stdio")
+			stdio = 1;
+		else{
+			cout<<"Usage: -stdio -verbose"<<endl;
+			return 0;
+		}
 	}
+
+
+
+	if (stdio)
+		RunStdioInput();
+	else
+		RunNautyInput();
 }
 
