@@ -317,7 +317,7 @@ void FractionalSolution(ListGraph::EdgeMap<double> &FracSol){
 				found_feasible = 1;
 			}
 
-			delete sol;
+			// delete sol;
 		}
 
 
