@@ -182,8 +182,10 @@ void RunNautyInput(int start){
 	__best_IP_graph_id = __best_IP_matching_id = __best_BDS_graph_id = __best_BDS_matching_id = 1;
 	ofstream log_progress;
 
-	int cnt = 1;
+	int cnt = 0;
 	while (readNautyGraph(G, cin)){
+		cnt++;
+		
 		int n = countNodes(G);
 		int m = countEdges(G);
 
