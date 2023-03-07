@@ -430,7 +430,7 @@ void SolveModel(
 
 					assert((node_u[id] == u) and (node_v[id]) == v); // Sanity check
 				}			
-
+				found_feasible = 1;
 
 
 			// pair<double, vector<Edge> > min_cut = FindMinCut(sol, n, m);
