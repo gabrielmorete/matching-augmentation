@@ -473,7 +473,7 @@ void SolveModel(
 
 			delete[] sol;
 		}
-
+	}	
 
 		if (sign(FracSol[G.edgeFromId(0)]) == -1) // No solution found
 			return;
