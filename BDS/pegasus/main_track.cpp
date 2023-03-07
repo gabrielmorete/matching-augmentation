@@ -118,6 +118,8 @@ class MinimumCut: public GRBCallback {
 
 						addLazy(expr >= 2);
 					}
+
+					delete x;
 				}	
 			} 
 			catch (GRBException e){
@@ -207,6 +209,8 @@ void IntegerSolution(ListGraph::EdgeMap<int> &IntSol){
 				// Sanity check
 				assert((node_u[id] == u) and (node_v[id]) == v);
 			}
+
+			delete sol;
 		}
 
 	} catch(GRBException e) {
