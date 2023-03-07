@@ -76,6 +76,8 @@ class MinimumCut: public GRBCallback {
 					// current formulation, must check if if there is a
 					// bridge or a cut.
 
+					cout<<"AHHHHHHHHHHHH"<<endl;
+
 					double *x = getSolution(vars, m);
 
 					ListGraph::EdgeMap<bool> in_sol(G);
@@ -343,7 +345,7 @@ void SolveModel(
 		// Create an environment
 		GRBEnv env = GRBEnv(true);
 		// env.set("LogFile", "MAPFractional.log");  // Output may be large
-		// env.set(GRB_IntParam_OutputFlag, 0);
+		env.set(GRB_IntParam_OutputFlag, 0);
 		env.start();
 
 		// Create an empty model
