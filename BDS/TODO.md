@@ -10,7 +10,7 @@
 * ~~use tarjan algorithm as a MIP separator~~
 * ~~add a call to last processed geng line~~
 * add new IP gap strategy
-* supress solver output
+* ~~supress solver output~~
 * check fractional solver
 * add inconsistency checker and counter (3 tries -> report to log)
 * check memory comsuption
