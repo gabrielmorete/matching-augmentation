@@ -16,5 +16,5 @@
 * check memory comsuption
 	* ~~no memoryleaks (valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=valgrind-out.txt)~~
 * command line
-	* add start at	
+	* ~~add start at~~
 	
