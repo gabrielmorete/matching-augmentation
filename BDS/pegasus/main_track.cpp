@@ -405,7 +405,8 @@ void SolveModel(
 						found = 1;
 						GRBLinExpr expr = 0;
 						for (GomoryHu<ListGraph, ListGraph::EdgeMap<double> >::MinCutEdgeIt e(GMH, v, u); e != INVALID; ++e){
-							int id = G.id(ListGraph::Edge e);
+							ListGraph::Edge f = e;
+							int id = G.id(f);
 							expr += vars[id];
 						}
 						model.addConstr(expr >= 2);
