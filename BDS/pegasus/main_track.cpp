@@ -13,19 +13,14 @@
 #include "src/lemon.h"
 #include "src/bds.cpp"
 #include "src/nauty_reader.cpp"
+#include "src/stdio_reader.cpp"
 
 using namespace std;
-
-
-
 
 /*
 	Conventions
 		- Graphs are 0-indexed and simple;
 */
-
-
-
 
 /*
 	This function receives a LP solution and retuns the edges
@@ -334,6 +329,5 @@ signed main(){
 	ListGraph G;
 
 	RunNautyInput();
-
 }
 
