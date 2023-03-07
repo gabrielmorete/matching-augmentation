@@ -336,7 +336,7 @@ signed main(int argc, char *argv[]){
 			stdio = 1;
 		else if (s == "-start"){
 			s = argv[i + 1];
-			start = 2;
+			start = to_string((string)s);
 			i++;
 		} else {
 			cout<<"Usage: -stdio -verbose -start n"<<endl;
