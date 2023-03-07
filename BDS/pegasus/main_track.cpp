@@ -75,7 +75,7 @@ vector<GRBLinExpr> FindMinCut(double *sol, GRBVar *vars, int n, int m){
 					cut += vars[G.id(f)];
 				}
 
-			restrictions.pd(cut);
+			restrictions.push_back(cut);
 		}
 	}
 	
