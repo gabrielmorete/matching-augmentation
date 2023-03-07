@@ -145,7 +145,7 @@ void IntegerSolution(ListGraph::EdgeMap<int> &IntSol){
 
 		// Create an environment
 		GRBEnv env = GRBEnv(true);
-		env.set("LogFile", "MAPInteger.log");
+		// env.set("LogFile", "MAPInteger.log"); // Output may be large
 		env.set(GRB_IntParam_OutputFlag, 0);
 		env.start();
 
@@ -231,7 +231,7 @@ void FractionalSolution(ListGraph::EdgeMap<double> &FracSol){
 
 		// Create an environment
 		GRBEnv env = GRBEnv(true);
-		env.set("LogFile", "MAPFractional.log");
+		// env.set("LogFile", "MAPFractional.log");  // Output may be large
 		env.set(GRB_IntParam_OutputFlag, 0);
 		env.start();
 
