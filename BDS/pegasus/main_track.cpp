@@ -343,7 +343,7 @@ void SolveModel(
 		// Create an environment
 		GRBEnv env = GRBEnv(true);
 		// env.set("LogFile", "MAPFractional.log");  // Output may be large
-		env.set(GRB_IntParam_OutputFlag, 0);
+		// env.set(GRB_IntParam_OutputFlag, 0);
 		env.start();
 
 		// Create an empty model
