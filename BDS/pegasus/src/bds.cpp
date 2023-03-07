@@ -151,7 +151,7 @@ void RecoverUpLinkSol(Node v,
 	Node u = G.u(e);
 	Node w = G.v(e);
 	if (Dec(w, u, in, out)) // If u is a decendent of w
-		swap(w, u);
+		std::swap(w, u);
 
 	// u is the ancestor node, w is the descendent
 
