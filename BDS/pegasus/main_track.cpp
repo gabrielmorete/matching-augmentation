@@ -338,7 +338,8 @@ signed main(int argc, char *argv[]){
 		}
 	}
 
-
+	dbg(stdio);
+	dbg(__verbose_mode);
 
 	if (stdio)
 		RunStdioInput();
