@@ -400,11 +400,11 @@ void SolveModel(
 			bool found = 0;
 
 			for (ListGraph::NodeIt v(G); v != INVALID; ++v)
-				for (ListGraph::NodeIt u(G); u != INVALID; ++u){
+				for (ListGraph::NodeIt u(G); u < v ; ++u){
 					if (sign(GMH.minCutValue(v, u) - 2) == 0){
 						found = 1;
 						GRBLinExpr expr = 0;
-						for (GomoryHu<ListGraph, ListGraph::EdgeMap<double> >::MinCutEdgeIt e(GMH, min_v, min_u); e != INVALID; ++e)
+						for (GomoryHu<ListGraph, ListGraph::EdgeMap<double> >::MinCutEdgeIt e(GMH, v, u); e != INVALID; ++e)
 							expr += vars[G.id(e)];
 							model.addConstr(expr >= 2);
 					}
