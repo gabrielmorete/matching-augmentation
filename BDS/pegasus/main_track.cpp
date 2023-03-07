@@ -76,8 +76,6 @@ class MinimumCut: public GRBCallback {
 					// current formulation, must check if if there is a
 					// bridge or a cut.
 
-					cout<<"AHHHHHHHHHHHH"<<endl;
-
 					double *x = getSolution(vars, m);
 
 					ListGraph::EdgeMap<bool> in_sol(G);
