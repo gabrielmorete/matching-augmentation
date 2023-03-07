@@ -475,7 +475,7 @@ void SolveModel(
 		}
 
 
-		if (sign(FracSol[G.id(0)]) == -1) // No solution found
+		if (sign(FracSol[G.edgeFromId(0)]) == -1) // No solution found
 			return;
 
 	/*
