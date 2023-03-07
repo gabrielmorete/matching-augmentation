@@ -21,6 +21,13 @@ void IntegerSolution(ListGraph::EdgeMap<int> &IntSol);
 */
 void FractionalSolution(ListGraph::EdgeMap<double> &FracSol);
 
+/*
+	Wrapper function that call the solvers.
+*/
+void SolveMapInstance(
+	ListGraph::EdgeMap<double> &FracSol,
+	ListGraph::EdgeMap<int> &IntSol,
+	ListGraph::EdgeMap<bool> &BDSSol);
 
 
 #endif

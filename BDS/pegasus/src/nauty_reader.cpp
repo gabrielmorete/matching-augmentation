@@ -18,14 +18,17 @@ ofstream g_out, log_out;
 	file.
 */
 void SolveCurrentMatching(int matching_id){
-	ListGraph::EdgeMap<int> IntSol(G);
-	IntegerSolution(IntSol);
-
-	ListGraph::EdgeMap<double> FracSol(G);
-	FractionalSolution(FracSol);
-
 	ListGraph::EdgeMap<bool> BDSSol(G);
-	BDSAlgorithm(FracSol, BDSSol);
+	ListGraph::EdgeMap<int> IntSol(G);
+	ListGraph::EdgeMap<double> FracSol(G);
+
+	SolveMapInstance(FracSol, IntSol, BDSSol);
+
+	if (sign(FracSol[0]) == -1 or IntSol[0] == -1){
+		log_out << "Exception on example g" << __cur_graph_id << " matching id " << matching_id << endl;
+		return;
+	}
+
 
 	int cost_Int = 0;
 	int cost_BDS = 0;
@@ -185,7 +188,7 @@ void RunNautyInput(int start){
 	int cnt = 0;
 	while (readNautyGraph(G, cin)){
 		cnt++;
-		
+
 		int n = countNodes(G);
 		int m = countEdges(G);
 

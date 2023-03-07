@@ -323,6 +323,35 @@ void FractionalSolution(ListGraph::EdgeMap<double> &FracSol){
 	}
 }
 
+/*
+	Wrapper function that call the solvers.
+*/
+void SolveMapInstance(
+	ListGraph::EdgeMap<double> &FracSol,
+	ListGraph::EdgeMap<int> &IntSol,
+	ListGraph::EdgeMap<bool> &BDSSol){
+
+	int tries_cnt = 0;
+
+	do {
+		FractionalSolution(FracSol);
+	} while (tries_cnt < 3 and sign(FracSol[0]) == -1);
+
+	if (sign(FracSol[0]) == -1)
+		return;
+
+	tries_cnt = 0;
+
+	do {
+		IntegerSolution(IntSol);
+	} while (tries_cnt < 3 and IntSol[0] == -1);
+
+	if (IntSol[0] == -1)
+		return;
+
+	BDSAlgorithm(FracSol, BDSSol);
+}
+
 
 signed main(int argc, char *argv[]){
 	bool stdio = 0;
