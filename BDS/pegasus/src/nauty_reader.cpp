@@ -1,5 +1,6 @@
 #include "libraries_and_utils.h"
 #include "lemon.h"
+#include "main.h"
 
 /*
 	Nauty Reader
