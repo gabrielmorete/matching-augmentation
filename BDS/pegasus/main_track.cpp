@@ -26,7 +26,36 @@ using namespace std;
 	This function receives a LP solution and retuns the edges
 	of a global minimum cut and its value.
 */
-pair<double, vector<Edge> > FindMinCut(double *sol, int n, int m){
+// pair<double, vector<Edge> > FindMinCut(double *sol, int n, int m){
+// 	ListGraph::EdgeMap<double> capacity(G);
+
+// 	// Build EdgeMap of capacities
+// 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+// 		capacity[e] = sol[G.id(e)]; // Using current solution as capacity
+
+// 	// Build Gomory-Hu Tree
+// 	GomoryHu<ListGraph, ListGraph::EdgeMap<double> > GMH(G,capacity);
+// 	GMH.run();	                
+
+// 	ListGraph::Node min_v = G.nodeFromId(0);
+// 	ListGraph::Node min_u = G.nodeFromId(1);
+// 	for (ListGraph::NodeIt v(G); v != INVALID; ++v)
+// 		for (ListGraph::NodeIt u(G); u != INVALID; ++u){
+// 			if (GMH.minCutValue(v, u) < GMH.minCutValue(min_v, min_u)){
+// 				min_v = v;
+// 				min_u = u;
+// 			}
+// 	}
+
+// 	vector<Edge> min_cut;
+// 	for (GomoryHu<ListGraph, ListGraph::EdgeMap<double> >::MinCutEdgeIt e(GMH, min_v, min_u); e != INVALID; ++e)
+// 		min_cut.push_back(e);
+	
+// 	return make_pair(GMH.minCutValue(min_v, min_u), min_cut);
+// }
+
+vector<GRBLinExpr> FindMinCut(double *sol, GRBVar *vars, int n, int m){
+	vector<GRBLinExpr> restrictions;
 	ListGraph::EdgeMap<double> capacity(G);
 
 	// Build EdgeMap of capacities
@@ -37,22 +66,22 @@ pair<double, vector<Edge> > FindMinCut(double *sol, int n, int m){
 	GomoryHu<ListGraph, ListGraph::EdgeMap<double> > GMH(G,capacity);
 	GMH.run();	                
 
-	ListGraph::Node min_v = G.nodeFromId(0);
-	ListGraph::Node min_u = G.nodeFromId(1);
 	for (ListGraph::NodeIt v(G); v != INVALID; ++v)
 		for (ListGraph::NodeIt u(G); u != INVALID; ++u){
-			if (GMH.minCutValue(v, u) < GMH.minCutValue(min_v, min_u)){
-				min_v = v;
-				min_u = u;
-			}
-	}
+			if ( sign(GMH.minCutValue(v, u) - 2) < 0){
+				GRBLinExpr cut = 0;
+				for (GomoryHu<ListGraph, ListGraph::EdgeMap<double> >::MinCutEdgeIt e(GMH, v, u); e != INVALID; ++e){
+					ListGraph::Edge f = e;
+					cut += vars[G.id(f)];
+				}
 
-	vector<Edge> min_cut;
-	for (GomoryHu<ListGraph, ListGraph::EdgeMap<double> >::MinCutEdgeIt e(GMH, min_v, min_u); e != INVALID; ++e)
-		min_cut.push_back(e);
+			restrictions.pd(cut);
+		}
+	}
 	
-	return make_pair(GMH.minCutValue(min_v, min_u), min_cut);
+	return restrictions;
 }
+
 
 /*
 	This is the separator function for the MIP. 
@@ -190,23 +219,14 @@ void SolveModel(
 		while (model.get(GRB_IntAttr_SolCount) > 0 and !found_feasible){
 		
 			double *sol = model.get(GRB_DoubleAttr_X, vars, m);
-			pair<double, vector<Edge> > min_cut = FindMinCut(sol, n, m);
+			// pair<double, vector<Edge> > min_cut = FindMinCut(sol, n, m);
+
+			vector<GRBLinExpr> res = FindMinCut(sol, vars, n, m);
 
 			// If min_cut.fist < 2, need to add constraint
-			if (sign(min_cut.first - 2.0) < 0) { // Min cut < 2
-				GRBLinExpr expr = 0;
-				
-				// All all edges of the global min cut as a contraint.
-				for (Edge e : min_cut.second){
-					int id = G.id(e);
-					int u = G.id(G.u(e));
-					int v = G.id(G.v(e));				
-					
-					expr += vars[id];
-					assert((node_u[id] == u) and (node_v[id]) == v); // Sanity check
-				}
-
-				model.addConstr(expr >= 2);
+			if (!res.empty()) { // Min cut < 2
+				for (GRBLinExpr expr : res)
+					model.addConstr(expr >= 2);
 				model.optimize();
 			}
 			else{
