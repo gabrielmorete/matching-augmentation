@@ -24,7 +24,7 @@ void SolveCurrentMatching(int matching_id){
 
 	SolveMapInstance(FracSol, IntSol, BDSSol);
 
-	if (sign(FracSol[0]) == -1 or IntSol[0] == -1){
+	if (sign(FracSol[G.edgeFromId(0)]) == -1 or IntSol[G.edgeFromId(0)] == -1){
 		log_out << "Exception on example g" << __cur_graph_id << " matching id " << matching_id << endl;
 		return;
 	}
