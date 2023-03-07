@@ -12,7 +12,7 @@
 #include "src/libraries_and_utils.h"
 #include "src/lemon.h"
 #include "src/bds.cpp"
-#include "nauty_reader.cpp"
+#include "src/nauty_reader.cpp"
 
 using namespace std;
 
