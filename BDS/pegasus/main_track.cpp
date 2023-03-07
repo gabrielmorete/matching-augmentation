@@ -326,6 +326,7 @@ void FractionalSolution(ListGraph::EdgeMap<double> &FracSol){
 
 signed main(int argc, char *argv[]){
 	bool stdio = 0;
+	int start = 0;
 
 	for (int i = 1; i < argc; i++){
 		string s = argv[i];
@@ -333,8 +334,12 @@ signed main(int argc, char *argv[]){
 			__verbose_mode = 1;
 		else if (s == "-stdio")
 			stdio = 1;
-		else{
-			cout<<"Usage: -stdio -verbose"<<endl;
+		else if (s == "-start"){
+			s = argv[i + 1];
+			start = to_string(s);
+			i++;
+		} else {
+			cout<<"Usage: -stdio -verbose -start n"<<endl;
 			return 0;
 		}
 	}
@@ -342,6 +347,6 @@ signed main(int argc, char *argv[]){
 	if (stdio)
 		RunStdioInput();
 	else
-		RunNautyInput();
+		RunNautyInput(start);
 }
 

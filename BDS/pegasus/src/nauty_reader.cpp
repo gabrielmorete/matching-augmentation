@@ -177,7 +177,7 @@ void SolveAllMatchings(){
 	build a LEMON graph and the log files, and calls the function
 	that iterates through all matchings.
 */
-void RunNautyInput(){
+void RunNautyInput(int start){
 	__best_IP = __best_BDS = 1;
 	__best_IP_graph_id = __best_IP_matching_id = __best_BDS_graph_id = __best_BDS_matching_id = 1;
 	ofstream log_progress;
@@ -187,10 +187,15 @@ void RunNautyInput(){
 		int n = countNodes(G);
 		int m = countEdges(G);
 
-		if (cnt == 1){ // Create folder to log files, create log stream
+		if (cnt < start) continue;
+
+
+		if (cnt == 1 and start == 0){ // Create folder to log files, create log stream
 			std::experimental::filesystem::create_directory("./" + to_string(n));
-			log_out.open(to_string(n) + "/log");
-		}	
+			log_out.open(to_string(n) + "/log"); // overwrite existing log
+		}
+		else if (start == cnt)
+			log_out.open(to_string(n) + "/log", ios::app); // open in append mode
 
 		// Next loop makes shure that lemon graph is consistent with the algorithm input
 		int nvtx = n - 1, ok = 1;
