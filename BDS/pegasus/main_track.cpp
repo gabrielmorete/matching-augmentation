@@ -487,7 +487,7 @@ void SolveMapInstance(
 	// int tries_cnt = 0;
 
 	// do {
-		FractionalSolution(FracSol);
+	// 	FractionalSolution(FracSol);
 	// } while (tries_cnt < 3 and sign(FracSol[G.edgeFromId(0)]) == -1);
 
 	// if (sign(FracSol[G.edgeFromId(0)]) == -1)
@@ -496,13 +496,13 @@ void SolveMapInstance(
 	// tries_cnt = 0;
 
 	// do {
-		IntegerSolution(IntSol);
+	// 	IntegerSolution(IntSol);
 	// } while (tries_cnt < 3 and IntSol[G.edgeFromId(0)] == -1);
 
 	// if (IntSol[G.edgeFromId(0)] == -1)
 	// 	return;
 
-	// SolveModel(FracSol, IntSol);
+	SolveModel(FracSol, IntSol);
 
 	BDSAlgorithm(FracSol, BDSSol);
 }
