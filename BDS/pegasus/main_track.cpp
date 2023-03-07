@@ -327,7 +327,7 @@ void FractionalSolution(ListGraph::EdgeMap<double> &FracSol){
 signed main(int argc, char *argv[]){
 	bool stdio = 0;
 	dbg(argc);
-	for (int i = 1; i <= argc; i++){
+	for (int i = 1; i < argc; i++){
 		string s = argv[i];
 		if (s == "-verbose")
 			__verbose_mode = 1;
