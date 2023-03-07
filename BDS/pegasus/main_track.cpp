@@ -386,35 +386,25 @@ void SolveModel(
 		while (model.get(GRB_IntAttr_SolCount) > 0 and !found_feasible){
 		
 			double *sol = model.get(GRB_DoubleAttr_X, vars, m);
-		
-			ListGraph::EdgeMap<double> capacity(G);
+			pair<double, vector<Edge> > min_cut = FindMinCut(sol, n, m);
 
-			// Build EdgeMap of capacities
-			for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
-				capacity[e] = sol[G.id(e)]; // Using current solution as capacity
+			// If min_cut.fist < 2, need to add constraint
+			if (sign(min_cut.first - 2.0) < 0) { // Min cut < 2
+				GRBLinExpr expr = 0;
+				
+				// All all edges of the global min cut as a contraint.
+				for (Edge e : min_cut.second){
+					int id = G.id(e);
+					int u = G.id(G.u(e));
+					int v = G.id(G.v(e));				
+					
+					expr += vars[id];
+					assert((node_u[id] == u) and (node_v[id]) == v); // Sanity check
+				}
 
-			// Build Gomory-Hu Tree
-			GomoryHu<ListGraph, ListGraph::EdgeMap<double> > GMH(G,capacity);
-			GMH.run();	                
-
-			bool found = 0;
-
-			for (ListGraph::NodeIt v(G); v != INVALID; ++v)
-				for (ListGraph::NodeIt u(G); u < v ; ++u){
-					if (sign(GMH.minCutValue(v, u) - 2) == 0){
-						found = 1;
-						GRBLinExpr expr = 0;
-						for (GomoryHu<ListGraph, ListGraph::EdgeMap<double> >::MinCutEdgeIt e(GMH, v, u); e != INVALID; ++e){
-							ListGraph::Edge f = e;
-							int id = G.id(f);
-							expr += vars[id];
-						}
-						model.addConstr(expr >= 2);
-					}
-			}
-
-			if (found)
+				model.addConstr(expr >= 2);
 				model.optimize();
+			}
 			else{
 				// Found a feasible opt
 				// cout << "Obj: " << model.get(GRB_DoubleAttr_ObjVal) << endl;
@@ -429,51 +419,14 @@ void SolveModel(
 					// cout<<u + 1<<' '<<v + 1<<' '<<abs(sol[u][v])<<endl;
 
 					assert((node_u[id] == u) and (node_v[id]) == v); // Sanity check
-				}			
-				found_feasible = 1;
-
-
-			// pair<double, vector<Edge> > min_cut = FindMinCut(sol, n, m);
-
-			// // If min_cut.fist < 2, need to add constraint
-			// if (sign(min_cut.first - 2.0) < 0) { // Min cut < 2
-			// 	GRBLinExpr expr = 0;
-				
-			// 	// All all edges of the global min cut as a contraint.
-			// 	for (Edge e : min_cut.second){
-			// 		int id = G.id(e);
-			// 		int u = G.id(G.u(e));
-			// 		int v = G.id(G.v(e));				
-					
-			// 		expr += vars[id];
-			// 		assert((node_u[id] == u) and (node_v[id]) == v); // Sanity check
-			// 	}
-
-			// 	model.addConstr(expr >= 2);
-			// 	model.optimize();
-			// }
-			// else{
-			// 	// Found a feasible opt
-			// 	// cout << "Obj: " << model.get(GRB_DoubleAttr_ObjVal) << endl;
-
-			// 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
-			// 		int id = G.id(e);
-			// 		int u = G.id(G.u(e));
-			// 		int v = G.id(G.v(e));
-
-			// 		FracSol[e] = sol[id]; 
-
-			// 		// cout<<u + 1<<' '<<v + 1<<' '<<abs(sol[u][v])<<endl;
-
-			// 		assert((node_u[id] == u) and (node_v[id]) == v); // Sanity check
-			// 	}
+				}
 			
-			// 	found_feasible = 1;
-			// }
+				found_feasible = 1;
+			}
 
 			delete[] sol;
 		}
-	}	
+
 
 		if (sign(FracSol[G.edgeFromId(0)]) == -1) // No solution found
 			return;
