@@ -324,10 +324,13 @@ void FractionalSolution(ListGraph::EdgeMap<double> &FracSol){
 }
 
 
-
-signed main(){
-	ListGraph G;
-
-	RunNautyInput();
+signed main(int argc, char *argv[]){
+	if (argc == 0)
+		RunNautyInput();
+	else{
+		if (argv[1] == "-verbose" or (argc > 1 and  (argv[2] == "-verbose")))
+			__verbose_mode = 1;
+		RunStdioInput();
+	}
 }
 

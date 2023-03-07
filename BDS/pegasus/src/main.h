@@ -1,6 +1,8 @@
 #ifndef MAIN_DEF
 #define MAIN_DEF
 
+bool __verbose_mode = 0;
+
 /*
 	This function receives a LP solution and retuns the edges
 	of a global minimum cut and its value.
