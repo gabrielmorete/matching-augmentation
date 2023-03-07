@@ -22,9 +22,6 @@ void ReadStdioInput(){
 	assert(n >= 3);
 	assert(m >= n);
 
-	_n = n;
-	_m = m;
-
 	for (int i = 0; i < n; i++){
 		ListGraph::Node v = G.addNode();
 		if (G.id(v) != i)
