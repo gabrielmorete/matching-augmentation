@@ -8,29 +8,14 @@
 	Author : Gabriel Morete
 */
 
-
-#include <iostream>
-#include <fstream>
-#include <experimental/filesystem>
-#include <vector>
-#include <array>
-#include <cassert>
-#include <string>
-#include <set>
-#include <algorithm>
 #include "gurobi_c++.h"
+#include "src/libraries_and_utils"
 #include "src/lemon.h"
-
 #include "src/bds.cpp"
-
 
 using namespace std;
 
 
-
-// Safe handling doubles
-const double EPS = 1e-3;
-int sign(double x) { return (x > EPS) - (x < -EPS); }
 
 
 /*
