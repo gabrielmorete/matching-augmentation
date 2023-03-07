@@ -330,6 +330,7 @@ signed main(int argc, char *argv[]){
 	else{
 		if (argv[1] == "-verbose" or (argc > 1 and  (argv[2] == "-verbose")))
 			__verbose_mode = 1;
+		dbg(__verbose_mode);
 		RunStdioInput();
 	}
 }
