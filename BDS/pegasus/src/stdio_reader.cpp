@@ -52,13 +52,10 @@ void RunStdioInput(){
 	ReadStdioInput();
 
 	ListGraph::EdgeMap<int> IntSol(G);
-	IntegerSolution(IntSol);
-
 	ListGraph::EdgeMap<double> FracSol(G);
-	FractionalSolution(FracSol);
-
 	ListGraph::EdgeMap<bool> BDSSol(G);
-	BDSAlgorithm(FracSol, BDSSol);
+
+	SolveMapInstance(FracSol,IntSol,BDSSol);
 
 	int cost_Int = 0;
 	int cost_BDS = 0;
