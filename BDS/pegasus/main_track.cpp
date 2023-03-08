@@ -26,33 +26,7 @@ using namespace std;
 	This function receives a LP solution and retuns the edges
 	of a global minimum cut and its value.
 */
-// pair<double, vector<Edge> > FindMinCut(double *sol, int n, int m){
-// 	ListGraph::EdgeMap<double> capacity(G);
 
-// 	// Build EdgeMap of capacities
-// 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
-// 		capacity[e] = sol[G.id(e)]; // Using current solution as capacity
-
-// 	// Build Gomory-Hu Tree
-// 	GomoryHu<ListGraph, ListGraph::EdgeMap<double> > GMH(G,capacity);
-// 	GMH.run();	                
-
-// 	ListGraph::Node min_v = G.nodeFromId(0);
-// 	ListGraph::Node min_u = G.nodeFromId(1);
-// 	for (ListGraph::NodeIt v(G); v != INVALID; ++v)
-// 		for (ListGraph::NodeIt u(G); u != INVALID; ++u){
-// 			if (GMH.minCutValue(v, u) < GMH.minCutValue(min_v, min_u)){
-// 				min_v = v;
-// 				min_u = u;
-// 			}
-// 	}
-
-// 	vector<Edge> min_cut;
-// 	for (GomoryHu<ListGraph, ListGraph::EdgeMap<double> >::MinCutEdgeIt e(GMH, min_v, min_u); e != INVALID; ++e)
-// 		min_cut.push_back(e);
-	
-// 	return make_pair(GMH.minCutValue(min_v, min_u), min_cut);
-// }
 
 vector<GRBLinExpr> FindMinCuts(double *sol, GRBVar *vars, int n, int m){
 	vector<GRBLinExpr> restrictions;
