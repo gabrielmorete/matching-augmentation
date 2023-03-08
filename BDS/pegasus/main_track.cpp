@@ -54,7 +54,7 @@ using namespace std;
 // 	return make_pair(GMH.minCutValue(min_v, min_u), min_cut);
 // }
 
-vector<GRBLinExpr> FindMinCut(double *sol, GRBVar *vars, int n, int m){
+vector<GRBLinExpr> FindMinCuts(double *sol, GRBVar *vars, int n, int m){
 	vector<GRBLinExpr> restrictions;
 	ListGraph::EdgeMap<double> capacity(G);
 
@@ -66,6 +66,7 @@ vector<GRBLinExpr> FindMinCut(double *sol, GRBVar *vars, int n, int m){
 	GomoryHu<ListGraph, ListGraph::EdgeMap<double> > GMH(G,capacity);
 	GMH.run();	                
 
+	// Find all cuts
 	for (ListGraph::NodeIt v(G); v != INVALID; ++v)
 		for (ListGraph::NodeIt u(G); u < v; ++u){
 			if (sign(GMH.minCutValue(v, u) - 2) < 0){
@@ -76,7 +77,6 @@ vector<GRBLinExpr> FindMinCut(double *sol, GRBVar *vars, int n, int m){
 				}
 
 			restrictions.push_back(cut);
-			// return restrictions;
 		}
 	}
 	
@@ -126,29 +126,27 @@ class MinimumCut: public GRBCallback {
 					ListGraph::NodeMap<int> ebcc(G, -1);
 					biEdgeConnectedComponents(H, ebcc);
 
-					int max_cmp = 0;
+					int ncmp = 0;
 					for (ListGraph::NodeIt v(G); v != INVALID; ++v)
-						max_cmp = max(max_cmp, ebcc[v]);
+						ncmp = max(ncmp, ebcc[v]);
 
-					if (max_cmp > 0){ // Not 2ECSS, must add a cut 
+					if (ncmp > 0){ // Not 2ECSS, must add a cut 
 	
 						// The cut will be all edges crossing the cut of the ebcc with id 0
-						GRBLinExpr expr[max_cmp + 1];
-						for (int i = 0; i <= max_cmp; i++)
-							expr[i] = 0;
+						GRBLinExpr expr = 0;
 	
 						for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
 							ListGraph::Node u = G.u(e);
 							ListGraph::Node v = G.v(e);
 							
-							if (ebcc[u] != ebcc[v]){
-								expr[ebcc[u]] += vars[G.id(e)];
-								expr[ebcc[v]] += vars[G.id(e)];
-							}
+							if (ebcc[u] == 0 and ebcc[v] != 0)
+								expr += vars[G.id(e)];
+					
+							if (ebcc[v] == 0 and ebcc[u] != 0)
+								expr += vars[G.id(e)];
 						}
 
-						for (int i = 0; i < max_cmp; i++) // do not need to add for the last
-							addLazy(expr[i] >= 2);
+						addLazy(expr >= 2);
 					}
 
 					delete[] x;
@@ -224,7 +222,7 @@ void SolveModel(
 			double *sol = model.get(GRB_DoubleAttr_X, vars, m);
 			// pair<double, vector<Edge> > min_cut = FindMinCut(sol, n, m);
 
-			vector<GRBLinExpr> res = FindMinCut(sol, vars, n, m);
+			vector<GRBLinExpr> res = FindMinCuts(sol, vars, n, m);
 
 			// If min_cut.fist < 2, need to add constraint
 			if (!res.empty()) { // Min cut < 2
