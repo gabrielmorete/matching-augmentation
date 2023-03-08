@@ -11,12 +11,11 @@
 * ~~add a call to last processed geng line~~
 * ~~supress solver output~~
 * ~~add inconsistency checker and counter (3 tries -> report to log)~~
-* check memory comsuption
+* ~~check memory comsumption~~
 	* ~~memory leaks on gurobi get sol(valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=valgrind-out.txt)~~
 * command line
 	* ~~add start at~~
 * optimize BDS
-* warstart IP
-* optimize code in general
+* ~~optimize solver~~
 * ~~optimize memory~~	
 	
