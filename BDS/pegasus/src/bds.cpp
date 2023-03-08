@@ -273,7 +273,7 @@ void BDSAlgorithm(ListGraph::EdgeMap<double> &FracSol, ListGraph::EdgeMap<bool> 
 	if (__verbose_mode){
 		cout << "BDS Tree Found" << endl;
 		for (NodeIt v(G); v != INVALID; ++v)
-			cout << parent[v] << " <-- " << G.id(v) << endl;	
+			cout << G.id(parent[v]) << " <-- " << G.id(v) << endl;	
 	}
 
 
