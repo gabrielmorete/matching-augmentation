@@ -226,6 +226,8 @@ void SolveModel(
 			delete[] sol;
 		}
 
+		return;
+
 
 		if (sign(FracSol[G.edgeFromId(0)]) == -1) // No solution found
 			return;
@@ -237,6 +239,18 @@ void SolveModel(
 			We will warmstart the integer version by using the
 			same model, just change the variable type
 		*/
+
+		bool is_integral = 1;
+		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+			if ((sign(FracSol[e]) != 0) and (sign(FracSol[e] - 1.0) != 0))
+				is_integral = 0;
+
+		if (is_integral){
+			for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+				IntSol[e] = FracSol[e];
+			return;
+		}
+
 
 		for (int i = 0; i < m; i++) // Changing variables to binary
 			vars[i].set(GRB_CharAttr_VType, GRB_BINARY);
@@ -294,15 +308,15 @@ void SolveMapInstance(
 
 	int tries_cnt = 0;
 
-	do {
+	// do {
 		SolveModel(FracSol, IntSol);
-	} while (tries_cnt < 3 and sign(FracSol[G.edgeFromId(0)]) == -1);
+	// } while (tries_cnt < 3 and sign(FracSol[G.edgeFromId(0)]) == -1);
 
-	if (sign(FracSol[G.edgeFromId(0)]) == -1)
-		return;
+	// if (sign(FracSol[G.edgeFromId(0)]) == -1)
+	// 	return;
 
-	if (IntSol[G.edgeFromId(0)] == -1)
-		return;
+	// if (IntSol[G.edgeFromId(0)] == -1)
+	// 	return;
 
 	BDSAlgorithm(FracSol, BDSSol);
 }
