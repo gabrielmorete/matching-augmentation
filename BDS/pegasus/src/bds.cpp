@@ -133,16 +133,21 @@ bool Dec(Node u, Node v, ListGraph::NodeMap<int> &in, ListGraph::NodeMap<int> &o
 
 int UpLinkDP(Node v, ListGraph::NodeMap<int> &memo, 
 	ListGraph::NodeMap<Edge> &dp_edge, 
-	ListGraph::NodeMap<int> &link_cost, 
+	ListGraph::EdgeMap<int> &link_cost, 
 	ListGraph::NodeMap<ListGraph::Node> &parent, 
 	ListGraph::NodeMap<int> &in, 
 	ListGraph::NodeMap<int> &out,
 	ListGraph::EdgeMap<bool> &BDSSol,
 	SubGraph<ListGraph> &T){
 	
-	if (memo[v] != -1)
-		return memo[v];
+	for (SubGraph<ListGraph>::OutArcIt a(T, v); a != INVALID; ++a){
+		ListGraph::Node y = T.target(a);
 
+		if (y != parent[v]){
+			// cout<<" Transition "<<G.id(v) + 1<<' '<<G.id(y) + 1<<endl;
+			subtree_cost += UpLinkDP(y, memo, dp_edge, link_cost, parent, in, out, BDSSol, T);
+			}
+	}		
 	memo[v] = countEdges(G) + 1; // infinity
 
 	for (EdgeIt e(G); e != INVALID; ++e)
