@@ -126,27 +126,29 @@ class MinimumCut: public GRBCallback {
 					ListGraph::NodeMap<int> ebcc(G, -1);
 					biEdgeConnectedComponents(H, ebcc);
 
-					int ncmp = 0;
+					int max_cmp = 0;
 					for (ListGraph::NodeIt v(G); v != INVALID; ++v)
-						ncmp = max(ncmp, ebcc[v]);
+						max_cmp = max(max_cmp, ebcc[v]);
 
-					if (ncmp > 0){ // Not 2ECSS, must add a cut 
+					if (max_cmp > 0){ // Not 2ECSS, must add a cut 
 	
 						// The cut will be all edges crossing the cut of the ebcc with id 0
-						GRBLinExpr expr = 0;
+						GRBLinExpr expr[max_cmp + 1];
+						for (int i = 0; i <= max_cmp; i++)
+							expr[i] = 0;
 	
 						for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
 							ListGraph::Node u = G.u(e);
 							ListGraph::Node v = G.v(e);
 							
-							if (ebcc[u] == 0 and ebcc[v] != 0)
-								expr += vars[G.id(e)];
-					
-							if (ebcc[v] == 0 and ebcc[u] != 0)
-								expr += vars[G.id(e)];
+							if (ebcc[u] != ebcc[v]){
+								expr[ebcc[u]] += vars[G.id(e)];
+								expr[ebcc[v]] += vars[G.id(e)];
+							}
 						}
 
-						addLazy(expr >= 2);
+						for (int i = 0; i < max_cmp; i++) // do not need to add for the last
+							addLazy(expr[i] >= 2);
 					}
 
 					delete[] x;
