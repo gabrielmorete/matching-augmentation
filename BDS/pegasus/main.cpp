@@ -45,9 +45,8 @@ vector<GRBLinExpr> FindMinCuts(double *sol, GRBVar *vars, int n, int m){
 		ListGraph::Node v = G.nodeFromId(i);
 		for (int j = 0; j < i; j++){
 			ListGraph::Node u = G.nodeFromId(j);
-			cout<<G.id(v)<<' '<<G.id(u)<<endl;
+
 			if (sign(GMH.minCutValue(v, u) - 2) < 0){
-				cout<<"Found"<<' '<<G.id(v)<<' '<<G.id(u)<<endl;
 				GRBLinExpr cut = 0;
 				for (GomoryHu<ListGraph, ListGraph::EdgeMap<double> >::MinCutEdgeIt e(GMH, v, u); e != INVALID; ++e){
 					ListGraph::Edge f = e;
@@ -58,8 +57,6 @@ vector<GRBLinExpr> FindMinCuts(double *sol, GRBVar *vars, int n, int m){
 		}
 	}
 	
-	dbg(restrictions.size())<<endl;
-
 	return restrictions;
 }
 
@@ -232,9 +229,6 @@ void SolveModel(
 			delete[] sol;
 		}
 
-		return;
-
-
 		if (sign(FracSol[G.edgeFromId(0)]) == -1) // No solution found
 			return;
 
@@ -246,6 +240,8 @@ void SolveModel(
 			same model, just change the variable type
 		*/
 
+
+		// If relaxed formulation is integral, no need to resolve
 		bool is_integral = 1;
 		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
 			if ((sign(FracSol[e]) != 0) and (sign(FracSol[e] - 1.0) != 0))
@@ -256,6 +252,8 @@ void SolveModel(
 				IntSol[e] = FracSol[e];
 			return;
 		}
+
+		cout<<"AAAAAAAAAAAAAAAAAAAAAAA"<<endl;
 
 
 		for (int i = 0; i < m; i++) // Changing variables to binary
