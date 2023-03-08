@@ -69,7 +69,7 @@ void RunStdioInput(){
 		cost_Frac +=  FracSol[e] * cost[e];
 		cost_BDS +=  BDSSol[e] * cost[e];
 
-		cout<<u + 1<<' '<<v + 1<<' '<<FracSol[e]<<' '<<IntSol[e]<<' '<<BDSSol[e]<<endl;
+		cout<<u<<' '<<v<<' '<<FracSol[e]<<' '<<IntSol[e]<<' '<<BDSSol[e]<<endl;
 	}
 
 	cout<<"Cost Fractional "<<cost_Frac<<endl;

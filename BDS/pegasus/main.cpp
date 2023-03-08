@@ -253,9 +253,6 @@ void SolveModel(
 			return;
 		}
 
-		cout<<"AAAAAAAAAAAAAAAAAAAAAAA"<<endl;
-
-
 		for (int i = 0; i < m; i++) // Changing variables to binary
 			vars[i].set(GRB_CharAttr_VType, GRB_BINARY);
 
