@@ -131,7 +131,8 @@ bool Dec(Node u, Node v, ListGraph::NodeMap<int> &in, ListGraph::NodeMap<int> &o
 // 	return memo[v];
 // }
 
-void UpLinkDP(Node v, ListGraph::NodeMap<int> &memo, 
+void UpLinkDP(Node v, 
+	ListGraph::NodeMap<int> &memo, 
 	ListGraph::NodeMap<Edge> &dp_edge, 
 	ListGraph::EdgeMap<int> &link_cost, 
 	ListGraph::NodeMap<ListGraph::Node> &parent, 
@@ -240,7 +241,7 @@ void UpLinkAugmentation(
 
 	ListGraph::NodeMap<int> memo(G, -1); 
 	ListGraph::NodeMap<Edge> dp_edge(G); 
-	ListGraph::NodeMap<int> link_cost(G); 
+	ListGraph::EdgeMap<int> link_cost(G); 
 
 
 	for (SubGraph<ListGraph>::OutArcIt a(T, G.nodeFromId(0)); a != INVALID; ++a){
