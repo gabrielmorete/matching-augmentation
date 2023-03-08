@@ -53,8 +53,8 @@ vector<GRBLinExpr> FindMinCuts(double *sol, GRBVar *vars, int n, int m){
 					ListGraph::Edge f = e;
 					cut += vars[G.id(f)];
 				}
-	}			
-			restrictions.push_back(cut);
+				restrictions.push_back(cut);
+			}			
 		}
 	}
 	
