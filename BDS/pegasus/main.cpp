@@ -44,7 +44,7 @@ vector<GRBLinExpr> FindMinCuts(double *sol, GRBVar *vars, int n, int m){
 	for (int i = 0; i < n; i++){
 		ListGraph::Node v = G.nodeFromId(i);
 		for (int j = 0; j < i; j++){
-			ListGraph::Node u = G.nodeFromId(u);
+			ListGraph::Node u = G.nodeFromId(j);
 			cout<<G.id(v)<<' '<<G.id(u)<<endl;
 			if (sign(GMH.minCutValue(v, u) - 2) < 0){
 				cout<<"Found"<<' '<<G.id(v)<<' '<<G.id(u)<<endl;
