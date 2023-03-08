@@ -253,6 +253,8 @@ void SolveModel(
 			return;
 		}
 
+		
+
 		for (int i = 0; i < m; i++) // Changing variables to binary
 			vars[i].set(GRB_CharAttr_VType, GRB_BINARY);
 
@@ -309,15 +311,15 @@ void SolveMapInstance(
 
 	int tries_cnt = 0;
 
-	// do {
+	do {
 		SolveModel(FracSol, IntSol);
-	// } while (tries_cnt < 3 and sign(FracSol[G.edgeFromId(0)]) == -1);
+	} while (tries_cnt < 3 and sign(FracSol[G.edgeFromId(0)]) == -1);
 
-	// if (sign(FracSol[G.edgeFromId(0)]) == -1)
-	// 	return;
+	if (sign(FracSol[G.edgeFromId(0)]) == -1)
+		return;
 
-	// if (IntSol[G.edgeFromId(0)] == -1)
-	// 	return;
+	if (IntSol[G.edgeFromId(0)] == -1)
+		return;
 
 	BDSAlgorithm(FracSol, BDSSol);
 }
