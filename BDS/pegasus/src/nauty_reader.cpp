@@ -225,7 +225,6 @@ void RunNautyInput(int start){
 		__cur_graph_id = cnt;
 
 		SolveAllMatchings();
-		cnt++;
 
 		if (__found_feasible)
 			g_out.close();
