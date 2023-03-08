@@ -44,6 +44,7 @@ vector<GRBLinExpr> FindMinCuts(double *sol, GRBVar *vars, int n, int m){
 	for (ListGraph::NodeIt v(G); v != INVALID; ++v)
 		for (ListGraph::NodeIt u(G); u < v; ++u){
 			if (sign(GMH.minCutValue(v, u) - 2) < 0){
+				cout<<"Found"<<' '<<G.id(v)<<' '<<G.if(u)<<endl;
 				GRBLinExpr cut = 0;
 				for (GomoryHu<ListGraph, ListGraph::EdgeMap<double> >::MinCutEdgeIt e(GMH, v, u); e != INVALID; ++e){
 					ListGraph::Edge f = e;
@@ -54,6 +55,8 @@ vector<GRBLinExpr> FindMinCuts(double *sol, GRBVar *vars, int n, int m){
 		}
 	}
 	
+	dbg(restrictions.size())<<endl;
+
 	return restrictions;
 }
 
