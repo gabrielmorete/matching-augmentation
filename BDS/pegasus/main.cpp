@@ -23,11 +23,9 @@ using namespace std;
 */
 
 /*
-	This function receives a LP solution and retuns the edges
-	of a global minimum cut and its value.
+	This function receives a LP solution and retuns the edges of
+	all st-cuts with capacity < 2..
 */
-
-
 vector<GRBLinExpr> FindMinCuts(double *sol, GRBVar *vars, int n, int m){
 	vector<GRBLinExpr> restrictions;
 	ListGraph::EdgeMap<double> capacity(G);
@@ -253,7 +251,7 @@ void SolveModel(
 			return;
 		}
 
-		
+
 
 		for (int i = 0; i < m; i++) // Changing variables to binary
 			vars[i].set(GRB_CharAttr_VType, GRB_BINARY);
