@@ -174,7 +174,7 @@ void UpLinkDP(Node v,
 				}
 			}
 			else if (StrictDec(u, parent[v], in, out) and Dec(parent[v], w, in, out) and !Dec(parent[v], w, in, out)){ // feasible link
-				prop.pb(e);
+				prop.push_back(e);
 			}
 		}
 
