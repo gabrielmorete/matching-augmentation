@@ -131,7 +131,7 @@ bool Dec(Node u, Node v, ListGraph::NodeMap<int> &in, ListGraph::NodeMap<int> &o
 // 	return memo[v];
 // }
 
-int UpLinkDP(Node v, ListGraph::NodeMap<int> &memo, 
+void UpLinkDP(Node v, ListGraph::NodeMap<int> &memo, 
 	ListGraph::NodeMap<Edge> &dp_edge, 
 	ListGraph::EdgeMap<int> &link_cost, 
 	ListGraph::NodeMap<ListGraph::Node> &parent, 
@@ -145,7 +145,7 @@ int UpLinkDP(Node v, ListGraph::NodeMap<int> &memo,
 
 		if (y != parent[v]){
 			// cout<<" Transition "<<G.id(v) + 1<<' '<<G.id(y) + 1<<endl;
-			subtree_cost += UpLinkDP(y, memo, dp_edge, link_cost, parent, in, out, BDSSol, T);
+			UpLinkDP(y, memo, dp_edge, link_cost, parent, in, out, BDSSol, T);
 			}
 	}		
 	memo[v] = countEdges(G) + 1; // infinity
@@ -188,7 +188,7 @@ int UpLinkDP(Node v, ListGraph::NodeMap<int> &memo,
 
 
 
-	return memo[v];
+	// return memo[v];
 }
 
 /*
