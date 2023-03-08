@@ -76,8 +76,64 @@ bool Dec(Node u, Node v, ListGraph::NodeMap<int> &in, ListGraph::NodeMap<int> &o
 
 	O(n^2|L|)
 */
+// int UpLinkDP(Node v, ListGraph::NodeMap<int> &memo, 
+// 	ListGraph::NodeMap<Edge> &dp_edge, 
+// 	ListGraph::NodeMap<ListGraph::Node> &parent, 
+// 	ListGraph::NodeMap<int> &in, 
+// 	ListGraph::NodeMap<int> &out,
+// 	ListGraph::EdgeMap<bool> &BDSSol,
+// 	SubGraph<ListGraph> &T){
+	
+// 	if (memo[v] != -1)
+// 		return memo[v];
+
+// 	memo[v] = countEdges(G) + 1; // infinity
+
+// 	for (EdgeIt e(G); e != INVALID; ++e)
+// 		if (BDSSol[e] == 0){ // A backedge
+			
+// 			Node u = G.u(e);
+// 			Node w = G.v(e);
+// 			if (Dec(w, u, in, out)) // If u is a descendent of w
+// 				std::swap(w, u);
+
+// 			// u is the ancestor node, w is the descendent
+
+// 			if (StrictDec(u, v, in, out) and Dec(v, w, in, out)){ // feasible link
+
+// 				// cout<<"considering edge "<<G.id(u) + 1<<' '<<G.id(w) + 1<<" to cover node "<<G.id(v) + 1<<endl;
+
+// 				int subtree_cost = 0;
+
+// 				Node h = w, lst = w, p = parent[v];
+// 				while (h != p){
+// 					for (SubGraph<ListGraph>::OutArcIt a(T, h); a != INVALID; ++a){
+// 						ListGraph::Node y = T.target(a);
+
+// 						if (y != lst and y != parent[h]){
+// 							// cout<<" Transition "<<G.id(v) + 1<<' '<<G.id(y) + 1<<endl;
+// 							subtree_cost += UpLinkDP(y, memo, dp_edge, parent, in, out, BDSSol, T);
+// 						}
+// 					}	
+
+// 					lst = h;
+// 					h = parent[h];
+// 				}
+
+// 				if (subtree_cost + cost[e] < memo[v]){
+// 					// cout<<"Foud New Solution to "<<G.id(v) + 1<<' '<<G.id(u) + 1<<' '<<G.id(w) + 1<<endl;
+// 					memo[v] = subtree_cost + cost[e];
+// 					dp_edge[v] = e;
+// 				}
+// 			}
+// 		}
+
+// 	return memo[v];
+// }
+
 int UpLinkDP(Node v, ListGraph::NodeMap<int> &memo, 
 	ListGraph::NodeMap<Edge> &dp_edge, 
+	ListGraph::NodeMap<int> &link_cost, 
 	ListGraph::NodeMap<ListGraph::Node> &parent, 
 	ListGraph::NodeMap<int> &in, 
 	ListGraph::NodeMap<int> &out,
@@ -100,33 +156,32 @@ int UpLinkDP(Node v, ListGraph::NodeMap<int> &memo,
 			// u is the ancestor node, w is the descendent
 
 			if (StrictDec(u, v, in, out) and Dec(v, w, in, out)){ // feasible link
-
-				// cout<<"considering edge "<<G.id(u) + 1<<' '<<G.id(w) + 1<<" to cover node "<<G.id(v) + 1<<endl;
-
-				int subtree_cost = 0;
-
-				Node h = w, lst = w, p = parent[v];
-				while (h != p){
-					for (SubGraph<ListGraph>::OutArcIt a(T, h); a != INVALID; ++a){
-						ListGraph::Node y = T.target(a);
-
-						if (y != lst and y != parent[h]){
-							// cout<<" Transition "<<G.id(v) + 1<<' '<<G.id(y) + 1<<endl;
-							subtree_cost += UpLinkDP(y, memo, dp_edge, parent, in, out, BDSSol, T);
-						}
-					}	
-
-					lst = h;
-					h = parent[h];
-				}
-
-				if (subtree_cost + cost[e] < memo[v]){
+			
+				if (link_cost[e] + cost[e] < memo[v]){
 					// cout<<"Foud New Solution to "<<G.id(v) + 1<<' '<<G.id(u) + 1<<' '<<G.id(w) + 1<<endl;
-					memo[v] = subtree_cost + cost[e];
+					memo[v] = link_cost[e] + cost[e];
 					dp_edge[v] = e;
 				}
 			}
 		}
+
+	if (parent[v] != v)	
+		for (EdgeIt e(G); e != INVALID; ++e)
+			if (BDSSol[e] == 0){ // A backedge
+				
+				Node u = G.u(e);
+				Node w = G.v(e);
+				if (Dec(w, u, in, out)) // If u is a descendent of w
+					std::swap(w, u);
+
+				// u is the ancestor node, w is the descendent
+
+				if (StrictDec(u, parent[v], in, out) and Dec(parent[v], w, in, out) and !Dec(parent[v], w, in, out)){ // feasible link
+					link_cost[e] += memo[v];
+				}
+			}	
+
+
 
 	return memo[v];
 }
@@ -180,9 +235,11 @@ void UpLinkAugmentation(
 
 	ListGraph::NodeMap<int> memo(G, -1); 
 	ListGraph::NodeMap<Edge> dp_edge(G); 
+	ListGraph::NodeMap<int> link_cost(G); 
+
 
 	for (SubGraph<ListGraph>::OutArcIt a(T, G.nodeFromId(0)); a != INVALID; ++a){
-		UpLinkDP(T.target(a), memo, dp_edge, parent, in, out, BDSSol, T);
+		UpLinkDP(T.target(a), memo, dp_edge, link_cost, parent, in, out, BDSSol, T);
 		RecoverUpLinkSol(T.target(a), dp_edge, parent, in, out, BDSSol, T);
 	}
 }
@@ -206,12 +263,11 @@ void BDSAlgorithm(ListGraph::EdgeMap<double> &FracSol, ListGraph::EdgeMap<bool> 
 	int cnt = 0;
 	BDSDFS(G.nodeFromId(0), parent, FracSol, BDSSol, cnt, in, out);
 
-	// cout<<"BDS tree"<<endl;
-	// for (NodeIt v(G); v != INVALID; ++v){
-	// 	cout<<parent[v] + 1<<" <-- "<<G.id(v) + 1<<endl;
-	// }
-
-
+	if (__verbose_mode){
+		cout << "BDS Tree Found" << endl;
+		for (NodeIt v(G); v != INVALID; ++v)
+			cout << parent[v] << " <-- " << G.id(v) << endl;	
+	}
 
 
 	ListGraph::NodeMap<bool> ones(G, 1); // Subgraph must be spanning
