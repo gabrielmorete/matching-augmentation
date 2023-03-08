@@ -150,7 +150,10 @@ void UpLinkDP(Node v,
 			UpLinkDP(y, memo, dp_edge, link_cost, parent, in, out, BDSSol, T);
 			}
 	}		
+	
 	memo[v] = countEdges(G) + 1; // infinity
+
+	vector<ListGraph::Edge> prop; 
 
 	for (EdgeIt e(G); e != INVALID; ++e)
 		if (BDSSol[e] == 0){ // A backedge
@@ -170,25 +173,14 @@ void UpLinkDP(Node v,
 					dp_edge[v] = e;
 				}
 			}
+			else if (StrictDec(u, parent[v], in, out) and Dec(parent[v], w, in, out) and !Dec(parent[v], w, in, out)){ // feasible link
+				prop.pb(e);
+			}
 		}
 
 	if (parent[v] != v)	
-		for (EdgeIt e(G); e != INVALID; ++e)
-			if (BDSSol[e] == 0){ // A backedge
-				
-				Node u = G.u(e);
-				Node w = G.v(e);
-				if (Dec(w, u, in, out)) // If u is a descendent of w
-					std::swap(w, u);
-
-				// u is the ancestor node, w is the descendent
-
-				if (StrictDec(u, parent[v], in, out) and Dec(parent[v], w, in, out) and !Dec(parent[v], w, in, out)){ // feasible link
-					link_cost[e] += memo[v];
-				}
-			}	
-
-
+		for (ListGraph::Edge e : prop)
+			link_cost[e] += memo[v];
 
 	// return memo[v];
 }
