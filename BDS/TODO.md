@@ -17,5 +17,6 @@
 	* ~~add start at~~
 * optimize BDS
 * ~~optimize solver~~
-* ~~optimize memory~~	
+* ~~optimize memory~~
+* ~~change model to just update objective~~	
 	
