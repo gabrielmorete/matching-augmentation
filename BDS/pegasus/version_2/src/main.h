@@ -7,22 +7,32 @@ GRBEnv env = GRBEnv(true);
 bool __verbose_mode = 0;
 
 /*
-	This function receives a LP solution and retuns the edges
-	of a global minimum cut and its value.
+	This function receives a LP solution and retuns the restrictions of
+	all st-cuts with capacity < 2.
 */
-pair<double, vector<Edge> > FindMinCut(double *sol, int n, int m);
+vector<GRBLinExpr> FindMinCuts(double *sol, GRBVar *vars, int n, int m);
 
 /*
-	This function returns a optimum integer solution to MAP.
-	If no solution is found, it returns a all -1 edge map.
+	This function builds a fractional cutLP model.
 */
-void IntegerSolution(ListGraph::EdgeMap<int> &IntSol);
+void BuildFractional(GRBModel &frac_model, GRBVar *frac_vars);
 
 /*
 	This function returns a optimum fractional solution to MAP.
 	If no solution is found, it returns a all -1 edge map.
 */
-void FractionalSolution(ListGraph::EdgeMap<double> &FracSol);
+void FractionalSolution(ListGraph::EdgeMap<double> &FracSol, GRBModel &frac_model, GRBVar *frac_vars);
+
+/*
+	This function builds a integral cutLP model.
+*/
+void BuildIntegral(GRBModel &int_model, GRBVar *int_vars);
+
+/*
+	This function returns a optimum integer solution to MAP.
+	If no solution is found, it returns a all -1 edge map.
+*/
+void IntegerSolution(ListGraph::EdgeMap<int> &IntSol, GRBModel &int_model, GRBVar *int_vars);
 
 /*
 	Wrapper function that call the solvers.

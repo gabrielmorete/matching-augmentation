@@ -29,12 +29,11 @@ using namespace std;
 	will be just different cost functions.
 */
 
-GRBEnv env = GRBEnv(true);
 
 
 /*
-	This function receives a LP solution and retuns the edges of
-	all st-cuts with capacity < 2..
+	This function receives a LP solution and retuns the restrictions of
+	all st-cuts with capacity < 2.
 */
 vector<GRBLinExpr> FindMinCuts(double *sol, GRBVar *vars, int n, int m){
 	vector<GRBLinExpr> restrictions;
@@ -149,8 +148,7 @@ class MinimumCut: public GRBCallback {
 
 
 /*
-	Tis function builds a fractional model
-
+	This function builds a fractional cutLP model.
 */
 void BuildFractional(GRBModel &frac_model, GRBVar *frac_vars){
 	int n = countNodes(G);
@@ -183,6 +181,77 @@ void BuildFractional(GRBModel &frac_model, GRBVar *frac_vars){
 		frac_model.addConstr(deg2[v] >= 2, "deg2_" + to_string(v));
 }
 
+/*
+	This function returns a optimum fractional solution to MAP.
+	If no solution is found, it returns a all -1 edge map.
+*/
+void FractionalSolution(ListGraph::EdgeMap<double> &FracSol, GRBModel &frac_model, GRBVar *frac_vars){
+	for (ListGraph::EdgeIt e(G); e != INVALID; ++e) 
+		FracSol[e] = -1;	
+
+	try {
+		int n = countNodes(G);
+		int m = countEdges(G);
+
+		GRBLinExpr obj = 0;
+		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+			obj += cost[e] * frac_vars[G.id(e)];
+
+		frac_model.setObjective(obj);
+
+
+		// Optimize model
+		frac_model.optimize();
+
+		bool found_feasible = 0;
+		while (frac_model.get(GRB_IntAttr_SolCount) > 0 and !found_feasible){
+		
+			double *sol = frac_model.get(GRB_DoubleAttr_X, frac_vars, m);
+			// pair<double, vector<Edge> > min_cut = FindMinCut(sol, n, m);
+
+			vector<GRBLinExpr> res = FindMinCuts(sol, frac_vars, n, m);
+
+			// If min_cut.fist < 2, need to add constraint
+			if (!res.empty()) { // Min cut < 2
+				for (GRBLinExpr expr : res)
+					frac_model.addConstr(expr >= 2);
+				frac_model.optimize();
+			}
+			else{
+				// Found a feasible opt
+				// cout << "Obj: " << frac_model.get(GRB_DoubleAttr_ObjVal) << endl;
+
+				for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
+					int id = G.id(e);
+					int u = G.id(G.u(e));
+					int v = G.id(G.v(e));
+
+					FracSol[e] = sol[id]; 
+
+					// cout<<u + 1<<' '<<v + 1<<' '<<abs(sol[u][v])<<endl;
+
+					// assert((node_u[id] == u) and (node_v[id]) == v); // Sanity check
+				}
+			
+				found_feasible = 1;
+			}
+
+			delete[] sol;
+		}
+
+
+	} catch(GRBException e) {
+		cout << "Error code = " << e.getErrorCode() << endl;
+		cout << e.getMessage() << endl;
+	} catch(...) {
+		cout << "Exception during optimization" << endl;
+	}
+}
+
+
+/*
+	This function builds a integral cutLP model.
+*/
 void BuildIntegral(GRBModel &int_model, GRBVar *int_vars){
 	int n = countNodes(G);
 	int m = countEdges(G);
@@ -266,72 +335,6 @@ void IntegerSolution(ListGraph::EdgeMap<int> &IntSol, GRBModel &int_model, GRBVa
 	}
 }
 
-/*
-	This function returns a optimum fractional solution to MAP.
-	If no solution is found, it returns a all -1 edge map.
-*/
-void FractionalSolution(ListGraph::EdgeMap<double> &FracSol, GRBModel &frac_model, GRBVar *frac_vars){
-	for (ListGraph::EdgeIt e(G); e != INVALID; ++e) 
-		FracSol[e] = -1;	
-
-	try {
-		int n = countNodes(G);
-		int m = countEdges(G);
-
-		GRBLinExpr obj = 0;
-		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
-			obj += cost[e] * frac_vars[G.id(e)];
-
-		frac_model.setObjective(obj);
-
-
-		// Optimize model
-		frac_model.optimize();
-
-		bool found_feasible = 0;
-		while (frac_model.get(GRB_IntAttr_SolCount) > 0 and !found_feasible){
-		
-			double *sol = frac_model.get(GRB_DoubleAttr_X, frac_vars, m);
-			// pair<double, vector<Edge> > min_cut = FindMinCut(sol, n, m);
-
-			vector<GRBLinExpr> res = FindMinCuts(sol, frac_vars, n, m);
-
-			// If min_cut.fist < 2, need to add constraint
-			if (!res.empty()) { // Min cut < 2
-				for (GRBLinExpr expr : res)
-					frac_model.addConstr(expr >= 2);
-				frac_model.optimize();
-			}
-			else{
-				// Found a feasible opt
-				// cout << "Obj: " << frac_model.get(GRB_DoubleAttr_ObjVal) << endl;
-
-				for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
-					int id = G.id(e);
-					int u = G.id(G.u(e));
-					int v = G.id(G.v(e));
-
-					FracSol[e] = sol[id]; 
-
-					// cout<<u + 1<<' '<<v + 1<<' '<<abs(sol[u][v])<<endl;
-
-					// assert((node_u[id] == u) and (node_v[id]) == v); // Sanity check
-				}
-			
-				found_feasible = 1;
-			}
-
-			delete[] sol;
-		}
-
-
-	} catch(GRBException e) {
-		cout << "Error code = " << e.getErrorCode() << endl;
-		cout << e.getMessage() << endl;
-	} catch(...) {
-		cout << "Exception during optimization" << endl;
-	}
-}
 
 /*
 	Wrapper function that call the solvers.
