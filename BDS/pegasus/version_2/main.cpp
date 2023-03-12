@@ -657,9 +657,11 @@ signed main(int argc, char *argv[]){
 		}
 	}
 
+	cout<<"oi"<<endl;
+
 	// if (stdio)
 	// 	RunStdioInput();
 	// else
-		RunNautyInput(start);
+	RunNautyInput(start);
 }
 
