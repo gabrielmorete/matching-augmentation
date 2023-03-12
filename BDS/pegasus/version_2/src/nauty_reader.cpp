@@ -1,6 +1,5 @@
 #include "lemon.h"
 #include "main.h"
-#include "gurobi.h"
 
 /*
 	Nauty Reader
@@ -17,15 +16,22 @@ ofstream g_out, log_out;
 	If the output satisfies the requerements, it writes a
 	file.
 */
-void SolveCurrentMatching(int matching_id){
+void SolveCurrentMatching(int matching_id,
+	GRBModel &frac_model,
+	GRBVar *frac_vars,
+	GRBModel &int_model,
+	GRBVar *int_vars){
+
 	ListGraph::EdgeMap<bool> BDSSol(G);
 	ListGraph::EdgeMap<int> IntSol(G);
 	ListGraph::EdgeMap<double> FracSol(G);
 
-	SolveMapInstance(FracSol, IntSol, BDSSol);
+	SolveMapInstance(FracSol, IntSol, BDSSol, frac_model, frac_vars, int_model, int_vars);
 
 	if (sign(FracSol[G.edgeFromId(0)]) == -1 or IntSol[G.edgeFromId(0)] == -1){
-		log_out << "Exception on example g" << __cur_graph_id << " matching id " << matching_id << endl;
+		ofstream excep.open(to_string(countNodes(G))+"/exception", std::ios_base::app);
+		excep << "Exception on example g" << __cur_graph_id << " matching id " << matching_id << endl;
+		excep.close();
 		return;
 	}
 
@@ -41,8 +47,6 @@ void SolveCurrentMatching(int matching_id){
 		cost_Int +=  IntSol[e] * cost[e];
 		cost_Frac +=  FracSol[e] * cost[e];
 		cost_BDS +=  (int)BDSSol[e] * cost[e];
-
-		// cout<<u + 1<<' '<<v + 1<<' '<<FracSol[e]<<' '<<IntSol[e]<<' '<<BDSSol[e]<<endl;
 	}
 
 	/* 
@@ -122,11 +126,11 @@ void SolveCurrentMatching(int matching_id){
 	EdgeMap cost. The running time is exponential
 */
 void FindAllMatchings(int e_id, int &n, int &m, int &n_matched, int &total_matchings, 
-	ListGraph::NodeMap<bool> &matched
+	ListGraph::NodeMap<bool> &matched,
 	GRBModel &frac_model,
-	GRBVars &frac_vars,
+	GRBVar *frac_vars,
 	GRBModel &int_model,
-	GRBVars &int_vars){
+	GRBVar *int_vars){
 
 	if (e_id >= m){
 		SolveCurrentMatching(total_matchings, frac_model, frac_vars, int_model, int_vars);
@@ -173,13 +177,14 @@ void SolveAllMatchings(){
 		cost[e] = 1;
 
 	GRBModel frac_model(env);
-	GRBVars frac_vars[m];
+	GRBVar frac_vars[m];
 	BuildFractional(frac_model, frac_vars);
 
 	GRBModel int_model(env);
-	GRBVars int_vars[m];
+	GRBVar int_vars[m];
 	BuildIntegral(int_model, int_vars);
-
+	MinimumCut cb = MinimumCut(int_vars, n, m);
+	int_model.setCallback(&cb);
 
 	ListGraph::NodeMap<bool> matched(G);
 
@@ -188,7 +193,6 @@ void SolveAllMatchings(){
 	if (__found_feasible == 1)
 		g_out << "Number of matchings : " << total_matchings << endl;
 }
-
 
 
 /*
@@ -202,7 +206,7 @@ void RunNautyInput(int start){
 	ofstream log_progress;
 
 	int cnt = 0;
-	while (readNautyGraph(G, cin)){
+	while (readNautyGraph(G, cin)){	
 		cnt++;
 
 		int n = countNodes(G);
@@ -226,6 +230,7 @@ void RunNautyInput(int start){
 				ok = 0;
 				break;
 			}
+
 		// Next loop makes shure that lemon graph edge indexing is consistent
 		set<int> q;
 		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)

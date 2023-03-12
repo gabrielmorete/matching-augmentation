@@ -1,10 +1,9 @@
-#include "lemon.h"
-#include "main.h"
-
 /*
-	Stdio reader
+	Library of functions that handle stdio.
 */
 
+#include "lemon.h"
+#include "main.h"
 
 /*
 	This function reads the Graph from Stdio. Graph is 0-indexed

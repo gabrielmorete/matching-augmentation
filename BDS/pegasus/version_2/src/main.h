@@ -27,7 +27,13 @@ int sign(double x) { return (x > EPS) - (x < -EPS); }
 
 bool __verbose_mode = 0;
 
-GRBEnv env = GRBEnv(true); // Gurobi enviroment
+
+/*
+	I will define a global enviroment. 
+	Each graph will have a single model. Different matchings
+	will be just different cost functions.
+*/
+GRBEnv env = GRBEnv(true);
 
 /*
 	This function receives a LP solution and returns the restrictions of
@@ -69,10 +75,9 @@ void SolveMapInstance(
 	GRBModel &int_model,
 	GRBVar *int_vars);
 
+
 /*
-	This is the separator function for the MIP. 
-	If the solution is not a 2ECSS it adds a cut
-	separating one 2ECC.
+	Callback function class.
 */
 class MinimumCut: public GRBCallback {
 	public:
