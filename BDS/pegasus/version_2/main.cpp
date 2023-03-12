@@ -230,7 +230,7 @@ void IntegerSolution(ListGraph::EdgeMap<int> &IntSol, GRBModel &int_model, GRBVa
 
 		GRBLinExpr obj = 0;
 		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
-			obj += cost[e] * int_vars[G.id(e)]
+			obj += cost[e] * int_vars[G.id(e)];
 
 		int_model.setObjective(obj);
 
