@@ -235,13 +235,13 @@ void IntegerSolution(ListGraph::EdgeMap<int> &IntSol, GRBModel &int_model, GRBVa
 		int_model.setObjective(obj);
 
 		// Optimize model
-		model.optimize();
+		int_model.optimize();
 
 		// Found optimal solution
-		if (model.get(GRB_IntAttr_SolCount) > 0){
-			// cout << "Obj: " << model.get(GRB_DoubleAttr_ObjVal) << endl;
+		if (int_model.get(GRB_IntAttr_SolCount) > 0){
+			// cout << "Obj: " << int_model.get(GRB_DoubleAttr_ObjVal) << endl;
 
-			double *sol = model.get(GRB_DoubleAttr_X, int_vars, m);
+			double *sol = int_model.get(GRB_DoubleAttr_X, int_vars, m);
 
 			for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
 				int id = G.id(e);
@@ -289,12 +289,12 @@ void FractionalSolution(ListGraph::EdgeMap<double> &FracSol, GRBModel &frac_mode
 
 
 		// Optimize model
-		model.optimize();
+		frac_model.optimize();
 
 		bool found_feasible = 0;
-		while (model.get(GRB_IntAttr_SolCount) > 0 and !found_feasible){
+		while (frac_model.get(GRB_IntAttr_SolCount) > 0 and !found_feasible){
 		
-			double *sol = model.get(GRB_DoubleAttr_X, vars, m);
+			double *sol = frac_model.get(GRB_DoubleAttr_X, vars, m);
 			// pair<double, vector<Edge> > min_cut = FindMinCut(sol, n, m);
 
 			vector<GRBLinExpr> res = FindMinCuts(sol, vars, n, m);
@@ -302,12 +302,12 @@ void FractionalSolution(ListGraph::EdgeMap<double> &FracSol, GRBModel &frac_mode
 			// If min_cut.fist < 2, need to add constraint
 			if (!res.empty()) { // Min cut < 2
 				for (GRBLinExpr expr : res)
-					model.addConstr(expr >= 2);
-				model.optimize();
+					frac_model.addConstr(expr >= 2);
+				frac_model.optimize();
 			}
 			else{
 				// Found a feasible opt
-				// cout << "Obj: " << model.get(GRB_DoubleAttr_ObjVal) << endl;
+				// cout << "Obj: " << frac_model.get(GRB_DoubleAttr_ObjVal) << endl;
 
 				for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
 					int id = G.id(e);
