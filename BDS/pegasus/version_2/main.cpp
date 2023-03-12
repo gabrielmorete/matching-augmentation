@@ -192,8 +192,6 @@ void BuildIntegral(GRBModel &int_model, GRBVar *int_vars){
 	MinimumCut cb = MinimumCut(int_vars, n, m);
 	int_model.setCallback(&cb);
 
-	GRBVar int_vars[m];
-
 	// Setting the correct UB and OBJ.	
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
 		int u = G.id(G.u(e));
