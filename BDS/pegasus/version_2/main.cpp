@@ -13,7 +13,7 @@
 #include "src/lemon.h"
 #include "src/bds.cpp"
 // #include "src/nauty_reader.cpp"
-// #include "src/stdio_reader.cpp"
+#include "src/stdio_reader.cpp"
 #include "src/main.h"
 
 using namespace std;
