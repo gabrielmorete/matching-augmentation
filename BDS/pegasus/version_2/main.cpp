@@ -189,8 +189,8 @@ void BuildIntegral(GRBModel &int_model, GRBVar *int_vars){
 
 	int_model.set(GRB_IntParam_LazyConstraints, 1); // Allow callback constraints
 	// Set callback function
-	MinimumCut cb = MinimumCut(int_vars, n, m);
-	int_model.setCallback(&cb);
+	// MinimumCut cb = MinimumCut(int_vars, n, m);
+	// int_model.setCallback(&cb);
 
 	// Setting the correct UB and OBJ.	
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
@@ -554,6 +554,10 @@ void SolveAllMatchings(){
 	GRBModel int_model(env);
 	GRBVar int_vars[m];
 	BuildIntegral(int_model, int_vars);
+	MinimumCut cb = MinimumCut(int_vars, n, m);
+	int_model.setCallback(&cb);
+
+
 
 
 	ListGraph::NodeMap<bool> matched(G);
