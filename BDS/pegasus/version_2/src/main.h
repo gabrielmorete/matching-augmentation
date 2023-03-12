@@ -10,6 +10,7 @@
 #include <string>
 #include <set>
 #include <algorithm>
+#include <cmath>
 #include "gurobi_c++.h"
 #include "lemon.h"
 
