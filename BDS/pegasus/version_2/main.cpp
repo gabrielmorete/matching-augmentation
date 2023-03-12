@@ -164,7 +164,7 @@ void BuildFractional(GRBModel &frac_model, GRBVar *frac_vars){
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
 		int u = G.id(G.u(e));
 		int v = G.id(G.v(e));
-		frac_vars[G.id(e)] = frac_model.addVar(0.0, 1.0, 0, GRB_CONTINUOUS, "x_" + to_string(u) + "_" + to_string(v));
+		frac_vars[G.id(e)] = frac_model.addVar(0.0, 1.0, 0.0, GRB_CONTINUOUS, "x_" + to_string(u) + "_" + to_string(v));
 	}
 
 	// Add \delta(v) >= 2, constraints
@@ -196,7 +196,7 @@ void BuildIntegral(GRBModel &int_model, GRBVar *int_vars){
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
 		int u = G.id(G.u(e));
 		int v = G.id(G.v(e));
-		int_vars[G.id(e)] = int_model.addVar(0.0, 1.0, GRB_BINARY, "x_" + to_string(u) + "_" + to_string(v));
+		int_vars[G.id(e)] = int_model.addVar(0.0, 1.0, 0.0, GRB_BINARY, "x_" + to_string(u) + "_" + to_string(v));
 	}
 
 	// Add \delta(v) >= 2, constraints
