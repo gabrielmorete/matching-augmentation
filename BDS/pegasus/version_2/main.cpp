@@ -507,7 +507,9 @@ void SolveMapInstance(
 	ListGraph::EdgeMap<int> &IntSol,
 	ListGraph::EdgeMap<bool> &BDSSol,
 	GRBModel &frac_model,
-	GRBModel &int_model){
+	GRBVars *frac_vars,
+	GRBModel &int_model,
+	GRBVars *int_vars){
 
 	FractionalSolution(FracSol, frac_model, frac_vars);
 
@@ -548,12 +550,17 @@ ofstream g_out, log_out;
 	If the output satisfies the requerements, it writes a
 	file.
 */
-void SolveCurrentMatching(int matching_id){
+void SolveCurrentMatching(int matching_id,
+	GRBModel &frac_model,
+	GRBVars *frac_vars,
+	GRBModel &int_model,
+	GRBVars *int_vars){
+
 	ListGraph::EdgeMap<bool> BDSSol(G);
 	ListGraph::EdgeMap<int> IntSol(G);
 	ListGraph::EdgeMap<double> FracSol(G);
 
-	SolveMapInstance(FracSol, IntSol, BDSSol);
+	SolveMapInstance(FracSol, IntSol, BDSSol, frac_model, frac_vars, int_model, int_vars);
 
 	if (sign(FracSol[G.edgeFromId(0)]) == -1 or IntSol[G.edgeFromId(0)] == -1){
 		log_out << "Exception on example g" << __cur_graph_id << " matching id " << matching_id << endl;
