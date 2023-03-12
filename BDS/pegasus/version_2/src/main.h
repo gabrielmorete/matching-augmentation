@@ -20,12 +20,16 @@ using namespace std;
 
 
 // Safe handling doubles
-const double EPS = 1e-3;
-int sign(double x) { return (x > EPS) - (x < -EPS); }
+const double EPS = 1e-4;
+/*
+	-1 if x < -EPS
+	0 if  -EPS <= x <= EPS
+	1 if EPS < x
+*/ 
+int sign(double x) { return (x > EPS) - (x < -EPS); } 
 
 
-
-
+// Print extra information
 bool __verbose_mode = 0;
 
 

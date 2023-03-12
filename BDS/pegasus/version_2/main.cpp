@@ -1,7 +1,7 @@
 /*
 	Matching Augmentation problem
 		- Linear Relaxation
-		- Integer Solution
+		- Integer Formulation
 		- BDS Approximation Algorithm 
 
 	
@@ -17,7 +17,13 @@ using namespace std;
 
 /*
 	Conventions
-		- Graphs are 0-indexed and simple;
+		- Graphs are 0-indexed and simple
+
+	We will build a polyhedron for each graph, one for integral
+	and other for fractional formulation. For each matching, we 
+	will update the cost function and reoptimize.
+
+	For fractional sulution, we impose primal simplex method.	
 */
 
 
@@ -68,7 +74,7 @@ MinimumCut::MinimumCut(GRBVar* xvars, int xn, int xm){
 }
 
 /*
-	This is the separator function for the MIP. 
+	Separator function for the MIP. 
 	If the solution is not a 2ECSS it adds a cut
 	separating one 2ECC.
 */
@@ -101,11 +107,11 @@ void MinimumCut::callback(){
 			ListGraph::NodeMap<int> ebcc(G, -1);
 			biEdgeConnectedComponents(H, ebcc);
 
-			int ncmp = 0;
+			int max_cmp = 0;
 			for (ListGraph::NodeIt v(G); v != INVALID; ++v)
-				ncmp = max(ncmp, ebcc[v]);
+				max_cmp = max(max_cmp, ebcc[v]);
 
-			if (ncmp > 0){ // Not 2ECSS, must add a cut 
+			if (max_cmp > 0){ // Not 2ECSS, must add a cut 
 
 				// The cut will be all edges crossing the cut of the ebcc with id 0
 				GRBLinExpr expr = 0;
@@ -147,7 +153,7 @@ void BuildFractional(GRBModel &frac_model, GRBVar *frac_vars){
 	// Important, since fractional solution must be an Extreme Point
 	
 	
-	// Setting the correct UB and OBJ.	
+	// Creating variables	
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
 		int u = G.id(G.u(e));
 		int v = G.id(G.v(e));
@@ -186,8 +192,8 @@ void FractionalSolution(ListGraph::EdgeMap<double> &FracSol, GRBModel &frac_mode
 		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
 			obj += cost[e] * frac_vars[G.id(e)];
 
+		// Each matching just changes the objective function
 		frac_model.setObjective(obj);
-
 
 		// Optimize model
 		frac_model.optimize();
@@ -196,7 +202,6 @@ void FractionalSolution(ListGraph::EdgeMap<double> &FracSol, GRBModel &frac_mode
 		while (frac_model.get(GRB_IntAttr_SolCount) > 0 and !found_feasible){
 		
 			double *sol = frac_model.get(GRB_DoubleAttr_X, frac_vars, m);
-			// pair<double, vector<Edge> > min_cut = FindMinCut(sol, n, m);
 
 			vector<GRBLinExpr> res = FindMinCuts(sol, frac_vars, n, m);
 
@@ -245,7 +250,6 @@ void BuildIntegral(GRBModel &int_model, GRBVar *int_vars){
 
 	int_model.set(GRB_IntParam_LazyConstraints, 1); // Allow callback constraints
 
-	// Setting the correct UB and OBJ.	
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
 		int u = G.id(G.u(e));
 		int v = G.id(G.v(e));
@@ -277,6 +281,7 @@ void IntegerSolution(ListGraph::EdgeMap<int> &IntSol,
 	ListGraph::EdgeMap<bool> &BDSSol, 
 	GRBModel &int_model, 
 	GRBVar *int_vars){
+
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e) 
 		IntSol[e] = -1;	
 
@@ -290,9 +295,9 @@ void IntegerSolution(ListGraph::EdgeMap<int> &IntSol,
 
 		int_model.setObjective(obj);
 
-		// // Setting bds sol as a starting feasible solution
-		// for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
-		// 	int_vars[G.id(e)].set(GRB_DoubleAttr_Start, BDSSol[e]);
+		// Setting bds sol as a starting feasible solution
+		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+			int_vars[G.id(e)].set(GRB_DoubleAttr_Start, BDSSol[e]);
 
 		// Optimize model
 		int_model.optimize();
@@ -346,9 +351,10 @@ void SolveMapInstance(
 
 	BDSAlgorithm(FracSol, BDSSol);
 
+	// If fractional solution is integral, no need to solve a MIP
 	bool is_integral = 1;
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
-		if ((sign(FracSol[e]) != 0) and (sign(FracSol[e] - 1.0) != 0))
+		if ((sign(FracSol[e]) != 0) and (sign(FracSol[e] - 1.0) != 0)) // not 0 nor 1
 			is_integral = 0;
 
 	if (is_integral){

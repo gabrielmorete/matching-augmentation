@@ -170,7 +170,7 @@ void FindAllMatchings(int e_id, int &n, int &m, int &n_matched, int &total_match
 	Wrapper function for the matching backtrackig algorithm.
 */
 void SolveAllMatchings(){
-	int total_matchings = 1, n = countNodes(G), m = countEdges(G), n_matched = 0;
+	int n = countNodes(G), m = countEdges(G);
 
 	// Initialize all edges to be heavy
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
@@ -188,6 +188,7 @@ void SolveAllMatchings(){
 
 	ListGraph::NodeMap<bool> matched(G);
 
+	int total_matchings = 1, n_matched = 0;
 	FindAllMatchings(0, n, m, n_matched, total_matchings, matched, frac_model, frac_vars, int_model, int_vars);
 
 	if (__found_feasible == 1)
