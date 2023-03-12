@@ -357,7 +357,7 @@ void SolveMapInstance(
 		BDS_cost += cost[e] * ((int) BDSSol[e]);
 	}
 
-	if (sign(ceil(FracSol) - BDS_cost) == 0){ // BDS sol is opt
+	if (sign(ceil(frac_cost) - BDS_cost) == 0){ // BDS sol is opt
 		cout<<"rolou"<<endl;
 		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
 			IntSol[e] = BDSSol[e];
