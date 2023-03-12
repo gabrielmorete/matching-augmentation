@@ -55,7 +55,17 @@ void RunStdioInput(){
 	ListGraph::EdgeMap<double> FracSol(G);
 	ListGraph::EdgeMap<bool> BDSSol(G);
 
-	SolveMapInstance(FracSol,IntSol,BDSSol);
+	GRBModel frac_model(env);
+	GRBVar frac_vars[m];
+	BuildFractional(frac_model, frac_vars);
+
+	GRBModel int_model(env);
+	GRBVar int_vars[m];
+	BuildIntegral(int_model, int_vars);
+	MinimumCut cb = MinimumCut(int_vars, n, m);
+	int_model.setCallback(&cb);
+
+	SolveMapInstance(FracSol, IntSol, BDSSol, frac_model, frac_vars, int_model, int_vars);
 
 	int cost_Int = 0;
 	int cost_BDS = 0;

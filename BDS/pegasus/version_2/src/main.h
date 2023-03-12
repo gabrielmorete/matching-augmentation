@@ -27,7 +27,11 @@ void FractionalSolution(ListGraph::EdgeMap<double> &FracSol);
 void SolveMapInstance(
 	ListGraph::EdgeMap<double> &FracSol,
 	ListGraph::EdgeMap<int> &IntSol,
-	ListGraph::EdgeMap<bool> &BDSSol);
+	ListGraph::EdgeMap<bool> &BDSSol,
+	GRBModel &frac_model,
+	GRBVar *frac_vars,
+	GRBModel &int_model,
+	GRBVar *int_vars);
 
 
 #endif

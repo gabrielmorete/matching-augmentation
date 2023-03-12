@@ -188,9 +188,6 @@ void BuildIntegral(GRBModel &int_model, GRBVar *int_vars){
 	int m = countEdges(G);
 
 	int_model.set(GRB_IntParam_LazyConstraints, 1); // Allow callback constraints
-	// Set callback function
-	// MinimumCut cb = MinimumCut(int_vars, n, m);
-	// int_model.setCallback(&cb);
 
 	// Setting the correct UB and OBJ.	
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
@@ -557,9 +554,6 @@ void SolveAllMatchings(){
 	MinimumCut cb = MinimumCut(int_vars, n, m);
 	int_model.setCallback(&cb);
 
-
-
-
 	ListGraph::NodeMap<bool> matched(G);
 
 	FindAllMatchings(0, n, m, n_matched, total_matchings, matched, frac_model, frac_vars, int_model, int_vars);
@@ -569,19 +563,12 @@ void SolveAllMatchings(){
 }
 
 
-
 /*
 	This functions receiv nauty's geng output from stdin(may modify this),
 	build a LEMON graph and the log files, and calls the function
 	that iterates through all matchings.
 */
 void RunNautyInput(int start){
-	
-	// Start a global gurobi enviroment
-	env.set(GRB_IntParam_OutputFlag, 0);
-	env.start();
-
-
 	__best_IP = __best_BDS = 1;
 	__best_IP_graph_id = __best_IP_matching_id = __best_BDS_graph_id = __best_BDS_matching_id = 1;
 	ofstream log_progress;
@@ -642,6 +629,10 @@ void RunNautyInput(int start){
 
 
 signed main(int argc, char *argv[]){
+	// Start a global gurobi enviroment
+	env.set(GRB_IntParam_OutputFlag, 0);
+	env.start();
+
 	bool stdio = 0;
 	int start = 0;
 
