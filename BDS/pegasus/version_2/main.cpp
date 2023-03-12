@@ -74,7 +74,7 @@ vector<GRBLinExpr> FindMinCuts(double *sol, GRBVar *vars, int n, int m){
 	separating one 2ECC.
 */
 
-MinimunCut::MinimumCut(GRBVar* xvars, int xn, int xm){
+MinimumCut::MinimumCut(GRBVar* xvars, int xn, int xm){
 			vars = xvars;
 			n = xn;
 			m = xm;
