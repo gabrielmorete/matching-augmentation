@@ -152,7 +152,7 @@ class MinimumCut: public GRBCallback {
 	Tis function builds a fractional model
 
 */
-void BuildFractional(GRBModel &frac_model, GRBVar &frac_vars){
+void BuildFractional(GRBModel &frac_model, GRBVar *frac_vars){
 	int n = countNodes(G);
 	int m = countEdges(G);
 
@@ -183,7 +183,7 @@ void BuildFractional(GRBModel &frac_model, GRBVar &frac_vars){
 		frac_model.addConstr(deg2[v] >= 2, "deg2_" + to_string(v));
 }
 
-void BuildIntegral(GRBModel &int_model, GRBVar &int_vars){
+void BuildIntegral(GRBModel &int_model, GRBVar *int_vars){
 	int n = countNodes(G);
 	int m = countEdges(G);
 
@@ -222,7 +222,7 @@ void BuildIntegral(GRBModel &int_model, GRBVar &int_vars){
 	This function returns a optimum integer solution to MAP.
 	If no solution is found, it returns a all -1 edge map.
 */
-void IntegerSolution(ListGraph::EdgeMap<int> &IntSol, GRBModel &int_model, GRBVar &int_vars){
+void IntegerSolution(ListGraph::EdgeMap<int> &IntSol, GRBModel &int_model, GRBVar *int_vars){
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e) 
 		IntSol[e] = -1;	
 
@@ -275,7 +275,7 @@ void IntegerSolution(ListGraph::EdgeMap<int> &IntSol, GRBModel &int_model, GRBVa
 	This function returns a optimum fractional solution to MAP.
 	If no solution is found, it returns a all -1 edge map.
 */
-void FractionalSolution(ListGraph::EdgeMap<double> &FracSol, GRBModel &frac_model, GRBVar &frac_vars){
+void FractionalSolution(ListGraph::EdgeMap<double> &FracSol, GRBModel &frac_model, GRBVar *frac_vars){
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e) 
 		FracSol[e] = -1;	
 
@@ -657,9 +657,9 @@ void SolveCurrentMatching(int matching_id){
 void FindAllMatchings(int e_id, int &n, int &m, int &n_matched, int &total_matchings, 
 	ListGraph::NodeMap<bool> &matched
 	GRBModel &frac_model,
-	GRBVars &frac_vars,
+	GRBVars *frac_vars,
 	GRBModel &int_model,
-	GRBVars &int_vars){
+	GRBVars *int_vars){
 
 	if (e_id >= m){
 		SolveCurrentMatching(total_matchings, frac_model, frac_vars, int_model, int_vars);
