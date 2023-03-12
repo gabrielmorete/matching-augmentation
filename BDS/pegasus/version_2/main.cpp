@@ -357,10 +357,12 @@ void SolveMapInstance(
 		BDS_cost += cost[e] * ((int) BDSSol[e]);
 	}
 
+	// ceil(frac_cost) is a lower bound on the integral cost
 	if (sign(ceil(frac_cost) - BDS_cost) == 0){ // BDS sol is opt
-		cout<<"rolou"<<endl;
 		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
 			IntSol[e] = BDSSol[e];
+
+		return;
 	}
 
 	IntegerSolution(IntSol, int_model, int_vars);
