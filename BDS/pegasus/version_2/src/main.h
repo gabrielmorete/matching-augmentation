@@ -3,6 +3,7 @@
 
 #include "libraries_and_utils.h"
 #include "gurobi_c++.h"
+#include "lemon.h"
 
 bool __verbose_mode = 0;
 
