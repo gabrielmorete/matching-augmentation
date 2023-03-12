@@ -18,6 +18,6 @@
 * optimize BDS
 * ~~optimize solver~~
 * ~~optimize memory~~
-* change model to just update objective
-* use BDS as a initial solution
+* ~~change model to just update objective~~
+* ~~use BDS as a initial solution~~
 	
