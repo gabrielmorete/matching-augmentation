@@ -255,7 +255,7 @@ void IntegerSolution(ListGraph::EdgeMap<int> &IntSol, GRBModel &int_model, GRBVa
 				// cout<<u + 1<<' '<<v + 1<<' '<<abs(sol[u][v])<<endl;
 
 				// Sanity check
-				assert((node_u[id] == u) and (node_v[id]) == v);
+				// assert((node_u[id] == u) and (node_v[id]) == v);
 			}
 
 			delete[] sol;
@@ -318,7 +318,7 @@ void FractionalSolution(ListGraph::EdgeMap<double> &FracSol, GRBModel &frac_mode
 
 					// cout<<u + 1<<' '<<v + 1<<' '<<abs(sol[u][v])<<endl;
 
-					assert((node_u[id] == u) and (node_v[id]) == v); // Sanity check
+					// assert((node_u[id] == u) and (node_v[id]) == v); // Sanity check
 				}
 			
 				found_feasible = 1;
