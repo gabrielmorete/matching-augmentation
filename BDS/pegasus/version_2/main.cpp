@@ -660,7 +660,7 @@ void SolveCurrentMatching(int matching_id,
 	EdgeMap cost. The running time is exponential
 */
 void FindAllMatchings(int e_id, int &n, int &m, int &n_matched, int &total_matchings, 
-	ListGraph::NodeMap<bool> &matched
+	ListGraph::NodeMap<bool> &matched,
 	GRBModel &frac_model,
 	GRBVar *frac_vars,
 	GRBModel &int_model,
