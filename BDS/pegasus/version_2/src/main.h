@@ -51,7 +51,7 @@ void SolveMapInstance(
 	If the solution is not a 2ECSS it adds a cut
 	separating one 2ECC.
 */
-class MinimumCut;
+class MinimumCut: public GRBCallback;
 
 #endif
 // /*
