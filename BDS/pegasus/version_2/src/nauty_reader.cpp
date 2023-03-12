@@ -29,7 +29,7 @@ void SolveCurrentMatching(int matching_id,
 	SolveMapInstance(FracSol, IntSol, BDSSol, frac_model, frac_vars, int_model, int_vars);
 
 	if (sign(FracSol[G.edgeFromId(0)]) == -1 or IntSol[G.edgeFromId(0)] == -1){
-		ofstream excep.open(to_string(countNodes(G))+"/exception", std::ios_base::app);
+		ofstream excep(to_string(countNodes(G))+"/exception", std::ios_base::app);
 		excep << "Exception on example g" << __cur_graph_id << " matching id " << matching_id << endl;
 		excep.close();
 		return;
