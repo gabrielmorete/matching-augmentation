@@ -294,10 +294,10 @@ void FractionalSolution(ListGraph::EdgeMap<double> &FracSol, GRBModel &frac_mode
 		bool found_feasible = 0;
 		while (frac_model.get(GRB_IntAttr_SolCount) > 0 and !found_feasible){
 		
-			double *sol = frac_model.get(GRB_DoubleAttr_X, vars, m);
+			double *sol = frac_model.get(GRB_DoubleAttr_X, frac_vars, m);
 			// pair<double, vector<Edge> > min_cut = FindMinCut(sol, n, m);
 
-			vector<GRBLinExpr> res = FindMinCuts(sol, vars, n, m);
+			vector<GRBLinExpr> res = FindMinCuts(sol, frac_vars, n, m);
 
 			// If min_cut.fist < 2, need to add constraint
 			if (!res.empty()) { // Min cut < 2
