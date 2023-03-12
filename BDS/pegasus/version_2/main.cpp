@@ -291,7 +291,7 @@ void IntegerSolution(ListGraph::EdgeMap<int> &IntSol,
 		int_model.setObjective(obj);
 
 		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
-			int_vars.set(GRB_DoubleParam_Start, BDSSol[e]);
+			int_vars[G.id(e)].set(GRB_DoubleParam_Start, BDSSol[e]);
 
 		// Optimize model
 		int_model.optimize();
