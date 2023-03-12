@@ -51,6 +51,8 @@ void ReadStdioInput(){
 void RunStdioInput(){
 	ReadStdioInput();
 
+	int m = countEdges(G);
+
 	ListGraph::EdgeMap<int> IntSol(G);
 	ListGraph::EdgeMap<double> FracSol(G);
 	ListGraph::EdgeMap<bool> BDSSol(G);
