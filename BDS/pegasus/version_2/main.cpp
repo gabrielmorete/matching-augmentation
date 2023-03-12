@@ -273,7 +273,10 @@ void BuildIntegral(GRBModel &int_model, GRBVar *int_vars){
 	This function returns a optimum integer solution to MAP.
 	If no solution is found, it returns a all -1 edge map.
 */
-void IntegerSolution(ListGraph::EdgeMap<int> &IntSol, GRBModel &int_model, GRBVar *int_vars){
+void IntegerSolution(ListGraph::EdgeMap<int> &IntSol, 
+	ListGraph::EdgeMap<bool> &BDSSol, 
+	GRBModel &int_model, 
+	GRBVar *int_vars){
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e) 
 		IntSol[e] = -1;	
 
@@ -286,6 +289,9 @@ void IntegerSolution(ListGraph::EdgeMap<int> &IntSol, GRBModel &int_model, GRBVa
 			obj += cost[e] * int_vars[G.id(e)];
 
 		int_model.setObjective(obj);
+
+		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+			int_vars.set(GRB_IntParam_Start, BDSSol[e]);
 
 		// Optimize model
 		int_model.optimize();
@@ -365,7 +371,7 @@ void SolveMapInstance(
 		return;
 	}
 
-	IntegerSolution(IntSol, int_model, int_vars);
+	IntegerSolution(IntSol, BDSSol, int_model, int_vars);
 }
 
 
