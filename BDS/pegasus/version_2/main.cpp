@@ -350,10 +350,20 @@ void SolveMapInstance(
 		return;
 	}
 
+	double frac_cost = 0, BDS_cost = 0;
+
+	for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
+		frac_cost += cost[e] * FracSol[e];
+		BDS_cost += cost[e] * ((int) BDSSol[e]);
+	}
+
+	if (sign(ceil(FracSol) - BDS_cost) == 0){ // BDS sol is opt
+		cout<<"rolou"<<endl;
+		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+			IntSol[e] = BDSSol[e];
+	}
+
 	IntegerSolution(IntSol, int_model, int_vars);
-
-	IntSol[G.edgeFromId(0)] = -1;
-
 }
 
 
