@@ -1,6 +1,9 @@
 #ifndef MAIN_DEF
 #define MAIN_DEF
 
+GRBEnv env = GRBEnv(true);
+
+
 bool __verbose_mode = 0;
 
 /*
