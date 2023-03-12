@@ -55,11 +55,7 @@ class MinimumCut: public GRBCallback {
 	public:
 		GRBVar* vars;
 		int n, m;
-		MinimumCut(GRBVar* xvars, int xn, int xm){
-			vars = xvars;
-			n = xn;
-			m = xm;
-		}
+		MinimumCut(GRBVar* xvars, int xn, int xm);
 	protected:
 		void callback();
 };

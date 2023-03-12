@@ -74,7 +74,13 @@ vector<GRBLinExpr> FindMinCuts(double *sol, GRBVar *vars, int n, int m){
 	separating one 2ECC.
 */
 
-void	MinimumCut::callback(){
+MinimunCut::MinimumCut(GRBVar* xvars, int xn, int xm){
+			vars = xvars;
+			n = xn;
+			m = xm;
+		}
+
+void MinimumCut::callback(){
 			try {
 				if (where == GRB_CB_MIPSOL){
 					// Solver found an integral optimal solution for the
