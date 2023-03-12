@@ -8,8 +8,6 @@
 	Author : Gabriel Morete
 */
 #include "src/main.h"
-// #include "gurobi_c++.h"
-#include "src/libraries_and_utils.h"
 #include "src/lemon.h"
 #include "src/bds.cpp"
 // #include "src/nauty_reader.cpp"
