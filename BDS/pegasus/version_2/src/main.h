@@ -1,9 +1,29 @@
 #ifndef MAIN_DEF
 #define MAIN_DEF
 
-#include "libraries_and_utils.h"
+#include <iostream>
+#include <fstream>
+#include <experimental/filesystem>
+#include <vector>
+#include <array>
+#include <cassert>
+#include <string>
+#include <set>
+#include <algorithm>
 #include "gurobi_c++.h"
 #include "lemon.h"
+
+using namespace std;
+
+#define dbg(x)  cout << #x << " = " << x << endl
+
+
+// Safe handling doubles
+const double EPS = 1e-3;
+int sign(double x) { return (x > EPS) - (x < -EPS); }
+
+
+
 
 bool __verbose_mode = 0;
 
