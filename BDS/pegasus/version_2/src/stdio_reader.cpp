@@ -51,6 +51,7 @@ void ReadStdioInput(){
 void RunStdioInput(){
 	ReadStdioInput();
 
+	int n = countNodes(G);
 	int m = countEdges(G);
 
 	ListGraph::EdgeMap<int> IntSol(G);
