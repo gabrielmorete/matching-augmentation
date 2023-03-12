@@ -655,10 +655,9 @@ signed main(int argc, char *argv[]){
 		}
 	}
 
-	dbg(start);
-	// if (stdio)
-	// 	RunStdioInput();
-	// else
-	RunNautyInput(start);
+	if (stdio)
+		RunStdioInput();
+	else
+		RunNautyInput(start);
 }
 
