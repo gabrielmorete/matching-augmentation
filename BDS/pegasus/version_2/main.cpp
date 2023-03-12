@@ -290,8 +290,9 @@ void IntegerSolution(ListGraph::EdgeMap<int> &IntSol,
 
 		int_model.setObjective(obj);
 
-		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
-			int_vars[G.id(e)].set(GRB_DoubleAttr_Start, BDSSol[e]);
+		// // Setting bds sol as a starting feasible solution
+		// for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+		// 	int_vars[G.id(e)].set(GRB_DoubleAttr_Start, BDSSol[e]);
 
 		// Optimize model
 		int_model.optimize();
