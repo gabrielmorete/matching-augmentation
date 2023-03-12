@@ -3,7 +3,6 @@
 
 GRBEnv env = GRBEnv(true);
 
-
 bool __verbose_mode = 0;
 
 /*
@@ -46,6 +45,13 @@ void SolveMapInstance(
 	GRBModel &int_model,
 	GRBVar *int_vars);
 
+
+/*
+	This is the separator function for the MIP. 
+	If the solution is not a 2ECSS it adds a cut
+	separating one 2ECC.
+*/
+class MinimumCut;
 
 #endif
 // /*
