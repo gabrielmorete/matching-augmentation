@@ -661,8 +661,7 @@ signed main(int argc, char *argv[]){
 		}
 	}
 
-	cout<<"oi"<<endl;
-
+	dbg(start);
 	// if (stdio)
 	// 	RunStdioInput();
 	// else
