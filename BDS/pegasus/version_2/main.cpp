@@ -358,12 +358,12 @@ void SolveMapInstance(
 	}
 
 	// ceil(frac_cost) is a lower bound on the integral cost
-	// if (sign(ceil(frac_cost) - BDS_cost) == 0){ // BDS sol is opt
-	// 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
-	// 		IntSol[e] = BDSSol[e];
+	if (sign(ceil(frac_cost) - BDS_cost) == 0){ // BDS sol is opt
+		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+			IntSol[e] = BDSSol[e];
 
-	// 	return;
-	// }
+		return;
+	}
 
 	IntegerSolution(IntSol, int_model, int_vars);
 }
