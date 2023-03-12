@@ -7,14 +7,13 @@
 	
 	Author : Gabriel Morete
 */
-
-#include "gurobi_c++.h"
+#include "src/main.h"
+// #include "gurobi_c++.h"
 #include "src/libraries_and_utils.h"
 #include "src/lemon.h"
 #include "src/bds.cpp"
 // #include "src/nauty_reader.cpp"
 #include "src/stdio_reader.cpp"
-#include "src/main.h"
 
 using namespace std;
 

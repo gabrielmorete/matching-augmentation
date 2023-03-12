@@ -1,9 +1,9 @@
 #ifndef MAIN_DEF
 #define MAIN_DEF
 
-GRBEnv env = GRBEnv(true);
-
 bool __verbose_mode = 0;
+
+GRBEnv env = GRBEnv(true); // Gurobi enviroment
 
 /*
 	This function receives a LP solution and returns the restrictions of
@@ -44,7 +44,6 @@ void SolveMapInstance(
 	GRBVar *frac_vars,
 	GRBModel &int_model,
 	GRBVar *int_vars);
-
 
 /*
 	This is the separator function for the MIP. 
