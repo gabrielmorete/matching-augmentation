@@ -351,6 +351,9 @@ void SolveMapInstance(
 	}
 
 	IntegerSolution(IntSol, int_model, int_vars);
+
+	IntSol[G.edgeFromId(0)] = -1;
+
 }
 
 
