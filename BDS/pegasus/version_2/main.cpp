@@ -283,7 +283,7 @@ void FractionalSolution(ListGraph::EdgeMap<double> &FracSol, GRBModel &frac_mode
 
 		GRBLinExpr obj = 0;
 		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
-			obj += cost[e] * frac_vars[G.id(e)]
+			obj += cost[e] * frac_vars[G.id(e)];
 
 		int_model.setObjective(obj);
 
