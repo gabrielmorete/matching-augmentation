@@ -73,78 +73,78 @@ vector<GRBLinExpr> FindMinCuts(double *sol, GRBVar *vars, int n, int m){
 	If the solution is not a 2ECSS it adds a cut
 	separating one 2ECC.
 */
-class MinimumCut: public GRBCallback {
-	public:
-		GRBVar* vars;
-		int n, m;
-		MinimumCut(GRBVar* xvars, int xn, int xm){
-			vars = xvars;
-			n = xn;
-			m = xm;
-		}
-	protected:
-		void callback(){
-			try {
-				if (where == GRB_CB_MIPSOL){
-					// Solver found an integral optimal solution for the
-					// current formulation, must check if if there is a
-					// bridge or a cut.
+// class MinimumCut: public GRBCallback {
+// 	public:
+// 		GRBVar* vars;
+// 		int n, m;
+// 		MinimumCut(GRBVar* xvars, int xn, int xm){
+// 			vars = xvars;
+// 			n = xn;
+// 			m = xm;
+// 		}
+// 	protected:
+// 		void callback(){
+// 			try {
+// 				if (where == GRB_CB_MIPSOL){
+// 					// Solver found an integral optimal solution for the
+// 					// current formulation, must check if if there is a
+// 					// bridge or a cut.
 
-					double *x = getSolution(vars, m);
+// 					double *x = getSolution(vars, m);
 
-					ListGraph::EdgeMap<bool> in_sol(G);
+// 					ListGraph::EdgeMap<bool> in_sol(G);
 					
-					for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
-						int id = G.id(e);
-						int u = G.id(G.u(e));
-						int v = G.id(G.v(e));
+// 					for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
+// 						int id = G.id(e);
+// 						int u = G.id(G.u(e));
+// 						int v = G.id(G.v(e));
 
-						if (x[id] > 0.5)
-							in_sol[e] = 1;
-					}
+// 						if (x[id] > 0.5)
+// 							in_sol[e] = 1;
+// 					}
 
-					ListGraph::NodeMap<bool> ones(G, 1); // Must be spanning
-					// H is a spanning subgraph with all edges in the solution
-					SubGraph<ListGraph> H(G, ones, in_sol);
+// 					ListGraph::NodeMap<bool> ones(G, 1); // Must be spanning
+// 					// H is a spanning subgraph with all edges in the solution
+// 					SubGraph<ListGraph> H(G, ones, in_sol);
 
-					ListGraph::NodeMap<int> ebcc(G, -1);
-					biEdgeConnectedComponents(H, ebcc);
+// 					ListGraph::NodeMap<int> ebcc(G, -1);
+// 					biEdgeConnectedComponents(H, ebcc);
 
-					int ncmp = 0;
-					for (ListGraph::NodeIt v(G); v != INVALID; ++v)
-						ncmp = max(ncmp, ebcc[v]);
+// 					int ncmp = 0;
+// 					for (ListGraph::NodeIt v(G); v != INVALID; ++v)
+// 						ncmp = max(ncmp, ebcc[v]);
 
-					if (ncmp > 0){ // Not 2ECSS, must add a cut 
+// 					if (ncmp > 0){ // Not 2ECSS, must add a cut 
 	
-						// The cut will be all edges crossing the cut of the ebcc with id 0
-						GRBLinExpr expr = 0;
+// 						// The cut will be all edges crossing the cut of the ebcc with id 0
+// 						GRBLinExpr expr = 0;
 	
-						for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
-							ListGraph::Node u = G.u(e);
-							ListGraph::Node v = G.v(e);
+// 						for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
+// 							ListGraph::Node u = G.u(e);
+// 							ListGraph::Node v = G.v(e);
 							
-							if (ebcc[u] == 0 and ebcc[v] != 0)
-								expr += vars[G.id(e)];
+// 							if (ebcc[u] == 0 and ebcc[v] != 0)
+// 								expr += vars[G.id(e)];
 					
-							if (ebcc[v] == 0 and ebcc[u] != 0)
-								expr += vars[G.id(e)];
-						}
+// 							if (ebcc[v] == 0 and ebcc[u] != 0)
+// 								expr += vars[G.id(e)];
+// 						}
 
-						addLazy(expr >= 2);
-					}
+// 						addLazy(expr >= 2);
+// 					}
 
-					delete[] x;
-				}	
-			} 
-			catch (GRBException e){
-				cout << "Error number: " << e.getErrorCode() << endl;
-				cout << e.getMessage() << endl;
-			} 
-			catch (...){
-				cout << "Error during callback" << endl;
-			}
-		}
-};
+// 					delete[] x;
+// 				}	
+// 			} 
+// 			catch (GRBException e){
+// 				cout << "Error number: " << e.getErrorCode() << endl;
+// 				cout << e.getMessage() << endl;
+// 			} 
+// 			catch (...){
+// 				cout << "Error during callback" << endl;
+// 			}
+// 		}
+// };
 
 
 /*
