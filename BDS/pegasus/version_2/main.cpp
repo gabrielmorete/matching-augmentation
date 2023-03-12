@@ -507,9 +507,9 @@ void SolveMapInstance(
 	ListGraph::EdgeMap<int> &IntSol,
 	ListGraph::EdgeMap<bool> &BDSSol,
 	GRBModel &frac_model,
-	GRBVars *frac_vars,
+	GRBVar *frac_vars,
 	GRBModel &int_model,
-	GRBVars *int_vars){
+	GRBVar *int_vars){
 
 	FractionalSolution(FracSol, frac_model, frac_vars);
 
@@ -552,9 +552,9 @@ ofstream g_out, log_out;
 */
 void SolveCurrentMatching(int matching_id,
 	GRBModel &frac_model,
-	GRBVars *frac_vars,
+	GRBVar *frac_vars,
 	GRBModel &int_model,
-	GRBVars *int_vars){
+	GRBVar *int_vars){
 
 	ListGraph::EdgeMap<bool> BDSSol(G);
 	ListGraph::EdgeMap<int> IntSol(G);
@@ -662,9 +662,9 @@ void SolveCurrentMatching(int matching_id,
 void FindAllMatchings(int e_id, int &n, int &m, int &n_matched, int &total_matchings, 
 	ListGraph::NodeMap<bool> &matched
 	GRBModel &frac_model,
-	GRBVars *frac_vars,
+	GRBVar *frac_vars,
 	GRBModel &int_model,
-	GRBVars *int_vars){
+	GRBVar *int_vars){
 
 	if (e_id >= m){
 		SolveCurrentMatching(total_matchings, frac_model, frac_vars, int_model, int_vars);
@@ -711,11 +711,11 @@ void SolveAllMatchings(){
 		cost[e] = 1;
 
 	GRBModel frac_model(env);
-	GRBVars frac_vars[m];
+	GRBVar frac_vars[m];
 	BuildFractional(frac_model, frac_vars);
 
 	GRBModel int_model(env);
-	GRBVars int_vars[m];
+	GRBVar int_vars[m];
 	BuildIntegral(int_model, int_vars);
 
 
