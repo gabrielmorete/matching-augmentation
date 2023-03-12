@@ -1,6 +1,9 @@
 #ifndef MAIN_DEF
 #define MAIN_DEF
 
+#include "libraries_and_utils.h"
+#include "gurobi_c++.h"
+
 bool __verbose_mode = 0;
 
 GRBEnv env = GRBEnv(true); // Gurobi enviroment
