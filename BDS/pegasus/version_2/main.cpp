@@ -422,6 +422,8 @@ void SolveMapInstance(
 	if (sign(FracSol[G.edgeFromId(0)]) == -1)
 		return;
 
+	BDSAlgorithm(FracSol, BDSSol);
+
 	bool is_integral = 1;
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
 		if ((sign(FracSol[e]) != 0) and (sign(FracSol[e] - 1.0) != 0))
@@ -434,14 +436,6 @@ void SolveMapInstance(
 	}
 
 	IntegerSolution(IntSol, int_model, int_vars);
-
-	if (IntSol[G.edgeFromId(0)] == -1)
-		return;
-
-	if (sign(FracSol[G.edgeFromId(0)]) == -1)
-		return;
-
-	BDSAlgorithm(FracSol, BDSSol);
 }
 
 
@@ -646,7 +640,7 @@ void RunNautyInput(int start){
 	ofstream log_progress;
 
 	int cnt = 0;
-	while (readNautyGraph(G, cin)){
+	while (readNautyGraph(G, cin)){	
 		cnt++;
 
 		int n = countNodes(G);
