@@ -30,9 +30,6 @@ using namespace std;
 */
 
 GRBEnv env = GRBEnv(true);
-env.set(GRB_IntParam_OutputFlag, 0);
-env.start();
-
 
 
 /*
@@ -733,6 +730,12 @@ void SolveAllMatchings(){
 	that iterates through all matchings.
 */
 void RunNautyInput(int start){
+	
+	// Start a global gurobi enviroment
+	env.set(GRB_IntParam_OutputFlag, 0);
+	env.start();
+
+
 	__best_IP = __best_BDS = 1;
 	__best_IP_graph_id = __best_IP_matching_id = __best_BDS_graph_id = __best_BDS_matching_id = 1;
 	ofstream log_progress;
