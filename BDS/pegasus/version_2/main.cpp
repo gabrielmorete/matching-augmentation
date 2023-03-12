@@ -22,6 +22,18 @@ using namespace std;
 		- Graphs are 0-indexed and simple;
 */
 
+
+/*
+	I will define a global enviroment and model. Different matchings
+	will be just different cost functions.
+*/
+
+GRBEnv env = GRBEnv(true);
+env.set(GRB_IntParam_OutputFlag, 0);
+env.start();
+
+
+
 /*
 	This function receives a LP solution and retuns the edges of
 	all st-cuts with capacity < 2..
@@ -138,55 +150,147 @@ class MinimumCut: public GRBCallback {
 };
 
 
-void SolveModel(
-	ListGraph::EdgeMap<double> &FracSol,
-	ListGraph::EdgeMap<int> &IntSol){
+/*
+	Tis function builds a fractional model
 
+*/
+void BuildFractional(GRBModel &frac_model, GRBVar &frac_vars){
+	int n = countNodes(G);
+	int m = countEdges(G);
+
+	frac_model.set(GRB_IntParam_Method, 0); // Forcing Primal Simplex Method
+	// Important, since fractional solution must be an Extreme Point
+	
+	
+	// Setting the correct UB and OBJ.	
+	for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
+		int u = G.id(G.u(e));
+		int v = G.id(G.v(e));
+		frac_vars[G.id(e)] = frac_model.addVar(0.0, 1.0, 0, GRB_CONTINUOUS, "x_" + to_string(u) + "_" + to_string(v));
+	}
+
+	// Add \delta(v) >= 2, constraints
+	GRBLinExpr deg2[n];
+	for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
+		int id = G.id(e);
+		int u = G.id(G.u(e));
+		int v = G.id(G.v(e));
+
+		deg2[u] += frac_vars[id];
+		deg2[v] += frac_vars[id];
+
+	}
+
+	for (int v = 0; v < n; v++)
+		frac_model.addConstr(deg2[v] >= 2, "deg2_" + to_string(v));
+}
+
+void BuildIntegral(GRBModel &int_model, GRBVar &int_vars){
+	int n = countNodes(G);
+	int m = countEdges(G);
+
+	int_model.set(GRB_IntParam_LazyConstraints, 1); // Allow callback constraints
+	// Set callback function
+	MinimumCut cb = MinimumCut(int_vars, n, m);
+	int_model.setCallback(&cb);
+
+	GRBVar int_vars[m];
+
+	// Setting the correct UB and OBJ.	
+	for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
+		int u = G.id(G.u(e));
+		int v = G.id(G.v(e));
+		int_vars[G.id(e)] = int_model.addVar(0.0, 1.0, GRB_BINARY, "x_" + to_string(u) + "_" + to_string(v));
+	}
+
+	// Add \delta(v) >= 2, constraints
+	GRBLinExpr deg2[n];
+	for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
+		int id = G.id(e);
+		int u = G.id(G.u(e));
+		int v = G.id(G.v(e));
+
+		deg2[u] += int_vars[id];
+		deg2[v] += int_vars[id];
+
+	}
+
+	for (int v = 0; v < n; v++)
+		int_model.addConstr(deg2[v] >= 2, "deg2_" + to_string(v));
+}
+
+
+/*
+	This function returns a optimum integer solution to MAP.
+	If no solution is found, it returns a all -1 edge map.
+*/
+void IntegerSolution(ListGraph::EdgeMap<int> &IntSol, GRBModel &int_model, GRBVar &int_vars){
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e) 
-		FracSol[e] = IntSol[e] = -1;	
+		IntSol[e] = -1;	
 
 	try {
 		int n = countNodes(G);
 		int m = countEdges(G);
 
-		// Create an environment
-		GRBEnv env = GRBEnv(true);
+		GRBLinExpr obj = 0;
+		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+			obj += cost[e] * int_vars[G.id(e)]
 
-		// env.set("LogFile", "MAPSolver.log");  // Output may be large
-		env.set(GRB_IntParam_OutputFlag, 0);
-		env.start();
+		int_model.setObjective(obj);
 
-		// Create an empty model
-		GRBModel model = GRBModel(env);
-		model.set(GRB_IntParam_Method, 0); // Forcing Primal Simplex Method
-		// Important, since fractional solution must be an Extreme Point
-				
-		GRBVar vars[m];
-		int node_u[m], node_v[m];
+		// Optimize model
+		model.optimize();
 
-		// Setting the correct UB and OBJ.	
-		for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
-			int u = G.id(G.u(e));
-			int v = G.id(G.v(e));
-			vars[G.id(e)] = model.addVar(0.0, 1.0, cost[e], GRB_CONTINUOUS, "x_" + to_string(u) + "_" + to_string(v));
-			node_u[G.id(e)] = u;
-			node_v[G.id(e)] = v;
+		// Found optimal solution
+		if (model.get(GRB_IntAttr_SolCount) > 0){
+			// cout << "Obj: " << model.get(GRB_DoubleAttr_ObjVal) << endl;
+
+			double *sol = model.get(GRB_DoubleAttr_X, int_vars, m);
+
+			for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
+				int id = G.id(e);
+				int u = G.id(G.u(e));
+				int v = G.id(G.v(e));
+
+				if (sol[id] > 0.5)
+					IntSol[e] = 1;
+				else
+					IntSol[e] = 0;
+				// cout<<u + 1<<' '<<v + 1<<' '<<abs(sol[u][v])<<endl;
+
+				// Sanity check
+				assert((node_u[id] == u) and (node_v[id]) == v);
+			}
+
+			delete[] sol;
 		}
 
-		// Add \delta(v) >= 2, constraints
-		GRBLinExpr deg2[n];
-		for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
-			int id = G.id(e);
-			int u = G.id(G.u(e));
-			int v = G.id(G.v(e));
+	} catch(GRBException e) {
+		cout << "Error code = " << e.getErrorCode() << endl;
+		cout << e.getMessage() << endl;
+	} catch(...) {
+		cout << "Exception during optimization" << endl;
+	}
+}
 
-			deg2[u] += vars[id];
-			deg2[v] += vars[id];
+/*
+	This function returns a optimum fractional solution to MAP.
+	If no solution is found, it returns a all -1 edge map.
+*/
+void FractionalSolution(ListGraph::EdgeMap<double> &FracSol, GRBModel &frac_model, GRBVar &frac_vars){
+	for (ListGraph::EdgeIt e(G); e != INVALID; ++e) 
+		FracSol[e] = -1;	
 
-		}
+	try {
+		int n = countNodes(G);
+		int m = countEdges(G);
 
-		for (int v = 0; v < n; v++)
-			model.addConstr(deg2[v] >= 2, "deg2_" + to_string(v));
+		GRBLinExpr obj = 0;
+		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+			obj += cost[e] * frac_vars[G.id(e)]
+
+		int_model.setObjective(obj);
+
 
 		// Optimize model
 		model.optimize();
@@ -227,68 +331,6 @@ void SolveModel(
 			delete[] sol;
 		}
 
-		if (sign(FracSol[G.edgeFromId(0)]) == -1) // No solution found
-			return;
-
-		/*
-			Found a fractional extreme point solution.
-			Now we will solve the integral version.
-
-			We will warmstart the integer version by using the
-			same model, just change the variable type
-		*/
-
-
-		// If relaxed formulation is integral, no need to resolve
-		bool is_integral = 1;
-		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
-			if ((sign(FracSol[e]) != 0) and (sign(FracSol[e] - 1.0) != 0))
-				is_integral = 0;
-
-		if (is_integral){
-			for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
-				IntSol[e] = FracSol[e];
-			return;
-		}
-
-
-
-		for (int i = 0; i < m; i++) // Changing variables to binary
-			vars[i].set(GRB_CharAttr_VType, GRB_BINARY);
-
-		model.set(GRB_IntParam_LazyConstraints, 1); // Allow callback constraints
-
-		// Set callback function
-    	MinimumCut cb = MinimumCut(vars, n, m);
-    	model.setCallback(&cb);
-		
-		// Optimize model
-		model.optimize();
-
-		// Found optimal solution
-		if (model.get(GRB_IntAttr_SolCount) > 0){
-			// cout << "Obj: " << model.get(GRB_DoubleAttr_ObjVal) << endl;
-
-			double *sol = model.get(GRB_DoubleAttr_X, vars, m);
-
-			for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
-				int id = G.id(e);
-				int u = G.id(G.u(e));
-				int v = G.id(G.v(e));
-
-				if (sol[id] > 0.5)
-					IntSol[e] = 1;
-				else
-					IntSol[e] = 0;
-				// cout<<u + 1<<' '<<v + 1<<' '<<abs(sol[u][v])<<endl;
-
-				// Sanity check
-				assert((node_u[id] == u) and (node_v[id]) == v);
-			}
-
-			delete[] sol;
-		}
-
 
 	} catch(GRBException e) {
 		cout << "Error code = " << e.getErrorCode() << endl;
@@ -299,24 +341,200 @@ void SolveModel(
 }
 
 
+
+// void SolveModel(
+// 	ListGraph::EdgeMap<double> &FracSol,
+// 	ListGraph::EdgeMap<int> &IntSol){
+
+// 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e) 
+// 		FracSol[e] = IntSol[e] = -1;	
+
+// 	try {
+// 		int n = countNodes(G);
+// 		int m = countEdges(G);
+
+// 		// Create an environment
+// 		GRBEnv env = GRBEnv(true);
+
+// 		// env.set("LogFile", "MAPSolver.log");  // Output may be large
+// 		env.set(GRB_IntParam_OutputFlag, 0);
+// 		env.start();
+
+// 		// Create an empty model
+// 		GRBModel model = GRBModel(env);
+// 		model.set(GRB_IntParam_Method, 0); // Forcing Primal Simplex Method
+// 		// Important, since fractional solution must be an Extreme Point
+				
+// 		GRBVar vars[m];
+// 		int node_u[m], node_v[m];
+
+// 		// Setting the correct UB and OBJ.	
+// 		for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
+// 			int u = G.id(G.u(e));
+// 			int v = G.id(G.v(e));
+// 			vars[G.id(e)] = model.addVar(0.0, 1.0, cost[e], GRB_CONTINUOUS, "x_" + to_string(u) + "_" + to_string(v));
+// 			node_u[G.id(e)] = u;
+// 			node_v[G.id(e)] = v;
+// 		}
+
+// 		// Add \delta(v) >= 2, constraints
+// 		GRBLinExpr deg2[n];
+// 		for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
+// 			int id = G.id(e);
+// 			int u = G.id(G.u(e));
+// 			int v = G.id(G.v(e));
+
+// 			deg2[u] += vars[id];
+// 			deg2[v] += vars[id];
+
+// 		}
+
+// 		for (int v = 0; v < n; v++)
+// 			model.addConstr(deg2[v] >= 2, "deg2_" + to_string(v));
+
+// 		// Optimize model
+// 		model.optimize();
+
+// 		bool found_feasible = 0;
+// 		while (model.get(GRB_IntAttr_SolCount) > 0 and !found_feasible){
+		
+// 			double *sol = model.get(GRB_DoubleAttr_X, vars, m);
+// 			// pair<double, vector<Edge> > min_cut = FindMinCut(sol, n, m);
+
+// 			vector<GRBLinExpr> res = FindMinCuts(sol, vars, n, m);
+
+// 			// If min_cut.fist < 2, need to add constraint
+// 			if (!res.empty()) { // Min cut < 2
+// 				for (GRBLinExpr expr : res)
+// 					model.addConstr(expr >= 2);
+// 				model.optimize();
+// 			}
+// 			else{
+// 				// Found a feasible opt
+// 				// cout << "Obj: " << model.get(GRB_DoubleAttr_ObjVal) << endl;
+
+// 				for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
+// 					int id = G.id(e);
+// 					int u = G.id(G.u(e));
+// 					int v = G.id(G.v(e));
+
+// 					FracSol[e] = sol[id]; 
+
+// 					// cout<<u + 1<<' '<<v + 1<<' '<<abs(sol[u][v])<<endl;
+
+// 					assert((node_u[id] == u) and (node_v[id]) == v); // Sanity check
+// 				}
+			
+// 				found_feasible = 1;
+// 			}
+
+// 			delete[] sol;
+// 		}
+
+// 		if (sign(FracSol[G.edgeFromId(0)]) == -1) // No solution found
+// 			return;
+
+// 		/*
+// 			Found a fractional extreme point solution.
+// 			Now we will solve the integral version.
+
+// 			We will warmstart the integer version by using the
+// 			same model, just change the variable type
+// 		*/
+
+
+// 		// If relaxed formulation is integral, no need to resolve
+// 		bool is_integral = 1;
+// 		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+// 			if ((sign(FracSol[e]) != 0) and (sign(FracSol[e] - 1.0) != 0))
+// 				is_integral = 0;
+
+// 		if (is_integral){
+// 			for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+// 				IntSol[e] = FracSol[e];
+// 			return;
+// 		}
+
+
+
+// 		for (int i = 0; i < m; i++) // Changing variables to binary
+// 			vars[i].set(GRB_CharAttr_VType, GRB_BINARY);
+
+// 		model.set(GRB_IntParam_LazyConstraints, 1); // Allow callback constraints
+
+// 		// Set callback function
+//     	MinimumCut cb = MinimumCut(vars, n, m);
+//     	model.setCallback(&cb);
+		
+// 		// Optimize model
+// 		model.optimize();
+
+// 		// Found optimal solution
+// 		if (model.get(GRB_IntAttr_SolCount) > 0){
+// 			// cout << "Obj: " << model.get(GRB_DoubleAttr_ObjVal) << endl;
+
+// 			double *sol = model.get(GRB_DoubleAttr_X, vars, m);
+
+// 			for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
+// 				int id = G.id(e);
+// 				int u = G.id(G.u(e));
+// 				int v = G.id(G.v(e));
+
+// 				if (sol[id] > 0.5)
+// 					IntSol[e] = 1;
+// 				else
+// 					IntSol[e] = 0;
+// 				// cout<<u + 1<<' '<<v + 1<<' '<<abs(sol[u][v])<<endl;
+
+// 				// Sanity check
+// 				assert((node_u[id] == u) and (node_v[id]) == v);
+// 			}
+
+// 			delete[] sol;
+// 		}
+
+
+// 	} catch(GRBException e) {
+// 		cout << "Error code = " << e.getErrorCode() << endl;
+// 		cout << e.getMessage() << endl;
+// 	} catch(...) {
+// 		cout << "Exception during optimization" << endl;
+// 	}
+// }
+
+
 /*
 	Wrapper function that call the solvers.
 */
 void SolveMapInstance(
 	ListGraph::EdgeMap<double> &FracSol,
 	ListGraph::EdgeMap<int> &IntSol,
-	ListGraph::EdgeMap<bool> &BDSSol){
+	ListGraph::EdgeMap<bool> &BDSSol,
+	GRBModel &frac_model,
+	GRBModel &int_model){
 
-	int tries_cnt = 0;
-
-	do {
-		SolveModel(FracSol, IntSol);
-	} while (tries_cnt < 3 and sign(FracSol[G.edgeFromId(0)]) == -1);
+	FractionalSolution(FracSol, frac_model, frac_vars);
 
 	if (sign(FracSol[G.edgeFromId(0)]) == -1)
 		return;
 
+	bool is_integral = 1;
+	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+		if ((sign(FracSol[e]) != 0) and (sign(FracSol[e] - 1.0) != 0))
+			is_integral = 0;
+
+	if (is_integral){
+		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+			IntSol[e] = FracSol[e];
+		return;
+	}
+
+	IntegerSolution(IntSol, int_model, int_vars);
+
 	if (IntSol[G.edgeFromId(0)] == -1)
+		return;
+
+	if (sign(FracSol[G.edgeFromId(0)]) == -1)
 		return;
 
 	BDSAlgorithm(FracSol, BDSSol);

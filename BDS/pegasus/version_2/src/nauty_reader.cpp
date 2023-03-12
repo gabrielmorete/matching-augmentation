@@ -1,6 +1,7 @@
 #include "libraries_and_utils.h"
 #include "lemon.h"
 #include "main.h"
+#include "gurobi.h"
 
 /*
 	Nauty Reader
@@ -160,13 +161,23 @@ void FindAllMatchings(int e_id, int &n, int &m, int &n_matched, int &total_match
 	Wrapper function for the matching backtrackig algorithm.
 */
 void SolveAllMatchings(){
+	int total_matchings = 1, n = countNodes(G), m = countEdges(G), n_matched = 0;
+
 	// Initialize all edges to be heavy
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
 		cost[e] = 1;
 
+	GRBModel frac_model(env);
+	GRBVars frac_vars[m];
+	BuildFractional(frac_model, frac_vars);
+
+	GRBModel int_model(env);
+	GRBVars int_vars[m];
+	BuildIntegral(int_model, int_vars);
+
+
 	ListGraph::NodeMap<bool> matched(G);
 
-	int total_matchings = 1, n = countNodes(G), m = countEdges(G), n_matched = 0;
 	FindAllMatchings(0, n, m, n_matched, total_matchings, matched);
 
 	if (__found_feasible == 1)
