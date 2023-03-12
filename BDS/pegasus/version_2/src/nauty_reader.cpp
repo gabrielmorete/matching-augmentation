@@ -122,20 +122,26 @@ void SolveCurrentMatching(int matching_id){
 	Matched edges are marked with cost 0 on the global
 	EdgeMap cost. The running time is exponential
 */
-void FindAllMatchings(int e_id, int &n, int &m, int &n_matched, int &total_matchings, ListGraph::NodeMap<bool> &matched){
+void FindAllMatchings(int e_id, int &n, int &m, int &n_matched, int &total_matchings, 
+	ListGraph::NodeMap<bool> &matched
+	GRBModel &frac_model,
+	GRBVars &frac_vars,
+	GRBModel &int_model,
+	GRBVars &int_vars){
+
 	if (e_id >= m){
-		SolveCurrentMatching(total_matchings);
+		SolveCurrentMatching(total_matchings, frac_model, frac_vars, int_model, int_vars);
 		return;
 	}
 
 	if (n_matched >= n - 1){ // matching cant increase, prune
-		SolveCurrentMatching(total_matchings);
+		SolveCurrentMatching(total_matchings, frac_model, frac_vars, int_model, int_vars);
 		return;
 	}
 
 
 	// Case 1 : won't add edge e_id to the matching
-	FindAllMatchings(e_id + 1, n, m, n_matched, total_matchings, matched); 
+	FindAllMatchings(e_id + 1, n, m, n_matched, total_matchings, matched, frac_model, frac_vars, int_model, int_vars); 
 
 	// Case 2 : if possible, will add e_id to the matching
 	ListGraph::Edge e = G.edgeFromId(e_id);
@@ -147,7 +153,7 @@ void FindAllMatchings(int e_id, int &n, int &m, int &n_matched, int &total_match
 		cost[e] = 0;
 		total_matchings++;
 
-		FindAllMatchings(e_id + 1, n, m, n_matched, total_matchings, matched);
+		FindAllMatchings(e_id + 1, n, m, n_matched, total_matchings, matched,  frac_model, frac_vars, int_model, int_vars);
 
 		matched[G.u(e)] = 0;
 		matched[G.v(e)] = 0;
@@ -178,7 +184,7 @@ void SolveAllMatchings(){
 
 	ListGraph::NodeMap<bool> matched(G);
 
-	FindAllMatchings(0, n, m, n_matched, total_matchings, matched);
+	FindAllMatchings(0, n, m, n_matched, total_matchings, matched, frac_model, frac_vars, int_model, int_vars);
 
 	if (__found_feasible == 1)
 		g_out << "Number of matchings : " << total_matchings << endl;
