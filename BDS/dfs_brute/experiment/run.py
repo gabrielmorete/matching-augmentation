@@ -57,8 +57,8 @@ for name in files:
 			file_in = file_in + str(edges[i][0]) + " " + str(edges[i][1]) +  " " + str(cost[i]) +  " " + str(lp[i]) + "\n"
 		file_in = file_in + name + " " + m_id + "\n"	
 		
-		# print("---")
-		# print(file_in)
+		print("---")
+		print(file_in)
 
 		command ="echo \"" + file_in + " \"  | ./dfs_brute" # command to be executed
 		out = str(subprocess.check_output(command, shell=True))
