@@ -37,6 +37,8 @@ void ReadGraph(){
 
 		cin>>v>>u>>c>>x;
 
+		// cout<<"--"<<v<<' '<<u<<' '<<c<<' '<<x<<endl;
+
 		adj[v].push_back(make_pair(u, eid));
 		adj[u].push_back(make_pair(v, eid));
 
@@ -61,8 +63,8 @@ void DFS(int v){
 	int nxt;
 	
 	// Edges are sorted by matching + decreasing value
-	// for (int i = 2; i < adj[v].size(); i++)
-	// 	assert(sign(lp[adj[v][i - 1].second] - lp[adj[v][i].second]) >= 0);
+	for (int i = 2; i < adj[v].size(); i++)
+		assert(sign(lp[adj[v][i - 1].second] - lp[adj[v][i].second]) >= 0);
 
 	for (auto x : adj[v]){
 		int u = x.first;
@@ -130,11 +132,12 @@ int Augmentation(int v){
 	return memo[v];
 }
 
-unordered_map<long long int, bool> done[MAXN]; //  may just use a massive matrix
+map<long long int, bool> done[MAXN]; //  may just use a massive matrix
 // set<pair<int, long long int>> done;
 
 
 void AllDFS(){
+	bool new_tree = 0;
 	for (int v = 0; v < n; v++){
 	
 		for (int u = 0; u < n; u++){
@@ -144,31 +147,35 @@ void AllDFS(){
 			tree_adj[u].clear();
 		}
 
+		for (int i = 0; i < m; i++)
+			in_sol[i] = 0;
+
+
 		clk = 0;
 		pre[v] = v;
 		DFS(v);
 
-		long long int msk;
+		long long int msk = 0;
 		for (int i = 0; i < m; i++)
 			if (in_sol[i])
-				msk |= (1<<i);
-		if (done[v][msk])
-			continue;	
+				msk |= (1ll<<i);
+		
+		if (done[v][msk] == 0){
+			done[v][msk] = 1;
+			
+			new_tree = 0;
 
-		done[v][msk] = 1;
+			int cur_cost = 0;
 
-		int cur_cost = 0;
+			for (int u : tree_adj[v])
+				cur_cost += Augmentation(u);
 
-		for (int u : tree_adj[v])
-			cur_cost += Augmentation(u);
+			for (int i = 0; i < m; i++)
+				cur_cost += in_sol[i] * cost[i];
 
-		for (int i = 0; i < m; i++){
-			cur_cost += in_sol[i] * cost[i];
-			in_sol[i] = 0;
+			max_cost = max(max_cost, cur_cost);
+			min_cost = min(min_cost, cur_cost);
 		}
-
-		max_cost = max(max_cost, cur_cost);
-		min_cost = min(min_cost, cur_cost);
 	}
 }
 
@@ -253,6 +260,10 @@ signed main(){
 	for (int i = 0; i < m; i++)
 		sol += lp[i] * cost[i];
 
+
+	// dbg(min_cost);
+	// dbg(max_cost);
+	// dbg(sol);
 	
 	double fmin = min_cost/sol;
 	double fmax = max_cost/sol;
