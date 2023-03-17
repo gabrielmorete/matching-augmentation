@@ -180,7 +180,7 @@ void SolveAllMatchings(){
 	that iterates through all matchings.
 */
 void RunNautyInput(int start){
-	__min_best_bds = __max_best_BDS = 1;
+	__min_best_BDS = __max_best_BDS = 1;
 	__max_best_BDS_graph_id = __max_best_BDS_matching_id = 1;
 	__min_best_BDS_graph_id = __min_best_BDS_matching_id = 1;
 	ofstream log_progress;
