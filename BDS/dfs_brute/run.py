@@ -4,19 +4,23 @@ import string
 
 # os.listdir(path) lists files and directories
 # subprocess.call("make dfs_brute", shell=True)
+
 path = "."
 files = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
 # files is a list with the name of all FILES
-	
-name_bst = "none"
-match_bst = "none"
-sz_bst = 10000
 
+# variables for smallest example with gap >= 1.4
+
+#variables for largest gap
+name_best = "none"
+match_best = "none"
+gap_best = 1;
+size_best = 10000
 
 for name in files:
 	if name[0] != 'g':
 		continue
-
+		
 	g = open(name)
 	n, m = map(int, g.readline().split())
 	g.readline()
@@ -34,20 +38,16 @@ for name in files:
 		t1, t2 = s.split(':')
 		m_id = t1
 
-		# print(cost)
 		for x in t2.split(','):
 			a, b = map(int, x.strip().split())
-			# print(a, b)
 			for i in range(m):
 				if (edges[i][0] == a) and (edges[i][1] == b):
 					cost[i] = 0
 				if (edges[i][1] == a) and (edges[i][0]) == b:
 					cost[i] = 0
-		# print(cost)
 
 		t1, t2 = g.readline().split('|')
 		
-
 		cnt = 0
 		lp = [float(x) for x in t2.split()]
 
@@ -71,11 +71,18 @@ for name in files:
 		f_min, f_max, lp_val =  out.split()
 		f_min = float(f_min[2:])
 		f_max = float(f_max)
+		lp_val = float(lp_val[:-3])
 
-		if f_max >= 1.39 and m < sz_bst:
-			sz_bst = m
-			name_bst = name
-			match_bst = m_id
-		print(name, m_id, out)
+		print(name, m_id, f_min, f_max, lp_val)
 
-print("Smallest example: ", name_bst,"matching",match_bst,"#edges:", sz_bst)
+		if f_max > gap_best:
+			gap_best = f_max
+			name_best = name
+			match_best = m_id
+			size_best = m
+		if f_max == gap_best and m < size_best:
+			name_best = name
+			match_best = m_id
+			size_best = m
+
+print("Largest gap:", gap_best,"|", name_best,"-",match_best)

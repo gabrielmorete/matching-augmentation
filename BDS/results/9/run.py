@@ -4,52 +4,57 @@ import string
 
 # os.listdir(path) lists files and directories
 # subprocess.call("make dfs_brute", shell=True)
+
 path = "."
 files = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
 # files is a list with the name of all FILES
-	
+
+# variables for smallest example with gap >= 1.4
+
+#variables for largest gap
+name_best = "none"
+match_best = "none"
+gap_best = 1;
+size_best = 10000
+
 for name in files:
 	if name[0] != 'g':
 		continue
-
-	g = open(name);
+		
+	g = open(name)
 	n, m = map(int, g.readline().split())
-	g.readline();
+	g.readline()
 
 	edges = []
 	for i in range(m):
 		a, b = map(int, g.readline().split())
-		edges.append([a, b]);
+		edges.append([a, b])
 
-	g.readline();
-	g.readline();
-	s = g.readline();
+	g.readline()
+	g.readline()
+	s = g.readline()
 	while s[0] != 'N':
 		cost = [1] * m
 		t1, t2 = s.split(':')
 		m_id = t1
 
-		# print(cost)
 		for x in t2.split(','):
 			a, b = map(int, x.strip().split())
-			# print(a, b);
 			for i in range(m):
 				if (edges[i][0] == a) and (edges[i][1] == b):
 					cost[i] = 0
 				if (edges[i][1] == a) and (edges[i][0]) == b:
 					cost[i] = 0
-		# print(cost)
 
 		t1, t2 = g.readline().split('|')
 		
-
 		cnt = 0
 		lp = [float(x) for x in t2.split()]
 
-		g.readline(); # integer sol	
-		g.readline(); # BDS sol
-		g.readline(); # blank line
-		s = g.readline();
+		g.readline() # integer sol	
+		g.readline() # BDS sol
+		g.readline() # blank line
+		s = g.readline()
 
 		# generate input
 		file_in = str(n) + " " + str(m) + "\n"
@@ -63,19 +68,21 @@ for name in files:
 		command ="echo \"" + file_in + " \"  | ./dfs_brute" # command to be executed
 		out = str(subprocess.check_output(command, shell=True))
 
-		print(name, m_id)
+		f_min, f_max, lp_val =  out.split()
+		f_min = float(f_min[2:])
+		f_max = float(f_max)
+		lp_val = float(lp_val[:-3])
 
+		print(name, m_id, f_min, f_max, lp_val)
 
+		if f_max > gap_best:
+			gap_best = f_max
+			name_best = name
+			match_best = m_id
+			size_best = m
+		if f_max == gap_best and m < size_best:
+			name_best = name
+			match_best = m_id
+			size_best = m
 
-
-
-
-	# finished reading the graph
-
-
-	# command ="./brute < " + path + x # command to be executed
-	# out = str(subprocess.check_output(command, shell=True))
-	# if len(out) > 3:
-	# 	print("File : " + path + x + " is a counter exemple!!")
-	# 	print(out)
-
+print("Largest gap:", gap_best,"|", name_best,"-",match_best)
