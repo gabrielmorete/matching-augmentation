@@ -22,7 +22,7 @@ void SolveCurrentMatching(int matching_id,
 
 	ListGraph::EdgeMap<double> FracSol(G);
 
-	pair<int, int> bds_ans = SolveMapInstance(FracSol, BDSSol, frac_model, frac_vars);
+	pair<int, int> bds_ans = SolveMapInstance(FracSol, frac_model, frac_vars);
 
 	if (sign(FracSol[G.edgeFromId(0)]) == -1){
 		ofstream excep(to_string(countNodes(G))+"/exception", std::ios_base::app);

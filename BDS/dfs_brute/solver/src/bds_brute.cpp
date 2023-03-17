@@ -157,7 +157,7 @@ namespace bds_brute{
 		} while (next_permutation(adj[v].begin() + sz[v][stage - 1], adj[v].begin() + sz[v][stage]));
 	}
 
-	void ReadGraph(){
+	void ReadGraph(ListGraph::EdgeMap<double> &FracSol){
 		n = countNodes(G);
 		m = countEdges(G);
 
