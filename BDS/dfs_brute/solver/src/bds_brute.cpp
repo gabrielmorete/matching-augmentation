@@ -10,10 +10,10 @@ const int MAXN = 20;
 
 struct bds_brute{
 	int n, m, eid;
+	int is_matched[MAXN];
 	int edge_cost[MAXN * MAXN], a[MAXN * MAXN], b[MAXN * MAXN];
 	double lp[MAXN * MAXN];
 	vector< pair<int, int> > adj[MAXN];
-	string name;
 
 	int max_cost, min_cost, clk;
 	int pre[MAXN], in[MAXN], out[MAXN], in_sol[MAXN * MAXN];
@@ -23,25 +23,18 @@ struct bds_brute{
 		in[v] = clk++;
 		int nxt;
 		
-		// Edges are sorted by matching + decreasing value
-		for (int i = 2; i < adj[v].size(); i++){
-			if(sign(lp[adj[v][i - 1].second] - lp[adj[v][i].second]) < 0){
-				for (int u = 0; u < n; u++){
-					cout<<u<<": ";
-					for (auto x : adj[u])
-						cout<<"("<<x.first<<", "<<lp[x.second]<<") ";
-					cout<<endl;
-				}	
-				assert(sign(lp[adj[v][i - 1].second] - lp[adj[v][i].second]) >= 0);
-			}
-		}
-
+		// Edges are sorted by matching + decreasing value of lp
+		// Sanity check
+		for (int i = 1 + is_matched[v]; i < adj[v].size(); i++)
+			assert(sign(lp[adj[v][i - 1].second] - lp[adj[v][i].second]) >= 0);
+		
 		for (auto x : adj[v]){
 			int u = x.first;
 			int id = x.second;
 
 			if (pre[u] != -1)
 				continue;
+
 			pre[u] = v;
 			in_sol[id] = 1;
 			tree_adj[v].push_back(u);
@@ -104,13 +97,12 @@ struct bds_brute{
 
 	map<long long int, bool> done[MAXN]; //  may just use a massive matrix
 	// set<pair<int, long long int>> done;
-	map<pair<int, int>, int> best_sol;
+
 
 	void AllDFS(){
-		bool new_tree = 0;
-		for (int v = 0; v < n; v++){
+		for (int v = 0; v < n; v++){ // For every root
 		
-			for (int u = 0; u < n; u++){
+			for (int u = 0; u < n; u++){ // Clear data
 				pre[u] = -1;
 				memo[u] = -1;
 
@@ -123,18 +115,16 @@ struct bds_brute{
 
 			clk = 0;
 			pre[v] = v;
-			DFS(v);
+			DFS(v); // Generate de DFS tree with root v
 
 			long long int msk = 0;
-			for (int i = 0; i < m; i++)
+			for (int i = 0; i < m; i++) // bitmask fo the tree
 				if (in_sol[i])
 					msk |= (1ll<<i);
-			
-			if (done[v][msk] == 0){
+
+			if (done[v][msk] == 0){ // new tree
 				done[v][msk] = 1;
 				
-				new_tree = 0;
-
 				int cur_cost = 0;
 
 				for (int u : tree_adj[v])
@@ -156,7 +146,7 @@ struct bds_brute{
 			return;
 		}
 
-		if (stage == values[v])
+		if (stage == values[v] + 1)
 			return Backtracking(v + 1, 1);
 
 		sort(adj[v].begin() + sz[v][stage - 1], adj[v].begin() + sz[v][stage]);
@@ -164,6 +154,15 @@ struct bds_brute{
 		do {
 			Backtracking(v, stage + 1);
 		} while (next_permutation(adj[v].begin() + sz[v][stage - 1], adj[v].begin() + sz[v][stage]));
+	}
+
+	void print(){
+		for (int u = 0; u < n; u++){
+			cout<<u<<": ";
+			for (auto x : adj[u])
+				cout<<"("<<x.first<<", "<<lp[x.second]<<") ";
+			cout<<endl;
+		}
 	}
 
 	void ReadGraph(ListGraph::EdgeMap<double> &FracSol){
@@ -185,7 +184,7 @@ struct bds_brute{
 			a[eid] = v;
 			b[eid] = u;
 			edge_cost[eid] = cost[ed];
-			dbg(FracSol[ed]);
+
 			lp[eid] = FracSol[ed];
 
 			eid++;
@@ -203,13 +202,6 @@ struct bds_brute{
 
 		for(int v = 0; v < n; v++){
 
-			sort(adj[v].begin(), adj[v].end(),
-				[this](pair<int, int> a, pair<int, int> b){
-					return lp[a.second] > lp[b.second];
-				}
-			);
-
-
 			// Matching edge will be the first edge
 			int p = 0;
 			for (int i = 0; i < adj[v].size(); i++)
@@ -221,8 +213,10 @@ struct bds_brute{
 			// Edges of the adj will be sorted by decreasing LP value.
 			// We will only permute edges with the same value
 
-			sort(adj[v].begin() + 1, adj[v].end(),
-				[this](pair<int, int> a, pair<int, int> b){
+			is_matched[v] = 1 - edge_cost[ adj[v][0].second ];
+
+			sort(adj[v].begin() + is_matched[v], adj[v].end(),
+				[](pair<int, int> a, pair<int, int> b){
 					return lp[a.second] > lp[b.second];
 				}
 			);
@@ -231,37 +225,36 @@ struct bds_brute{
 				adj[v].pop_back();
 
 
-			values[v] = 1;
-			sz[v][0] = 1;
+			// sz[v][i] will be the amount of edges with the ith lp value
+			// sz[v][0] = 0 since we will acumulate the sum
 
-			for (int i = 1; i < adj[v].size(); i++){
+			sz[v][0] = 0;
+
+			values[v] = 1;
+			sz[v][1] = 1;
+
+			if (is_matched[v]){ // Matching edge is different
+				values[v] = 2;
+				sz[v][2] = 1;
+			}
+
+			for (int i = 1 + is_matched[v]; i < adj[v].size(); i++){
 				int e1 = adj[v][i].second;
 				int e2 = adj[v][i - 1].second;
 
-				if (sign(lp[e1] - lp[e2]) != 0)
+				if (sign(lp[e1] - lp[e2]) != 0){
 					values[v]++;
+					sz[v][values[v]] = 0;
+				}
 
-				sz[v][values[v] - 1]++;
+				sz[v][values[v]]++;
 			}
 			
 
-			for (int i = 1; i < values[v]; i++)
+			for (int i = 1; i <= values[v]; i++)
 				sz[v][i] += sz[v][i - 1];
-
-			// cout<<v<<" : ";
-			// for (int i = 0; i < values[v]; i++)
-			// 	cout<<sz[v][i]<<' ';
-			// cout<<endl;
 		}
-		
-
-		for (int u = 0; u < n; u++){
-			cout<<u<<": ";
-			for (auto x : adj[u])
-				cout<<"("<<x.first<<", "<<lp[x.second]<<", " << edge_cost[x.second] <<") ";
-			cout<<endl;
-		}	
-		// assert(0);
+	
 
 		Backtracking(0, 1);
 
