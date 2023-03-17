@@ -20,10 +20,9 @@ void SolveCurrentMatching(int matching_id,
 	GRBModel &frac_model,
 	GRBVar *frac_vars){
 
-	ListGraph::EdgeMap<bool> BDSSol(G);
 	ListGraph::EdgeMap<double> FracSol(G);
 
-	SolveMapInstance(FracSol, BDSSol, frac_model, frac_vars);
+	pair<int, int> bds_ans = SolveMapInstance(FracSol, BDSSol, frac_model, frac_vars);
 
 	if (sign(FracSol[G.edgeFromId(0)]) == -1){
 		ofstream excep(to_string(countNodes(G))+"/exception", std::ios_base::app);
@@ -33,7 +32,6 @@ void SolveCurrentMatching(int matching_id,
 	}
 
 
-	int cost_BDS = 0;
 	double cost_Frac = 0;
 
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
@@ -41,8 +39,9 @@ void SolveCurrentMatching(int matching_id,
 		int v = G.id(G.v(e));
 
 		cost_Frac +=  FracSol[e] * cost[e];
-		cost_BDS +=  (int)BDSSol[e] * cost[e];
 	}
+
+	double cost_BDS = bds_ans.second;
 
 	/* 
 		Found a feasible example, print to file
@@ -83,11 +82,6 @@ void SolveCurrentMatching(int matching_id,
 			g_out << FracSol[e] << ' ';
 		g_out << endl;
 
-
-		g_out << "BDS: " << cost_BDS << " | ";
-		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
-			g_out << BDSSol[e] << ' ';
-		g_out << endl << endl;
 
 		// Generate entry in the log file
 		log_out << "Found feasible example g" << __cur_graph_id << " matching id " << matching_id << endl;

@@ -5,7 +5,7 @@
 */
 #include "src/main.h"
 #include "src/lemon.h"
-#include "src/bds.cpp"
+#include "src/bds_brute.cpp"
 #include "src/nauty_reader.cpp"
 // #include "src/stdio_reader.cpp"
 
@@ -164,9 +164,8 @@ void FractionalSolution(ListGraph::EdgeMap<double> &FracSol, GRBModel &frac_mode
 /*
 	Wrapper function that call the solvers.
 */
-void SolveMapInstance(
+pair<int, int> SolveMapInstance(
 	ListGraph::EdgeMap<double> &FracSol,
-	ListGraph::EdgeMap<bool> &BDSSol,
 	GRBModel &frac_model,
 	GRBVar *frac_vars){
 
@@ -175,8 +174,7 @@ void SolveMapInstance(
 	if (sign(FracSol[G.edgeFromId(0)]) == -1)
 		return;
 
-	BDSAlgorithm(FracSol, BDSSol);
-
+	pair<int, int> ans_bds = bds_brute::brute_all(FracSol);
 	
 }
 

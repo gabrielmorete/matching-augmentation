@@ -61,9 +61,8 @@ void FractionalSolution(ListGraph::EdgeMap<double> &FracSol, GRBModel &frac_mode
 /*
 	Wrapper function that call the solvers.
 */
-void SolveMapInstance(
+pair<int, int> SolveMapInstance(
 	ListGraph::EdgeMap<double> &FracSol,
-	ListGraph::EdgeMap<bool> &BDSSol,
 	GRBModel &frac_model,
 	GRBVar *frac_vars);
 
