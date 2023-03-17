@@ -20,7 +20,7 @@ int sign(double x) { return (x > EPS) - (x < -EPS); }
 const int MAXN = 20;
 
 int n, m, eid;
-int cost[MAXN * MAXN], a[MAXN * MAXN], b[MAXN * MAXN];
+int edge_cost[MAXN * MAXN], a[MAXN * MAXN], b[MAXN * MAXN];
 double lp[MAXN * MAXN];
 vector< pair<int, int> > adj[MAXN];
 string name;
@@ -44,7 +44,7 @@ void ReadGraph(){
 
 		a[eid] = v;
 		b[eid] = u;
-		cost[eid] = c;
+		edge_cost[eid] = c;
 		lp[eid] = x;
 
 		eid++;
@@ -62,9 +62,12 @@ void DFS(int v){
 	in[v] = clk++;
 	int nxt;
 	
-	// Edges are sorted by matching + decreasing value
-	for (int i = 2; i < adj[v].size(); i++)
-		assert(sign(lp[adj[v][i - 1].second] - lp[adj[v][i].second]) >= 0);
+	// Edges are sorted by matching + decreasing value of lp
+	{	// Sanity check
+		int has_match = 1 - edge_cost[adj[v][0].second];
+		for (int i = 1 + has_match; i < adj[v].size(); i++)
+			assert(sign(lp[adj[v][i - 1].second] - lp[adj[v][i].second]) >= 0);
+	}
 
 	for (auto x : adj[v]){
 		int u = x.first;
@@ -72,6 +75,7 @@ void DFS(int v){
 
 		if (pre[u] != -1)
 			continue;
+
 		pre[u] = v;
 		in_sol[id] = 1;
 		tree_adj[v].push_back(u);
@@ -113,7 +117,7 @@ int Augmentation(int v){
 			swap(u, w); // u is the ancestor
 
 		if (StrictDec(u, v) and Dec(v, w)){ // feasible link
-			int cur_cost = cost[i];
+			int cur_cost = edge_cost[i];
 
 			int lst = w;
 			while (w != pre[v]){
@@ -137,10 +141,9 @@ map<long long int, bool> done[MAXN]; //  may just use a massive matrix
 
 
 void AllDFS(){
-	bool new_tree = 0;
-	for (int v = 0; v < n; v++){
+	for (int v = 0; v < n; v++){ // For every root
 	
-		for (int u = 0; u < n; u++){
+		for (int u = 0; u < n; u++){ // Clear data
 			pre[u] = -1;
 			memo[u] = -1;
 
@@ -153,25 +156,23 @@ void AllDFS(){
 
 		clk = 0;
 		pre[v] = v;
-		DFS(v);
+		DFS(v); // Generate de DFS tree with root v
 
 		long long int msk = 0;
-		for (int i = 0; i < m; i++)
+		for (int i = 0; i < m; i++) // bitmask fo the tree
 			if (in_sol[i])
 				msk |= (1ll<<i);
-		
-		if (done[v][msk] == 0){
+
+		if (done[v][msk] == 0){ // new tree
 			done[v][msk] = 1;
 			
-			new_tree = 0;
-
 			int cur_cost = 0;
 
 			for (int u : tree_adj[v])
 				cur_cost += Augmentation(u);
 
 			for (int i = 0; i < m; i++)
-				cur_cost += in_sol[i] * cost[i];
+				cur_cost += in_sol[i] * edge_cost[i];
 
 			max_cost = max(max_cost, cur_cost);
 			min_cost = min(min_cost, cur_cost);
@@ -215,7 +216,7 @@ signed main(){
 		// Matching edge will be the first edge
 		int p = 0;
 		for (int i = 0; i < adj[v].size(); i++)
-			if (cost[adj[v][i].second] == 0)
+			if (edge_cost[adj[v][i].second] == 0)
 				p = i;
 		
 		swap(adj[v][0], adj[v][p]);
@@ -257,19 +258,12 @@ signed main(){
 	}
 	
 
-	// for (int u = 0; u < n; u++){
-	// 	cout<<u<<": ";
-	// 	for (auto x : adj[u])
-	// 		cout<<"("<<x.first<<", "<<lp[x.second]<<") ";
-	// 	cout<<endl;
-	// }	
-
 	Backtracking(0, 1);
 
 
 	double sol = 0;
 	for (int i = 0; i < m; i++)
-		sol += lp[i] * cost[i];
+		sol += lp[i] * edge_cost[i];
 
 
 	// dbg(min_cost);
