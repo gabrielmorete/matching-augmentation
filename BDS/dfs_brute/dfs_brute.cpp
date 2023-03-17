@@ -222,6 +222,10 @@ signed main(){
 			}
 		);
 
+		while ((adj[v].size() > 1) and ( sign( lp[adj[v].back().second] ) <= 0 ))
+			adj[v].pop_back();
+
+
 		values[v] = 1;
 		sz[v][0] = 1;
 
