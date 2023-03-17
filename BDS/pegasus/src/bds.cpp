@@ -29,6 +29,9 @@ void BDSDFS(ListGraph::Node v,
 		for (ListGraph::OutArcIt a(G, v); a != INVALID; ++a){
 			ListGraph::Node u = G.target(a);
 
+			if (sign(FracSol[a]) <= 0) // Run algorithm on the support
+				continue;
+
 			if (parent[u] == u and G.id(u) != 0){ // Unvisited non root node
 
 				if ((!found_next) or (cost[a] == 0)){
@@ -82,6 +85,7 @@ int UpLinkDP(Node v, ListGraph::NodeMap<int> &memo,
 	ListGraph::NodeMap<int> &in, 
 	ListGraph::NodeMap<int> &out,
 	ListGraph::EdgeMap<bool> &BDSSol,
+	ListGraph::EdgeMap<double> &FracSol,
 	SubGraph<ListGraph> &T){
 	
 	if (memo[v] != -1)
@@ -90,7 +94,7 @@ int UpLinkDP(Node v, ListGraph::NodeMap<int> &memo,
 	memo[v] = countEdges(G) + 1; // infinity
 
 	for (EdgeIt e(G); e != INVALID; ++e)
-		if (BDSSol[e] == 0){ // A backedge
+		if ((BDSSol[e] == 0) and (sign(FracSol[e]) > 0)){ // A backedge of the support
 			
 			Node u = G.u(e);
 			Node w = G.v(e);
@@ -112,7 +116,7 @@ int UpLinkDP(Node v, ListGraph::NodeMap<int> &memo,
 
 						if (y != lst and y != parent[h]){
 							// cout<<" Transition "<<G.id(v) + 1<<' '<<G.id(y) + 1<<endl;
-							subtree_cost += UpLinkDP(y, memo, dp_edge, parent, in, out, BDSSol, T);
+							subtree_cost += UpLinkDP(y, memo, dp_edge, parent, in, out, BDSSol, FracSol, T);
 						}
 					}	
 
@@ -227,6 +231,7 @@ void RecoverUpLinkSol(Node v,
 void UpLinkAugmentation(
 	SubGraph<ListGraph> &T,
 	ListGraph::EdgeMap<bool> &BDSSol,
+	ListGraph::EdgeMap<double> &FracSol,
 	ListGraph::NodeMap<ListGraph::Node> &parent, 
 	ListGraph::NodeMap<int> &in,
 	ListGraph::NodeMap<int> &out){
@@ -237,7 +242,7 @@ void UpLinkAugmentation(
 
 
 	for (SubGraph<ListGraph>::OutArcIt a(T, G.nodeFromId(0)); a != INVALID; ++a){
-		UpLinkDP(T.target(a), memo, dp_edge, parent, in, out, BDSSol, T);
+		UpLinkDP(T.target(a), memo, dp_edge, parent, in, out, BDSSol, FracSol, T);
 		RecoverUpLinkSol(T.target(a), dp_edge, parent, in, out, BDSSol, T);
 	}
 }
@@ -282,7 +287,7 @@ void BDSAlgorithm(ListGraph::EdgeMap<double> &FracSol, ListGraph::EdgeMap<bool> 
 
 
 	// Step 2, uplink only augmentation
-	UpLinkAugmentation(T, BDSSol, parent, in, out);
+	UpLinkAugmentation(T, BDSSol, FracSol, parent, in, out);
 
 	// Sanity check, checks is BDS returned a feasible solution
 	SubGraph<ListGraph> H(G, ones, BDSSol);
