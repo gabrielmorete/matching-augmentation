@@ -24,8 +24,17 @@ struct bds_brute{
 		int nxt;
 		
 		// Edges are sorted by matching + decreasing value
-		for (int i = 2; i < adj[v].size(); i++)
-			assert(sign(lp[adj[v][i - 1].second] - lp[adj[v][i].second]) >= 0);
+		for (int i = 2; i < adj[v].size(); i++){
+			if(sign(lp[adj[v][i - 1].second] - lp[adj[v][i].second]) < 0){
+				for (int u = 0; u < n; u++){
+					cout<<u<<": ";
+					for (auto x : adj[u])
+						cout<<"("<<x.first<<", "<<lp[x.second]<<") ";
+					cout<<endl;
+				}	
+				assert(sign(lp[adj[v][i - 1].second] - lp[adj[v][i].second]) >= 0);
+			}
+		}
 
 		for (auto x : adj[v]){
 			int u = x.first;
