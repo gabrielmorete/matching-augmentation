@@ -10,7 +10,7 @@ const int MAXN = 20;
 
 namespace bds_brute{
 	int n, m, eid;
-	int cost[MAXN * MAXN], a[MAXN * MAXN], b[MAXN * MAXN];
+	int edge_cost[MAXN * MAXN], a[MAXN * MAXN], b[MAXN * MAXN];
 	double lp[MAXN * MAXN];
 	vector< pair<int, int> > adj[MAXN];
 	string name;
@@ -74,7 +74,7 @@ namespace bds_brute{
 				swap(u, w); // u is the ancestor
 
 			if (StrictDec(u, v) and Dec(v, w)){ // feasible link
-				int cur_cost = cost[i];
+				int cur_cost = edge_cost[i];
 
 				int lst = w;
 				while (w != pre[v]){
@@ -132,7 +132,7 @@ namespace bds_brute{
 					cur_cost += Augmentation(u);
 
 				for (int i = 0; i < m; i++)
-					cur_cost += in_sol[i] * cost[i];
+					cur_cost += in_sol[i] * edge_cost[i];
 
 				max_cost = max(max_cost, cur_cost);
 				min_cost = min(min_cost, cur_cost);
@@ -175,7 +175,7 @@ namespace bds_brute{
 
 			a[eid] = v;
 			b[eid] = u;
-			cost[eid] = cost[ed];
+			edge_cost[eid] = cost[ed];
 			lp[eid] = FracSol[ed];
 
 			eid++;
