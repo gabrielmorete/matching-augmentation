@@ -63,7 +63,7 @@ for name in files:
 		command ="echo \"" + file_in + " \"  | ./dfs_brute" # command to be executed
 		out = str(subprocess.check_output(command, shell=True))
 
-		print(name, m_id)
+		print(name, m_id, out)
 
 
 

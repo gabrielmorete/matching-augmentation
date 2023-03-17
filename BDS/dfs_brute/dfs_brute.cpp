@@ -265,12 +265,16 @@ signed main(){
 		sol += lp[i] * cost[i];
 
 
-	dbg(min_cost);
-	dbg(max_cost);
-	dbg(sol);
+	// dbg(min_cost);
+	// dbg(max_cost);
+	// dbg(sol);
 	
+
+
 	double fmin = min_cost/sol;
 	double fmax = max_cost/sol;
+
+	cout<<fmin<<' '<<fmax<<' '<<sol<<endl;
 
 	if (sign(fmin - 1.4) >= 0 or sign(fmax - 1.4) > 0){
 		ofstream log("log_bds_brute", ios::app); // open in append mode
