@@ -57,41 +57,15 @@ void BuildFractional(GRBModel &frac_model, GRBVar *frac_vars);
 */
 void FractionalSolution(ListGraph::EdgeMap<double> &FracSol, GRBModel &frac_model, GRBVar *frac_vars);
 
-/*
-	This function builds a integral cutLP model.
-*/
-void BuildIntegral(GRBModel &int_model, GRBVar *int_vars);
-
-/*
-	This function returns a optimum integer solution to MAP.
-	If no solution is found, it returns a all -1 edge map.
-*/
-void IntegerSolution(ListGraph::EdgeMap<int> &IntSol, GRBModel &int_model, GRBVar *int_vars);
 
 /*
 	Wrapper function that call the solvers.
 */
 void SolveMapInstance(
 	ListGraph::EdgeMap<double> &FracSol,
-	ListGraph::EdgeMap<int> &IntSol,
 	ListGraph::EdgeMap<bool> &BDSSol,
 	GRBModel &frac_model,
-	GRBVar *frac_vars,
-	GRBModel &int_model,
-	GRBVar *int_vars);
-
-
-/*
-	Callback function class.
-*/
-class MinimumCut: public GRBCallback {
-	public:
-		GRBVar* vars;
-		int n, m;
-		MinimumCut(GRBVar* xvars, int xn, int xm);
-	protected:
-		void callback();
-};
+	GRBVar *frac_vars);
 
 
 #endif
