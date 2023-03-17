@@ -205,7 +205,7 @@ struct bds_brute{
 			// We will only permute edges with the same value
 
 			sort(adj[v].begin() + 1, adj[v].end(),
-				[](pair<int, int> a, pair<int, int> b){
+				[this](pair<int, int> a, pair<int, int> b){
 					return lp[a.second] > lp[b.second];
 				}
 			);
