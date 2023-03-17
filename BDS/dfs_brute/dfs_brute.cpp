@@ -264,6 +264,11 @@ signed main(){
 
 		for (int i = 1; i <= values[v]; i++)
 			sz[v][i] += sz[v][i - 1];
+
+		// cout<<v<<" : ";
+		// for (int i = 0; i < values[v]; i++)
+		// 	cout<<sz[v][i]<<' ';
+		// cout<<endl;
 	}
 	
 
