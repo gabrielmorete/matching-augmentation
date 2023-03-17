@@ -265,9 +265,9 @@ signed main(){
 		sol += lp[i] * cost[i];
 
 
-	// dbg(min_cost);
-	// dbg(max_cost);
-	// dbg(sol);
+	dbg(min_cost);
+	dbg(max_cost);
+	dbg(sol);
 	
 	double fmin = min_cost/sol;
 	double fmax = max_cost/sol;
