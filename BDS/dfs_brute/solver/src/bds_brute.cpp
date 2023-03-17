@@ -250,7 +250,7 @@ struct bds_brute{
 		for (int u = 0; u < n; u++){
 			cout<<u<<": ";
 			for (auto x : adj[u])
-				cout<<"("<<x.first<<", "<<lp[x.second]<<") ";
+				cout<<"("<<x.first<<", "<<lp[x.second]<<", " << edge_cost[x.second] <<") ";
 			cout<<endl;
 		}	
 		assert(0);
