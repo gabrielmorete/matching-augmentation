@@ -20,6 +20,7 @@ int sign(double x) { return (x > EPS) - (x < -EPS); }
 const int MAXN = 20;
 
 int n, m, eid;
+int is_matched[MAXN];
 int edge_cost[MAXN * MAXN], a[MAXN * MAXN], b[MAXN * MAXN];
 double lp[MAXN * MAXN];
 vector< pair<int, int> > adj[MAXN];
@@ -63,11 +64,10 @@ void DFS(int v){
 	int nxt;
 	
 	// Edges are sorted by matching + decreasing value of lp
-	{	// Sanity check
-		int has_match = 1 - edge_cost[adj[v][0].second];
-		for (int i = 1 + has_match; i < adj[v].size(); i++)
-			assert(sign(lp[adj[v][i - 1].second] - lp[adj[v][i].second]) >= 0);
-	}
+	// Sanity check
+	for (int i = 1 + is_matched[v]; i < adj[v].size(); i++)
+		assert(sign(lp[adj[v][i - 1].second] - lp[adj[v][i].second]) >= 0);
+	
 
 	for (auto x : adj[v]){
 		int u = x.first;
@@ -187,7 +187,7 @@ void Backtracking(int v, int stage){
 		return;
 	}
 
-	if (stage == values[v])
+	if (stage == values[v] + 1)
 		return Backtracking(v + 1, 1);
 
 	sort(adj[v].begin() + sz[v][stage - 1], adj[v].begin() + sz[v][stage]);
@@ -197,6 +197,14 @@ void Backtracking(int v, int stage){
 	} while (next_permutation(adj[v].begin() + sz[v][stage - 1], adj[v].begin() + sz[v][stage]));
 }
 
+void print(){
+	for (int u = 0; u < n; u++){
+		cout<<u<<": ";
+		for (auto x : adj[u])
+			cout<<"("<<x.first<<", "<<lp[x.second]<<") ";
+		cout<<endl;
+	}
+}
 
 signed main(){
 	ReadGraph();
@@ -205,13 +213,6 @@ signed main(){
 
 
 	for(int v = 0; v < n; v++){
-
-		sort(adj[v].begin(), adj[v].end(), // sort all edges
-			[](pair<int, int> a, pair<int, int> b){
-				return lp[a.second] > lp[b.second];
-			}
-		);
-
 
 		// Matching edge will be the first edge
 		int p = 0;
@@ -224,7 +225,9 @@ signed main(){
 		// Edges of the adj will be sorted by decreasing LP value.
 		// We will only permute edges with the same value
 
-		sort(adj[v].begin() + 1, adj[v].end(),
+		is_matched[v] = 1 - edge_cost[ adj[v][0].second ];
+
+		sort(adj[v].begin() + is_matched[v], adj[v].end(),
 			[](pair<int, int> a, pair<int, int> b){
 				return lp[a.second] > lp[b.second];
 			}
@@ -234,21 +237,33 @@ signed main(){
 			adj[v].pop_back();
 
 
-		values[v] = 1;
-		sz[v][0] = 1;
+		// sz[v][i] will be the amount of edges with the ith lp value
+		// sz[v][0] = 0 since we will acumulate the sum
 
-		for (int i = 1; i < adj[v].size(); i++){
+		sz[v][0] = 0;
+
+		values[v] = 1;
+		sz[v][1] = 1;
+
+		if (is_matched[v]){ // Matching edge is different
+			values[v] = 2;
+			sz[v][2] = 1;
+		}
+
+		for (int i = 1 + is_matched[v]; i < adj[v].size(); i++){
 			int e1 = adj[v][i].second;
 			int e2 = adj[v][i - 1].second;
 
-			if (sign(lp[e1] - lp[e2]) != 0)
+			if (sign(lp[e1] - lp[e2]) != 0){
 				values[v]++;
+				sz[v][values[v]] = 0;
+			}
 
-			sz[v][values[v] - 1]++;
+			sz[v][values[v]]++;
 		}
 		
 
-		for (int i = 1; i < values[v]; i++)
+		for (int i = 1; i <= values[v]; i++)
 			sz[v][i] += sz[v][i - 1];
 
 		// cout<<v<<" : ";
@@ -264,13 +279,6 @@ signed main(){
 	double sol = 0;
 	for (int i = 0; i < m; i++)
 		sol += lp[i] * edge_cost[i];
-
-
-	// dbg(min_cost);
-	// dbg(max_cost);
-	// dbg(sol);
-	
-
 
 	double fmin = min_cost/sol;
 	double fmax = max_cost/sol;
