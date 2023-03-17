@@ -215,6 +215,7 @@ struct bds_brute{
 
 			sort(adj[v].begin() + 1, adj[v].end(),
 				[this](pair<int, int> a, pair<int, int> b){
+					cout<<"ajaijiajsiajisiajs"<<endl;
 					return lp[a.second] > lp[b.second];
 				}
 			);
