@@ -260,6 +260,8 @@ struct bds_brute{
 			// 	cout<<sz[v][i]<<' ';
 			// cout<<endl;
 		}
+
+		print();
 	
 
 		Backtracking(0, 1);
