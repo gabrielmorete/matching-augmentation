@@ -172,7 +172,7 @@ pair<int, int> SolveMapInstance(
 	FractionalSolution(FracSol, frac_model, frac_vars);
 
 	if (sign(FracSol[G.edgeFromId(0)]) == -1)
-		return;
+		return make_pair(-1, -1);
 
 	pair<int, int> ans_bds = bds_brute::brute_all(FracSol);
 	
