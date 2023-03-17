@@ -196,7 +196,7 @@ namespace bds_brute{
 			// Matching edge will be the first edge
 			int p = 0;
 			for (int i = 0; i < adj[v].size(); i++)
-				if (cost[adj[v][i].second] == 0)
+				if (edge_cost[adj[v][i].second] == 0)
 					p = i;
 			
 			swap(adj[v][0], adj[v][p]);
