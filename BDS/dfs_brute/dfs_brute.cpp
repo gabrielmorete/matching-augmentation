@@ -68,7 +68,6 @@ void DFS(int v){
 	for (int i = 1 + is_matched[v]; i < adj[v].size(); i++)
 		assert(sign(lp[adj[v][i - 1].second] - lp[adj[v][i].second]) >= 0);
 	
-
 	for (auto x : adj[v]){
 		int u = x.first;
 		int id = x.second;
