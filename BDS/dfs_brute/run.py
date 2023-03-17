@@ -75,4 +75,4 @@ for name in files:
 
 		print(name, m_id, out)
 
-print("Smallest example ", bst)
+print("Smallest example ", bst, sz_bst)
