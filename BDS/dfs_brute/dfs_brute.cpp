@@ -205,6 +205,13 @@ signed main(){
 
 	for(int v = 0; v < n; v++){
 
+		sort(adj[v].begin(), adj[v].end(), // sort all edges
+			[](pair<int, int> a, pair<int, int> b){
+				return lp[a.second] > lp[b.second];
+			}
+		);
+
+
 		// Matching edge will be the first edge
 		int p = 0;
 		for (int i = 0; i < adj[v].size(); i++)
