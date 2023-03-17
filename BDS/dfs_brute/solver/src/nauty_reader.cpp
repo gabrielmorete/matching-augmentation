@@ -6,8 +6,8 @@
 */
 
 bool __found_feasible;
-int __cur_graph_id, __best_BDS_graph_id, __best_BDS_matching_id;
-double __best_IP, __best_BDS;
+int __cur_graph_id, __max_best_BDS_graph_id, __max_best_BDS_matching_id, __min_best_BDS_graph_id, __min_best_BDS_matching_id;
+double __min_best_BDS, __max_best_BDS;
 ofstream g_out, log_out;
 
 /*
@@ -41,14 +41,15 @@ void SolveCurrentMatching(int matching_id,
 		cost_Frac +=  FracSol[e] * cost[e];
 	}
 
-	double cost_BDS = bds_ans.second;
+	double max_cost_BDS = bds_ans.second;
+	double min_cost_BDS = bds_ans.first;
 
 	/* 
 		Found a feasible example, print to file
 			- IP gap must be at least 6/5
 			- BDS gap must be better than 4/3
 	*/
-	if (sign(3.0 * cost_BDS - 4.0 * cost_Frac) > 0){
+	if (sign(3.0 * max_cost_BDS - 4.0 * cost_Frac) > 0 or sign(3.0 * min_cost_BDS - 4.0 * cost_Frac) > 0){
 		if (__found_feasible == 0){ // First matching found for this graph
 			// create file "g"+cnt
 			g_out.open(to_string(countNodes(G)) + "/g" + to_string(__cur_graph_id));
@@ -85,15 +86,23 @@ void SolveCurrentMatching(int matching_id,
 
 		// Generate entry in the log file
 		log_out << "Found feasible example g" << __cur_graph_id << " matching id " << matching_id << endl;
-		log_out << "BDS/Frc = " << (double) cost_BDS/cost_Frac << endl;
+		log_out << "max BDS/Frc = " << (double) max_cost_BDS/cost_Frac << endl;
+		log_out << "min BDS/Frc = " << (double) min_cost_BDS/cost_Frac << endl;
 		log_out << endl;
 	}
 
-	if (sign((double)cost_BDS/cost_Frac - __best_BDS) > 0){
-		__best_BDS = (double)cost_BDS/cost_Frac;
-		__best_BDS_graph_id = __cur_graph_id;
-		__best_BDS_matching_id = matching_id;
+	if (sign((double)max_cost_BDS/cost_Frac - __max_best_BDS) > 0){
+		__max_best_BDS = (double)max_cost_BDS/cost_Frac;
+		__max_best_BDS_graph_id = __cur_graph_id;
+		__max_best_BDS_matching_id = matching_id;
 	}
+
+	if (sign((double)min_cost_BDS/cost_Frac - __min_best_BDS) > 0){
+		__min_best_BDS = (double)min_cost_BDS/cost_Frac;
+		__min_best_BDS_graph_id = __cur_graph_id;
+		__min_best_BDS_matching_id = matching_id;
+	}
+
 }
 
 
@@ -171,8 +180,9 @@ void SolveAllMatchings(){
 	that iterates through all matchings.
 */
 void RunNautyInput(int start){
-	__best_IP = __best_BDS = 1;
-	__best_BDS_graph_id = __best_BDS_matching_id = 1;
+	__best_IP = __max_best_BDS = 1;
+	__max_best_BDS_graph_id = __max_best_BDS_matching_id = 1;
+	__min_best_BDS_graph_id = __min_best_BDS_matching_id = 1;
 	ofstream log_progress;
 
 	int cnt = 0;
@@ -222,7 +232,8 @@ void RunNautyInput(int start){
 
 		log_progress.open(to_string(n) + "/log_progress");
 		log_progress << "Last fully processed graph g" << cnt << endl;
-		log_progress << "Best BDS/Frac: " << __best_BDS << " g" << __best_BDS_graph_id << " matching " << __best_BDS_matching_id << endl;
+		log_progress << "Best max BDS/Frac: " << __max_best_BDS << " g" << __max_best_BDS_graph_id << " matching " << __max_best_BDS_matching_id << endl;
+		log_progress << "Best min BDS/Frac: " << __min_best_BDS << " g" << __min_best_BDS_graph_id << " matching " << __min_best_BDS_matching_id << endl;
 		log_progress.close();	
 	}
 

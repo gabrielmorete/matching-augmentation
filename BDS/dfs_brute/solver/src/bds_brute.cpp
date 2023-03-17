@@ -201,68 +201,68 @@ struct bds_brute{
 		min_cost = m + 1;
 
 
-			for(int v = 0; v < n; v++){
+		for(int v = 0; v < n; v++){
 
-		// Matching edge will be the first edge
-		int p = 0;
-		for (int i = 0; i < adj[v].size(); i++)
-			if (edge_cost[adj[v][i].second] == 0)
-				p = i;
-		
-		swap(adj[v][0], adj[v][p]);
+			// Matching edge will be the first edge
+			int p = 0;
+			for (int i = 0; i < adj[v].size(); i++)
+				if (edge_cost[adj[v][i].second] == 0)
+					p = i;
+			
+			swap(adj[v][0], adj[v][p]);
 
-		// Edges of the adj will be sorted by decreasing LP value.
-		// We will only permute edges with the same value
+			// Edges of the adj will be sorted by decreasing LP value.
+			// We will only permute edges with the same value
 
-		is_matched[v] = 1 - edge_cost[ adj[v][0].second ];
+			is_matched[v] = 1 - edge_cost[ adj[v][0].second ];
 
-		sort(adj[v].begin() + is_matched[v], adj[v].end(),
-			[this](pair<int, int> a, pair<int, int> b){
-				return lp[a.second] > lp[b.second];
-			}
-		);
+			sort(adj[v].begin() + is_matched[v], adj[v].end(),
+				[this](pair<int, int> a, pair<int, int> b){
+					return lp[a.second] > lp[b.second];
+				}
+			);
 
-		while ((adj[v].size() > 1) and ( sign( lp[adj[v].back().second] ) <= 0 ))
-			adj[v].pop_back();
+			while ((adj[v].size() > 1) and ( sign( lp[adj[v].back().second] ) <= 0 ))
+				adj[v].pop_back();
 
 
-		// sz[v][i] will be the amount of edges with the ith lp value
-		// sz[v][0] = 0 since we will acumulate the sum
+			// sz[v][i] will be the amount of edges with the ith lp value
+			// sz[v][0] = 0 since we will acumulate the sum
 
-		sz[v][0] = 0;
+			sz[v][0] = 0;
 
-		values[v] = 1;
-		sz[v][1] = 1;
+			values[v] = 1;
+			sz[v][1] = 1;
 
-		if (is_matched[v]){ // Matching edge is different
-			values[v] = 2;
-			sz[v][2] = 1;
-		}
-
-		for (int i = 1 + is_matched[v]; i < adj[v].size(); i++){
-			int e1 = adj[v][i].second;
-			int e2 = adj[v][i - 1].second;
-
-			if (sign(lp[e1] - lp[e2]) != 0){
-				values[v]++;
-				sz[v][values[v]] = 0;
+			if (is_matched[v]){ // Matching edge is different
+				values[v] = 2;
+				sz[v][2] = 1;
 			}
 
-			sz[v][values[v]]++;
+			for (int i = 1 + is_matched[v]; i < adj[v].size(); i++){
+				int e1 = adj[v][i].second;
+				int e2 = adj[v][i - 1].second;
+
+				if (sign(lp[e1] - lp[e2]) != 0){
+					values[v]++;
+					sz[v][values[v]] = 0;
+				}
+
+				sz[v][values[v]]++;
+			}
+			
+
+			for (int i = 1; i <= values[v]; i++)
+				sz[v][i] += sz[v][i - 1];
+
+			// cout<<v<<" : ";
+			// for (int i = 0; i < values[v]; i++)
+			// 	cout<<sz[v][i]<<' ';
+			// cout<<endl;
 		}
-		
-
-		for (int i = 1; i <= values[v]; i++)
-			sz[v][i] += sz[v][i - 1];
-
-		// cout<<v<<" : ";
-		// for (int i = 0; i < values[v]; i++)
-		// 	cout<<sz[v][i]<<' ';
-		// cout<<endl;
-	}
 	
 
-	Backtracking(0, 1);
+		Backtracking(0, 1);
 
 
 		return make_pair(min_cost, max_cost);
