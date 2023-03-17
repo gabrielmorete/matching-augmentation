@@ -178,6 +178,7 @@ pair<int, int> SolveMapInstance(
 
 	pair<int, int> ans_bds = all_dfs.brute_all(FracSol);
 	
+	return ans_bds;	
 }
 
 
