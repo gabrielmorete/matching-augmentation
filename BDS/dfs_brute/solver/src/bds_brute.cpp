@@ -8,7 +8,7 @@
 
 const int MAXN = 20;
 
-namespace bds_brute{
+struct bds_brute{
 	int n, m, eid;
 	int edge_cost[MAXN * MAXN], a[MAXN * MAXN], b[MAXN * MAXN];
 	double lp[MAXN * MAXN];
@@ -249,4 +249,4 @@ namespace bds_brute{
 
 		return make_pair(min_cost, max_cost);
 	}
-}
+};

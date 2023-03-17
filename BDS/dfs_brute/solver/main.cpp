@@ -174,7 +174,9 @@ pair<int, int> SolveMapInstance(
 	if (sign(FracSol[G.edgeFromId(0)]) == -1)
 		return make_pair(-1, -1);
 
-	pair<int, int> ans_bds = bds_brute::brute_all(FracSol);
+	dfs_brute all_dfs;
+
+	pair<int, int> ans_bds = all_dfs(FracSol);
 	
 }
 
