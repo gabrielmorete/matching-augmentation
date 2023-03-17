@@ -44,7 +44,7 @@ void SolveCurrentMatching(int matching_id,
 	double max_cost_BDS = bds_ans.second;
 	double min_cost_BDS = bds_ans.first;
 	cout<<max_cost_BDS<<' '<<min_cost_BDS<<endl;
-
+	cout<<FracSol[G.edgeFromId(0)]<<endl;
 	/* 
 		Found a feasible example, print to file
 			- IP gap must be at least 6/5
