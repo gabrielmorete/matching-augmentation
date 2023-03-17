@@ -69,7 +69,7 @@ for name in files:
 
 		f_min, f_max, lp_val = map(float, out.split())
 
-		if f_max >= 1.39 and m < sz_bst
+		if f_max >= 1.39 and m < sz_bst:
 			sz_bst = m
 			bst = name 
 
