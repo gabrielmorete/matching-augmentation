@@ -247,12 +247,13 @@ struct bds_brute{
 		}
 		
 
-		// for (int u = 0; u < n; u++){
-		// 	cout<<u<<": ";
-		// 	for (auto x : adj[u])
-		// 		cout<<"("<<x.first<<", "<<lp[x.second]<<") ";
-		// 	cout<<endl;
-		// }	
+		for (int u = 0; u < n; u++){
+			cout<<u<<": ";
+			for (auto x : adj[u])
+				cout<<"("<<x.first<<", "<<lp[x.second]<<") ";
+			cout<<endl;
+		}	
+		assert(0);
 
 		Backtracking(0, 1);
 
