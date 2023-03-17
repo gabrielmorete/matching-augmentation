@@ -43,12 +43,11 @@ void SolveCurrentMatching(int matching_id,
 
 	double max_cost_BDS = bds_ans.second;
 	double min_cost_BDS = bds_ans.first;
-	cout<<max_cost_BDS<<' '<<min_cost_BDS<<endl;
-	cout<<FracSol[G.edgeFromId(0)]<<endl;
+
 	/* 
 		Found a feasible example, print to file
-			- IP gap must be at least 6/5
-			- BDS gap must be better than 4/3
+			- BDS max gap must be better than 4/3
+			- BDS min gap must be at lest 4/3
 	*/
 	if (sign(3.0 * max_cost_BDS - 4.0 * cost_Frac) > 0 or sign(3.0 * min_cost_BDS - 4.0 * cost_Frac) > 0){
 		if (__found_feasible == 0){ // First matching found for this graph
