@@ -67,7 +67,9 @@ for name in files:
 		command ="echo \"" + file_in + " \"  | ./dfs_brute" # command to be executed
 		out = str(subprocess.check_output(command, shell=True))
 
-		f_min, f_max, lp_val = map(float, out.split())
+		f_min, f_max, lp_val =  out.split()
+		f_min = float(f_min[2:])
+		f_max = float(f_max)
 
 		if f_max >= 1.39 and m < sz_bst:
 			sz_bst = m
