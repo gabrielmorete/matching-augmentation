@@ -266,6 +266,8 @@ struct bds_brute{
 
 		Backtracking(0, 1);
 
+		cout<<"aisjaij "<<min_cost<<' '<<max_cost<<endl;
+
 
 		return make_pair(min_cost, max_cost);
 	}
