@@ -8,7 +8,8 @@ path = "."
 files = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
 # files is a list with the name of all FILES
 	
-bst = "none"
+name_bst = "none"
+match_bst = "none"
 sz_bst = 10000
 
 
@@ -73,8 +74,8 @@ for name in files:
 
 		if f_max >= 1.39 and m < sz_bst:
 			sz_bst = m
-			bst = name 
-
+			name_bst = name
+			match_bst = m_id
 		print(name, m_id, out)
 
-print("Smallest example ", bst, sz_bst)
+print("Smallest example: ", name_bst,"matching",match_bst,"#edges:" sz_bst)
