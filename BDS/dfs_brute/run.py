@@ -78,4 +78,4 @@ for name in files:
 			match_bst = m_id
 		print(name, m_id, out)
 
-print("Smallest example: ", name_bst,"matching",match_bst,"#edges:" sz_bst)
+print("Smallest example: ", name_bst,"matching",match_bst,"#edges:", sz_bst)
