@@ -187,6 +187,9 @@ void RunNautyInput(int start){
 
 	int cnt = 0;
 	while (readNautyGraph(G, cin)){	
+		if (biEdgeConnected(G) == 0)
+			continue;
+
 		cnt++;
 
 		int n = countNodes(G);
