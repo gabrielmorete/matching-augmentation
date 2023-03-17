@@ -185,7 +185,7 @@ struct bds_brute{
 			a[eid] = v;
 			b[eid] = u;
 			edge_cost[eid] = cost[ed];
-			dbg(FracSol[ed]);
+
 			lp[eid] = FracSol[ed];
 
 			eid++;
