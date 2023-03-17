@@ -261,7 +261,7 @@ struct bds_brute{
 				cout<<"("<<x.first<<", "<<lp[x.second]<<", " << edge_cost[x.second] <<") ";
 			cout<<endl;
 		}	
-		assert(0);
+		// assert(0);
 
 		Backtracking(0, 1);
 
