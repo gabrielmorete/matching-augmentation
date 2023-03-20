@@ -218,10 +218,11 @@ bool ReadGraph(int &cnt, int &my_cnt){
 	return ok;
 }
 
-void log_progress(int n){
+void PrintLogProgress(int n){
+
 	#pragma omp critical
 	{
-		log_progress.open(to_string(n) + "/log_progress");
+		ofstream log_progress(to_string(n) + "/log_progress");
 		log_progress << "Last read graph" << cnt << endl;
 		log_progress << "Best IP/Frac: " << __best_IP << " g" << __best_IP_graph_id << " matching " << __best_IP_matching_id << endl;
 		log_progress << "Best BDS/Frac: " << __best_BDS << " g" << __best_BDS_graph_id << " matching " << __best_BDS_matching_id << endl;
@@ -239,12 +240,11 @@ void RunNautyInput(int start){
 	__best_IP = __best_BDS = 1;
 	__best_IP_graph_id = __best_IP_matching_id = __best_BDS_graph_id = __best_BDS_matching_id = 1;
 
-	ofstream log_progress;
 	int cnt = 0
 
     #pragma omp parallel num_threads(NUM_THREADS)
     	private(G, cost, __found_feasible, __cur_graph_id, g_out,)\
-    	shared(cnt, log, log_progress, \
+    	shared(cnt, log, \
     		__best_BDS_graph_id, __best_BDS_matching_id, __best_IP_graph_id, __best_IP_matching_id\
     		__best_IP, __best_BDS)
     {	
