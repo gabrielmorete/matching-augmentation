@@ -208,7 +208,7 @@ void SolveAllMatchings(){
 }
 
 
-int NUM_THREADS = 8;
+int NUM_THREADS = 1;
 
 bool ReadGraph(int &cnt, int &my_cnt){
 	bool ok = 1;
