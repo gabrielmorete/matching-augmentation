@@ -18,7 +18,7 @@ bool read(string &s, int &my_cnt){
 	return ok;
 }
 
-signed main(){
+void func(){
 	string s;
 
     #pragma omp parallel num_threads(NUM_THREADS)\
@@ -34,5 +34,9 @@ signed main(){
 			}
 		}
 	}	
+}
+
+signed main(){
+	func();
 
 }
