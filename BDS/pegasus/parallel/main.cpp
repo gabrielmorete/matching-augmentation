@@ -364,7 +364,7 @@ void SolveMapInstance(
 	}
 
 	ListGraph::NodeMap<bool> ones(G, 1);
-	ListGraph::NodeMap<bool> BoolIntSol(G);
+	ListGraph::EdgeMap<bool> BoolIntSol(G);
 
 	for (ListGraph::NodeIt v(G); v != INVALID; ++v){
 		BoolIntSol[v] = IntSol[v];
