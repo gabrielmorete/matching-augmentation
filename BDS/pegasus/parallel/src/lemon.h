@@ -18,7 +18,7 @@ typedef ListGraph::EdgeIt EdgeIt;
 // typedef ListGraph::EdgeMap<int> EdgeMap<int>;
 // typedef ListGraph::EdgeMap<double> EdgeMap<double>;
 
-ListGraph G; // Declare global Graph
+// ListGraph G; // Declare global Graph
 // ListGraph::EdgeMap<int> cost(G); // Cost of the edges
 
 
