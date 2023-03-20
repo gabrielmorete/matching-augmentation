@@ -102,7 +102,8 @@ void SolveCurrentMatching(int matching_id,
 		g_out << endl << endl;
 
 		
-		#pragma omp critical{
+		#pragma omp critical
+		{
 			// Generate entry in the log file
 			log_out << "Found feasible example g" << __cur_graph_id << " matching id " << matching_id << endl;
 			log_out << "Int/Frc = " << (double) cost_Int/cost_Frac << " BDS/Frc = " << (double) cost_BDS/cost_Frac << endl;
