@@ -71,6 +71,7 @@ MinimumCut::MinimumCut(GRBVar* xvars, int xn, int xm, ListGraph &_G){
 	vars = xvars;
 	n = xn;
 	m = xm;
+	G = _G;
 }
 
 /*
