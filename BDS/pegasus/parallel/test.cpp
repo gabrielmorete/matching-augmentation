@@ -1,4 +1,4 @@
-#include <bits/stdc++.h>
+#include <stdio>
 #include <omp.h>
 
 using namespace std;
