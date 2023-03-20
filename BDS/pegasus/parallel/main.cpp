@@ -351,7 +351,7 @@ void SolveMapInstance(
 	GRBModel &frac_model,
 	GRBVar *frac_vars,
 	GRBModel &int_model,
-	GRBVar *int_vars
+	GRBVar *int_vars,
 	ListGraph &G){
 
 	FractionalSolution(cost, FracSol, frac_model, frac_vars, G);
