@@ -218,7 +218,7 @@ bool ReadGraph(int &cnt, int &my_cnt){
 	return ok;
 }
 
-void PrintLogProgress(int n){
+void PrintLogProgress(int n, int cnt){
 
 	#pragma omp critical
 	{
@@ -293,7 +293,7 @@ void RunNautyInput(int start){
 			if (__found_feasible)
 				g_out.close();
 
-			
+			PrintLogProgress(n, cnt);
 		}
 	}
 
