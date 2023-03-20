@@ -243,8 +243,8 @@ void RunNautyInput(int start){
 	int cnt = 0
 
     #pragma omp parallel num_threads(NUM_THREADS)
-    	private(G, cost, __found_feasible, __cur_graph_id, g_out)\
-    	shared(cnt, log, __best_BDS_graph_id, __best_BDS_matching_id, __best_IP_graph_id, __best_IP_matching_id, __best_IP, __best_BDS)
+    private(G, cost, __found_feasible, __cur_graph_id, g_out)\
+    shared(cnt, log, __best_BDS_graph_id, __best_BDS_matching_id, __best_IP_graph_id, __best_IP_matching_id, __best_IP, __best_BDS)
     {	
 		int my_cnt;
 		while (ReadGraph(cnt, my_cnt)){	
