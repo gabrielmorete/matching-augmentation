@@ -240,7 +240,7 @@ void RunNautyInput(int start){
 	__best_IP = __best_BDS = 1;
 	__best_IP_graph_id = __best_IP_matching_id = __best_BDS_graph_id = __best_BDS_matching_id = 1;
 
-	int cnt = 0
+	int cnt = 0;
 
     #pragma omp parallel num_threads(NUM_THREADS) private(G, cost, __found_feasible, __cur_graph_id, g_out)     shared(cnt, log, __best_BDS_graph_id, __best_BDS_matching_id, __best_IP_graph_id, __best_IP_matching_id, __best_IP, __best_BDS)
 	{
