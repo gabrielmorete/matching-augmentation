@@ -364,12 +364,11 @@ void SolveMapInstance(
 	}
 
 	ListGraph::NodeMap<bool> ones(G, 1);
-	ListGraph::NodeMap<bool> BoolIntSol(G, 1);
+	ListGraph::NodeMap<bool> BoolIntSol(G);
 
 	for (ListGraph::NodeIt v(G); v != INVALID; ++v){
 		BoolIntSol[v] = IntSol[v];
 	}
-
 
 	SubGraph<ListGraph> H(G, ones, BoolIntSol);
 	assert(biEdgeConnected(H) == 1);
