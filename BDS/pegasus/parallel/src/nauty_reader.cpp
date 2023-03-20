@@ -136,6 +136,7 @@ void SolveCurrentMatching(int matching_id,
 */
 void FindAllMatchings(int e_id, int &n, int &m, int &n_matched, int &total_matchings, 
 	ListGraph::NodeMap<bool> &matched,
+	ListGraph::EdgeMap<int> &cost;
 	GRBModel &frac_model,
 	GRBVar *frac_vars,
 	GRBModel &int_model,
@@ -181,6 +182,7 @@ void FindAllMatchings(int e_id, int &n, int &m, int &n_matched, int &total_match
 void SolveAllMatchings(){
 	int n = countNodes(G), m = countEdges(G);
 
+	ListGraph::EdgeMap<int> cost(G); // Cost of the edges
 	// Initialize all edges to be heavy
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
 		cost[e] = 1;
@@ -198,7 +200,7 @@ void SolveAllMatchings(){
 	ListGraph::NodeMap<bool> matched(G);
 
 	int total_matchings = 1, n_matched = 0;
-	FindAllMatchings(0, n, m, n_matched, total_matchings, matched, frac_model, frac_vars, int_model, int_vars);
+	FindAllMatchings(0, n, m, n_matched, total_matchings, matched, cost, frac_model, frac_vars, int_model, int_vars);
 
 	if (__found_feasible == 1)
 		g_out << "Number of matchings : " << total_matchings << endl;

@@ -180,7 +180,11 @@ void BuildFractional(GRBModel &frac_model, GRBVar *frac_vars){
 	This function returns a optimum fractional solution to MAP.
 	If no solution is found, it returns a all -1 edge map.
 */
-void FractionalSolution(ListGraph::EdgeMap<double> &FracSol, GRBModel &frac_model, GRBVar *frac_vars){
+void FractionalSolution(ListGraph::EdgeMap<int> &cost,
+	ListGraph::EdgeMap<double> &FracSol, 
+	GRBModel &frac_model, 
+	GRBVar *frac_vars){
+	
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e) 
 		FracSol[e] = -1;	
 
@@ -277,7 +281,8 @@ void BuildIntegral(GRBModel &int_model, GRBVar *int_vars){
 	This function returns a optimum integer solution to MAP.
 	If no solution is found, it returns a all -1 edge map.
 */
-void IntegerSolution(ListGraph::EdgeMap<int> &IntSol, 
+void IntegerSolution(ListGraph::EdgeMap<int> &cost,
+	ListGraph::EdgeMap<int> &IntSol, 
 	ListGraph::EdgeMap<bool> &BDSSol, 
 	GRBModel &int_model, 
 	GRBVar *int_vars){
@@ -336,6 +341,7 @@ void IntegerSolution(ListGraph::EdgeMap<int> &IntSol,
 	Wrapper function that call the solvers.
 */
 void SolveMapInstance(
+	ListGraph::EdgeMap<int> &cost,
 	ListGraph::EdgeMap<double> &FracSol,
 	ListGraph::EdgeMap<int> &IntSol,
 	ListGraph::EdgeMap<bool> &BDSSol,
@@ -344,12 +350,12 @@ void SolveMapInstance(
 	GRBModel &int_model,
 	GRBVar *int_vars){
 
-	FractionalSolution(FracSol, frac_model, frac_vars);
+	FractionalSolution(cost, FracSol, frac_model, frac_vars);
 
 	if (sign(FracSol[G.edgeFromId(0)]) == -1)
 		return;
 
-	BDSAlgorithm(FracSol, BDSSol);
+	BDSAlgorithm(cost, FracSol, BDSSol);
 
 	// If fractional solution is integral, no need to solve a MIP
 	bool is_integral = 1;
@@ -378,7 +384,7 @@ void SolveMapInstance(
 		return;
 	}
 
-	IntegerSolution(IntSol, BDSSol, int_model, int_vars);
+	IntegerSolution(cost, IntSol, BDSSol, int_model, int_vars);
 }
 
 

@@ -10,7 +10,8 @@
 	O(n^2)
 */
 void BDSDFS(ListGraph::Node v, 
-	ListGraph::NodeMap<ListGraph::Node> &parent, 
+	ListGraph::NodeMap<ListGraph::Node> &parent,
+	ListGraph::EdgeMap<int> &cost,
 	ListGraph::EdgeMap<double> &FracSol, 
 	ListGraph::EdgeMap<bool> &BDSSol,
 	int &clk,
@@ -51,7 +52,7 @@ void BDSDFS(ListGraph::Node v,
 
 			parent[u] = v;
 
-			BDSDFS(u, parent, FracSol, BDSSol, clk, in, out);
+			BDSDFS(u, parent, cost, FracSol, BDSSol, clk, in, out);
 		}
 
 	} while (found_next);
@@ -80,7 +81,8 @@ bool Dec(Node u, Node v, ListGraph::NodeMap<int> &in, ListGraph::NodeMap<int> &o
 	O(n^2|L|)
 */
 int UpLinkDP(Node v, ListGraph::NodeMap<int> &memo, 
-	ListGraph::NodeMap<Edge> &dp_edge, 
+	ListGraph::NodeMap<Edge> &dp_edge,
+	ListGraph::EdgeMap<int> &cost,
 	ListGraph::NodeMap<ListGraph::Node> &parent, 
 	ListGraph::NodeMap<int> &in, 
 	ListGraph::NodeMap<int> &out,
@@ -116,7 +118,7 @@ int UpLinkDP(Node v, ListGraph::NodeMap<int> &memo,
 
 						if (y != lst and y != parent[h]){
 							// cout<<" Transition "<<G.id(v) + 1<<' '<<G.id(y) + 1<<endl;
-							subtree_cost += UpLinkDP(y, memo, dp_edge, parent, in, out, BDSSol, FracSol, T);
+							subtree_cost += UpLinkDP(y, memo, dp_edge, cost, parent, in, out, BDSSol, FracSol, T);
 						}
 					}	
 
@@ -230,6 +232,7 @@ void RecoverUpLinkSol(Node v,
 
 void UpLinkAugmentation(
 	SubGraph<ListGraph> &T,
+	ListGraph::EdgeMap<int> &cost,
 	ListGraph::EdgeMap<bool> &BDSSol,
 	ListGraph::EdgeMap<double> &FracSol,
 	ListGraph::NodeMap<ListGraph::Node> &parent, 
@@ -242,7 +245,7 @@ void UpLinkAugmentation(
 
 
 	for (SubGraph<ListGraph>::OutArcIt a(T, G.nodeFromId(0)); a != INVALID; ++a){
-		UpLinkDP(T.target(a), memo, dp_edge, parent, in, out, BDSSol, FracSol, T);
+		UpLinkDP(T.target(a), memo, dp_edge, cost, parent, in, out, BDSSol, FracSol, T);
 		RecoverUpLinkSol(T.target(a), dp_edge, parent, in, out, BDSSol, T);
 	}
 }
@@ -253,7 +256,10 @@ void UpLinkAugmentation(
 
 	O(n^2|L|)
 */
-void BDSAlgorithm(ListGraph::EdgeMap<double> &FracSol, ListGraph::EdgeMap<bool> &BDSSol){
+void BDSAlgorithm(ListGraph::EdgeMap<int> &cost,
+	ListGraph::EdgeMap<double> &FracSol, 
+	ListGraph::EdgeMap<bool> &BDSSol){
+
 	int n = countNodes(G);
 
 	// Step 1, find a DFS Tree
@@ -264,7 +270,7 @@ void BDSAlgorithm(ListGraph::EdgeMap<double> &FracSol, ListGraph::EdgeMap<bool> 
 		parent[v] = v;
 
 	int cnt = 0;
-	BDSDFS(G.nodeFromId(0), parent, FracSol, BDSSol, cnt, in, out);
+	BDSDFS(G.nodeFromId(0), parent, cost, FracSol, BDSSol, cnt, in, out);
 
 	if (__verbose_mode){
 		cout << "BDS Tree Found" << endl;
@@ -287,7 +293,7 @@ void BDSAlgorithm(ListGraph::EdgeMap<double> &FracSol, ListGraph::EdgeMap<bool> 
 
 
 	// Step 2, uplink only augmentation
-	UpLinkAugmentation(T, BDSSol, FracSol, parent, in, out);
+	UpLinkAugmentation(T, cost, BDSSol, FracSol, parent, in, out);
 
 	// Sanity check, checks if BDS returned a feasible solution
 	SubGraph<ListGraph> H(G, ones, BDSSol);
