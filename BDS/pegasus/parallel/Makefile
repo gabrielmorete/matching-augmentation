@@ -8,7 +8,7 @@ GUROBI_PATH = /opt/uw/gurobi/8.1.1
 INC      = $(GUROBI_PATH)/include/
 CPP      = g++
 STD      = -std=c++11 -D_GLIBCXX_USE_CXX11_ABI=0
-CARGS    = -m64
+CARGS    = -m64 -O3
 GUROBI_CPPLIB   = -L $(GUROBI_PATH)/lib -lgurobi_c++ -lgurobi81
 
 
