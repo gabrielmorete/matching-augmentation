@@ -54,6 +54,14 @@ void ReadGraph(){
 	cin>>name;
 }
 
+void print(){
+	for (int u = 0; u < n; u++){
+		cout<<u<<": ";
+		for (auto x : adj[u])
+			cout<<"("<<x.first<<", "<<lp[x.second]<<") ";
+		cout<<endl;
+	}
+}
 
 int max_cost, min_cost, clk;
 int pre[MAXN], in[MAXN], out[MAXN], in_sol[MAXN * MAXN];
@@ -173,6 +181,11 @@ void AllDFS(){
 			for (int i = 0; i < m; i++)
 				cur_cost += in_sol[i] * edge_cost[i];
 
+			if (cur_cost > max_cost){
+				cout<<"Start "<<v<<endl;
+				print();
+			}
+
 			max_cost = max(max_cost, cur_cost);
 			min_cost = min(min_cost, cur_cost);
 		}
@@ -196,14 +209,7 @@ void Backtracking(int v, int stage){
 	} while (next_permutation(adj[v].begin() + sz[v][stage - 1], adj[v].begin() + sz[v][stage]));
 }
 
-void print(){
-	for (int u = 0; u < n; u++){
-		cout<<u<<": ";
-		for (auto x : adj[u])
-			cout<<"("<<x.first<<", "<<lp[x.second]<<") ";
-		cout<<endl;
-	}
-}
+
 
 signed main(){
 	ReadGraph();

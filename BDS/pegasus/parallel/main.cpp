@@ -32,7 +32,7 @@ using namespace std;
 	This function receives a LP solution and retuns the restrictions of
 	all st-cuts with capacity < 2.
 */
-vector<GRBLinExpr> FindMinCuts(double *sol, GRBVar *vars, int n, int m){
+vector<GRBLinExpr> FindMinCuts(double *sol, GRBVar *vars, int n, int m, ListGraph &G){
 	vector<GRBLinExpr> restrictions;
 	ListGraph::EdgeMap<double> capacity(G);
 
@@ -67,7 +67,7 @@ vector<GRBLinExpr> FindMinCuts(double *sol, GRBVar *vars, int n, int m){
 /*
 	Constructor of min cut class
 */
-MinimumCut::MinimumCut(GRBVar* xvars, int xn, int xm){
+MinimumCut::MinimumCut(GRBVar* xvars, int xn, int xm, ListGraph &_G){
 	vars = xvars;
 	n = xn;
 	m = xm;
@@ -145,7 +145,7 @@ void MinimumCut::callback(){
 /*
 	This function builds a fractional cutLP model.
 */
-void BuildFractional(GRBModel &frac_model, GRBVar *frac_vars){
+void BuildFractional(GRBModel &frac_model, GRBVar *frac_vars, ListGraph &G){
 	int n = countNodes(G);
 	int m = countEdges(G);
 
@@ -183,7 +183,8 @@ void BuildFractional(GRBModel &frac_model, GRBVar *frac_vars){
 void FractionalSolution(ListGraph::EdgeMap<int> &cost,
 	ListGraph::EdgeMap<double> &FracSol, 
 	GRBModel &frac_model, 
-	GRBVar *frac_vars){
+	GRBVar *frac_vars,
+	ListGraph &G){
 	
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e) 
 		FracSol[e] = -1;	
@@ -207,7 +208,7 @@ void FractionalSolution(ListGraph::EdgeMap<int> &cost,
 		
 			double *sol = frac_model.get(GRB_DoubleAttr_X, frac_vars, m);
 
-			vector<GRBLinExpr> res = FindMinCuts(sol, frac_vars, n, m);
+			vector<GRBLinExpr> res = FindMinCuts(sol, frac_vars, n, m, G);
 
 			// If min_cut.fist < 2, need to add constraint
 			if (!res.empty()) { // Min cut < 2
@@ -248,7 +249,7 @@ void FractionalSolution(ListGraph::EdgeMap<int> &cost,
 /*
 	This function builds a integral cutLP model.
 */
-void BuildIntegral(GRBModel &int_model, GRBVar *int_vars){
+void BuildIntegral(GRBModel &int_model, GRBVar *int_vars, ListGraph &G){
 	int n = countNodes(G);
 	int m = countEdges(G);
 
@@ -285,7 +286,8 @@ void IntegerSolution(ListGraph::EdgeMap<int> &cost,
 	ListGraph::EdgeMap<int> &IntSol, 
 	ListGraph::EdgeMap<bool> &BDSSol, 
 	GRBModel &int_model, 
-	GRBVar *int_vars){
+	GRBVar *int_vars,
+	ListGraph &G){
 
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e) 
 		IntSol[e] = -1;	
@@ -348,14 +350,15 @@ void SolveMapInstance(
 	GRBModel &frac_model,
 	GRBVar *frac_vars,
 	GRBModel &int_model,
-	GRBVar *int_vars){
+	GRBVar *int_vars
+	ListGraph &G){
 
-	FractionalSolution(cost, FracSol, frac_model, frac_vars);
+	FractionalSolution(cost, FracSol, frac_model, frac_vars, G);
 
 	if (sign(FracSol[G.edgeFromId(0)]) == -1)
 		return;
 
-	BDSAlgorithm(cost, FracSol, BDSSol);
+	// BDSAlgorithm(cost, FracSol, BDSSol);
 
 	// If fractional solution is integral, no need to solve a MIP
 	bool is_integral = 1;
@@ -384,7 +387,7 @@ void SolveMapInstance(
 		return;
 	}
 
-	IntegerSolution(cost, IntSol, BDSSol, int_model, int_vars);
+	IntegerSolution(cost, IntSol, BDSSol, int_model, int_vars, ListGraph &G);
 }
 
 
