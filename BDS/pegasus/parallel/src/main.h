@@ -89,7 +89,7 @@ void SolveMapInstance(
 */
 class MinimumCut: public GRBCallback {
 	public:
-		ListGraph &G;
+		ListGraph *G;
 		GRBVar* vars;
 		int n, m;
 		MinimumCut(GRBVar* xvars, int xn, int xm, ListGraph &_G);
