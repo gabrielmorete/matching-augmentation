@@ -93,19 +93,19 @@ void MinimumCut::callback(){
 			ListGraph::EdgeMap<bool> in_sol(*G);
 			
 			for (ListGraph::EdgeIt e(*G); e != INVALID; ++e){
-				int id = G.id(e);
-				int u = G.id(G.u(e));
-				int v = G.id(G.v(e));
+				int id = (*G).id(e);
+				int u = (*G).id((*G).u(e));
+				int v = (*G).id((*G).v(e));
 
 				if (x[id] > 0.5)
 					in_sol[e] = 1;
 			}
 
-			ListGraph::NodeMap<bool> ones(G, 1); // Must be spanning
+			ListGraph::NodeMap<bool> ones((*G), 1); // Must be spanning
 			// H is a spanning subgraph with all edges in the solution
-			SubGraph<ListGraph> H(G, ones, in_sol);
+			SubGraph<ListGraph> H((*G), ones, in_sol);
 
-			ListGraph::NodeMap<int> ebcc(G, -1);
+			ListGraph::NodeMap<int> ebcc((*G), -1);
 			biEdgeConnectedComponents(H, ebcc);
 
 			int max_cmp = 0;
@@ -117,15 +117,15 @@ void MinimumCut::callback(){
 				// The cut will be all edges crossing the cut of the ebcc with id 0
 				GRBLinExpr expr = 0;
 
-				for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
-					ListGraph::Node u = G.u(e);
-					ListGraph::Node v = G.v(e);
+				for (ListGraph::EdgeIt e((*G)); e != INVALID; ++e){
+					ListGraph::Node u = (*G).u(e);
+					ListGraph::Node v = (*G).v(e);
 					
 					if (ebcc[u] == 0 and ebcc[v] != 0)
-						expr += vars[G.id(e)];
+						expr += vars[(*G).id(e)];
 			
 					if (ebcc[v] == 0 and ebcc[u] != 0)
-						expr += vars[G.id(e)];
+						expr += vars[(*G).id(e)];
 				}
 
 				addLazy(expr >= 2);
