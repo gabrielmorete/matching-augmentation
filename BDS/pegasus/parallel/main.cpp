@@ -90,9 +90,9 @@ void MinimumCut::callback(){
 
 			double *x = getSolution(vars, m);
 
-			ListGraph::EdgeMap<bool> in_sol(G);
+			ListGraph::EdgeMap<bool> in_sol(*G);
 			
-			for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
+			for (ListGraph::EdgeIt e(*G); e != INVALID; ++e){
 				int id = G.id(e);
 				int u = G.id(G.u(e));
 				int v = G.id(G.v(e));
