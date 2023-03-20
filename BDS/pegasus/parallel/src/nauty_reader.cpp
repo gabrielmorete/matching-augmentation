@@ -22,8 +22,7 @@ void SolveCurrentMatching(int matching_id,
 	GRBVar *frac_vars,
 	GRBModel &int_model,
 	GRBVar *int_vars,
-	ListGraph &G,
-	){
+	ListGraph &G){
 
 	ListGraph::EdgeMap<bool> BDSSol(G);
 	ListGraph::EdgeMap<int> IntSol(G);
@@ -144,8 +143,7 @@ void FindAllMatchings(int e_id, int &n, int &m, int &n_matched, int &total_match
 	GRBVar *frac_vars,
 	GRBModel &int_model,
 	GRBVar *int_vars,
-	ListGraph &G
-	){
+	ListGraph &G){
 
 	if (e_id >= m){
 		SolveCurrentMatching(total_matchings, cost, frac_model, frac_vars, int_model, int_vars, G);
