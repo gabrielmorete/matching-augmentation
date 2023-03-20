@@ -359,15 +359,11 @@ void SolveMapInstance(
 	IntegerSolution(cost, IntSol, BDSSol, int_model, int_vars, G);
 
 	cout<<"--------"<<endl;
-	for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
-		cout<<FracSol[e]<<' '<<IntSol[e]<<endl;
-	}
-
-	ListGraph::NodeMap<bool> ones(G, 1);
 	ListGraph::EdgeMap<bool> BoolIntSol(G);
 
-	for (ListGraph::NodeIt v(G); v != INVALID; ++v){
-		BoolIntSol[v] = IntSol[v];
+	for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
+		cout<<FracSol[e]<<' '<<IntSol[e]<<endl;
+		BoolIntSol[e] = IntSol[e];
 	}
 
 	SubGraph<ListGraph> H(G, ones, BoolIntSol);
