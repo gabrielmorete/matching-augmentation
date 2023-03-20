@@ -17,6 +17,7 @@ ofstream g_out, log_out;
 	file.
 */
 void SolveCurrentMatching(int matching_id,
+	ListGraph::EdgeMap<int> &cost,
 	GRBModel &frac_model,
 	GRBVar *frac_vars,
 	GRBModel &int_model,
@@ -26,7 +27,7 @@ void SolveCurrentMatching(int matching_id,
 	ListGraph::EdgeMap<int> IntSol(G);
 	ListGraph::EdgeMap<double> FracSol(G);
 
-	SolveMapInstance(FracSol, IntSol, BDSSol, frac_model, frac_vars, int_model, int_vars);
+	SolveMapInstance(cost, FracSol, IntSol, BDSSol, frac_model, frac_vars, int_model, int_vars);
 
 	if (sign(FracSol[G.edgeFromId(0)]) == -1 or IntSol[G.edgeFromId(0)] == -1){
 		#pragma omp critical
@@ -143,18 +144,18 @@ void FindAllMatchings(int e_id, int &n, int &m, int &n_matched, int &total_match
 	GRBVar *int_vars){
 
 	if (e_id >= m){
-		SolveCurrentMatching(total_matchings, frac_model, frac_vars, int_model, int_vars);
+		SolveCurrentMatching(total_matchings, cost, frac_model, frac_vars, int_model, int_vars);
 		return;
 	}
 
 	if (n_matched >= n - 1){ // matching cant increase, prune
-		SolveCurrentMatching(total_matchings, frac_model, frac_vars, int_model, int_vars);
+		SolveCurrentMatching(total_matchings, cost, frac_model, frac_vars, int_model, int_vars);
 		return;
 	}
 
 
 	// Case 1 : won't add edge e_id to the matching
-	FindAllMatchings(e_id + 1, n, m, n_matched, total_matchings, matched, frac_model, frac_vars, int_model, int_vars); 
+	FindAllMatchings(e_id + 1, n, m, n_matched, total_matchings, matched, cost, frac_model, frac_vars, int_model, int_vars); 
 
 	// Case 2 : if possible, will add e_id to the matching
 	ListGraph::Edge e = G.edgeFromId(e_id);
@@ -166,7 +167,7 @@ void FindAllMatchings(int e_id, int &n, int &m, int &n_matched, int &total_match
 		cost[e] = 0;
 		total_matchings++;
 
-		FindAllMatchings(e_id + 1, n, m, n_matched, total_matchings, matched,  frac_model, frac_vars, int_model, int_vars);
+		FindAllMatchings(e_id + 1, n, m, n_matched, total_matchings, matched, cost, frac_model, frac_vars, int_model, int_vars);
 
 		matched[G.u(e)] = 0;
 		matched[G.v(e)] = 0;

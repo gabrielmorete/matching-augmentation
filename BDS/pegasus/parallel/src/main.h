@@ -73,6 +73,7 @@ void IntegerSolution(ListGraph::EdgeMap<int> &IntSol, GRBModel &int_model, GRBVa
 	Wrapper function that call the solvers.
 */
 void SolveMapInstance(
+	ListGraph::EdgeMap<int> &cost,
 	ListGraph::EdgeMap<double> &FracSol,
 	ListGraph::EdgeMap<int> &IntSol,
 	ListGraph::EdgeMap<bool> &BDSSol,
