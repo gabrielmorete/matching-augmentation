@@ -13,7 +13,7 @@ GUROBI_CPPLIB   = -L $(GUROBI_PATH)/lib -lgurobi_c++ -lgurobi81
 
 
 % : %.cpp
-	$(CPP) $(CARGS) $(STD) -o $@ $< -I$(INC) $(GUROBI_CPPLIB) -lm -lemon -lstdc++fs -fopenmp
+	$(CPP) $(CARGS) $(STD) -o $@ $< -I$(INC) $(GUROBI_CPPLIB) -lm -lemon -fopenmp
 #	$(CPP) -o $@ $
 
 # clean:
