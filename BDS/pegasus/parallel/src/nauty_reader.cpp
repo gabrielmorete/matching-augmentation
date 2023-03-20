@@ -221,7 +221,7 @@ bool ReadGraph(int &cnt, int &my_cnt){
 	return ok;
 }
 
-void PrintLogProgress(int n, int cnt){
+void PrintLogProgress(int n, int cnt, ListGraph &G){
 
 	#pragma omp critical
 	{
@@ -249,8 +249,9 @@ void RunNautyInput(int start){
     private(G, __found_feasible, __cur_graph_id, g_out, log_out)\
     shared(cnt, __best_BDS_graph_id, __best_BDS_matching_id, __best_IP_graph_id, __best_IP_matching_id, __best_IP, __best_BDS)
 	{
+		ListGraph G; // Declare global Graph
 		int my_cnt;
-		while (ReadGraph(cnt, my_cnt)){	
+		while (ReadGraph(cnt, my_cnt, G)){	
 
 
 			int n = countNodes(G);
@@ -289,7 +290,7 @@ void RunNautyInput(int start){
 			__found_feasible = 0;
 			__cur_graph_id = my_cnt;
 
-			SolveAllMatchings();
+			// SolveAllMatchings();
 
 			if (__found_feasible)
 				g_out.close();
