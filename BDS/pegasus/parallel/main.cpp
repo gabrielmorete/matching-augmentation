@@ -363,8 +363,8 @@ void SolveMapInstance(
 		cout<<FracSol[e]<<' '<<IntSol[e]<<endl;
 	}
 
-	ListGraph::NodeMap ones(G, 1);
-	ListGraph::NodeMap BoolIntSol(G, 1);
+	ListGraph::NodeMap<bool> ones(G, 1);
+	ListGraph::NodeMap<bool> BoolIntSol(G, 1);
 
 	for (ListGraph::NodeIt v(G); v != INVALID; ++v){
 		BoolIntSol[v] = IntSol[v];
