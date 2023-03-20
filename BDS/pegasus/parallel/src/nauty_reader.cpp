@@ -257,7 +257,7 @@ void RunNautyInput(int start){
 
 
 			if (cnt == 1 and start == 0){ // Create folder to log files, create log stream
-				std::experimental::filesystem::create_directory("./" + to_string(n));
+				// std::experimental::filesystem::create_directory("./" + to_string(n));
 				log_out.open(to_string(n) + "/log"); // overwrite existing log
 			}
 			else if (start == cnt)
