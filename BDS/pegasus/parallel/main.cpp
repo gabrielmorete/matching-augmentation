@@ -366,6 +366,8 @@ void SolveMapInstance(
 		BoolIntSol[e] = IntSol[e];
 	}
 
+	ListGraph::NodeMap<bool> ones(G, 1);
+
 	SubGraph<ListGraph> H(G, ones, BoolIntSol);
 	assert(biEdgeConnected(H) == 1);
 
