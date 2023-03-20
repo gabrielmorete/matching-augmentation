@@ -388,7 +388,7 @@ void SolveMapInstance(
 		return;
 	}
 
-	IntegerSolution(cost, IntSol, BDSSol, int_model, int_vars, ListGraph &G);
+	IntegerSolution(cost, IntSol, BDSSol, int_model, int_vars, G);
 }
 
 
