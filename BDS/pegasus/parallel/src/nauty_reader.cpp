@@ -210,7 +210,7 @@ void SolveAllMatchings(){
 
 int NUM_THREADS = 1;
 
-bool ReadGraph(int &cnt, int &my_cnt){
+bool ReadGraph(int &cnt, int &my_cnt, ListGraph &G){
 	bool ok = 1;
 	#pragma omp critical 
 	{ 
@@ -221,7 +221,7 @@ bool ReadGraph(int &cnt, int &my_cnt){
 	return ok;
 }
 
-void PrintLogProgress(int n, int cnt, ListGraph &G){
+void PrintLogProgress(int n, int cnt){
 
 	#pragma omp critical
 	{
