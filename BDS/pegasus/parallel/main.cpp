@@ -109,7 +109,7 @@ void MinimumCut::callback(){
 			biEdgeConnectedComponents(H, ebcc);
 
 			int max_cmp = 0;
-			for (ListGraph::NodeIt v(G); v != INVALID; ++v)
+			for (ListGraph::NodeIt v((*G)); v != INVALID; ++v)
 				max_cmp = max(max_cmp, ebcc[v]);
 
 			if (max_cmp > 0){ // Not 2ECSS, must add a cut 
