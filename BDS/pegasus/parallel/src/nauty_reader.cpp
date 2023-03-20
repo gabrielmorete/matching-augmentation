@@ -248,7 +248,7 @@ void RunNautyInput(int start){
 	int cnt = 0;
 
     #pragma omp parallel num_threads(NUM_THREADS) \
-    private(G, __found_feasible, __cur_graph_id, g_out, log_out)\
+    private(__found_feasible, __cur_graph_id, g_out, log_out)\
     shared(cnt, __best_BDS_graph_id, __best_BDS_matching_id, __best_IP_graph_id, __best_IP_matching_id, __best_IP, __best_BDS)
 	{
 		ListGraph G; // Declare global Graph
