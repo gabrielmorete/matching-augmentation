@@ -113,8 +113,8 @@ void SolveCurrentMatching(int matching_id,
 		#pragma omp critical
 		{
 			ofstream log_out(to_string(countNodes(G)) + "/log", ios::app); // clear log file
-			log_out << "Found feasible example g" << __cur_graph_id << " matching id " << matching_id << endl;
-			log_out << "Int/Frc = " << (double) cost_Int/cost_Frac << " BDS/Frc = " << (double) cost_BDS/cost_Frac << endl;
+			cout << "Found feasible example g" << __cur_graph_id << " matching id " << matching_id << endl;
+			cout << "Int/Frc = " << (double) cost_Int/cost_Frac << " BDS/Frc = " << (double) cost_BDS/cost_Frac << endl;
 			log_out << endl;
 			log_out.close();
 		}
