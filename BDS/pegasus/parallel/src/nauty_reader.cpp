@@ -127,6 +127,7 @@ void SolveCurrentMatching(int matching_id,
 		if (sign((double)cost_BDS/cost_Frac - __best_BDS) > 0){
 			__best_BDS = (double)cost_BDS/cost_Frac;
 			__best_BDS_graph_id = __cur_graph_id;
+			dbg(__best_BDS_graph_id);
 			__best_BDS_matching_id = matching_id;
 		}
 	}	
