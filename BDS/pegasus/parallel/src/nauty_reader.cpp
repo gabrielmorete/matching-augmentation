@@ -211,9 +211,6 @@ void SolveAllMatchings(ListGraph &G){
 
 	int total_matchings = 1, n_matched = 0;
 	FindAllMatchings(0, n, m, n_matched, total_matchings, matched, cost, frac_model, frac_vars, int_model, int_vars, G);
-
-	if (__found_feasible == 1)
-		g_out << "Number of matchings : " << total_matchings << endl;
 }
 
 
