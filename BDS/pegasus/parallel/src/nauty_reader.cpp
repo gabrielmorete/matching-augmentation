@@ -15,8 +15,8 @@
 
 const double __IP_dividend = 4;
 const double __IP_divisor = 3;
-const double __BDS_dividend = 7;
-const double __BDS_divisor = 5;
+const double __BDS_dividend = 5;
+const double __BDS_divisor = 4;
 
 bool __found_feasible;
 int __cur_graph_id, __best_IP_graph_id, __best_IP_matching_id, __best_BDS_graph_id, __best_BDS_matching_id;
