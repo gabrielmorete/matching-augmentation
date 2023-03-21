@@ -263,7 +263,7 @@ void RunNautyInput(int start, int n_threads = 1){
 			{	
 				if (start == 0){ // Create folder to log files, create log stream
 					std::experimental::filesystem::create_directory("./" + to_string(n));
-					ofstream log_out(to_string(countNodes(G)) + "/log"); // clear log file
+					log_out.open(to_string(countNodes(G)) + "/log"); // clear log file
 					start == -1;
 				}	
 			}
