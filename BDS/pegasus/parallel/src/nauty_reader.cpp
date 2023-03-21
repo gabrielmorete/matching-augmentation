@@ -8,7 +8,6 @@
 bool __found_feasible;
 int __cur_graph_id, __best_IP_graph_id, __best_IP_matching_id, __best_BDS_graph_id, __best_BDS_matching_id;
 double __best_IP, __best_BDS;
-ofstream log_out;
 
 #pragma omp threadprivate(__found_feasible, __cur_graph_id)
 #pragma omp threadshared(log_out)
@@ -114,9 +113,11 @@ void SolveCurrentMatching(int matching_id,
 		
 		#pragma omp critical
 		{
+			ofstrem log_out(to_string(countNodes(G)) + "/log", ios::app); // clear log file
 			log_out << "Found feasible example g" << __cur_graph_id << " matching id " << matching_id << endl;
 			log_out << "Int/Frc = " << (double) cost_Int/cost_Frac << " BDS/Frc = " << (double) cost_BDS/cost_Frac << endl;
 			log_out << endl;
+			log_out.close();
 		}
 	}
 
@@ -131,9 +132,7 @@ void SolveCurrentMatching(int matching_id,
 
 		if (sign((double)cost_BDS/cost_Frac - __best_BDS) > 0){
 			__best_BDS = (double)cost_BDS/cost_Frac;
-			dbg(__cur_graph_id);
 			__best_BDS_graph_id = __cur_graph_id;
-			dbg(__best_BDS_graph_id);
 			__best_BDS_matching_id = matching_id;
 		}
 	}	
@@ -264,7 +263,8 @@ void RunNautyInput(int start, int n_threads = 1){
 			{	
 				if (start == 0){ // Create folder to log files, create log stream
 					std::experimental::filesystem::create_directory("./" + to_string(n));
-					log_out.open(to_string(countNodes(G)) + "/log"); // clear log file
+					ofstrem log_out(to_string(countNodes(G)) + "/log"); // clear log file
+					log_out.close();
 					start == -1;
 				}	
 			}
@@ -299,5 +299,4 @@ void RunNautyInput(int start, int n_threads = 1){
 			PrintLogProgress(n, cnt);
 		}
 	}
-	log_out.close();
 }
