@@ -267,7 +267,7 @@ void RunNautyInput(int start, int n_threads = 1){
 					std::experimental::filesystem::create_directory("./" + to_string(n));
 					ofstream log_out(to_string(countNodes(G)) + "/log"); // clear log file
 					log_out.close();
-					start == -1;
+					start = -1;
 				}	
 			}
 
