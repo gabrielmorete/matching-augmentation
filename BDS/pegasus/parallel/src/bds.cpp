@@ -209,8 +209,8 @@ void RecoverUpLinkSol(Node v,
 	Edge e = dp_edge[v];
 	BDSSol[e] = 1;
 
-	Node u = G.u(e);
-	Node w = G.v(e);
+	Node u = T.u(e);
+	Node w = T.v(e);
 	if (Dec(w, u, in, out)) // If u is a decendent of w
 		std::swap(w, u);
 
