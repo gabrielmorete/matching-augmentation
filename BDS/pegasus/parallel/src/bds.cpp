@@ -16,7 +16,7 @@ void BDSDFS(ListGraph::Node v,
 	ListGraph::EdgeMap<bool> &BDSSol,
 	int &clk,
 	ListGraph::NodeMap<int> &in,
-	ListGraph::NodeMap<int> &out
+	ListGraph::NodeMap<int> &out,
 	ListGraph &G){
 
 	in[v] = clk++;
