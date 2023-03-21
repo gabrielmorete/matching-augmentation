@@ -1,7 +1,7 @@
 /*
 	Nauty Reader
 
-	Files to read graph6 input in parallel and generate all matchings.
+	Read graph6 input in parallel, generate all matchings and calls solvers.
 */
 
 #include "lemon.h"
@@ -11,7 +11,6 @@
 	gaps for each algorithm.
 		- IP gap is >= __IP_dividend/__IP_divisor
 		- BDS gap is > __BDS_dividend/__BDS_divisor
-	
 */
 
 const double __IP_dividend = 4;
