@@ -13,7 +13,7 @@
 		...
 		a_m b_m c_m 
 */
-void ReadStdioInput(){
+void ReadStdioInput(ListGraph &G){
 	int n, m;
 	cin>>n>>m;
 	
@@ -47,7 +47,8 @@ void ReadStdioInput(){
 }
 
 void RunStdioInput(){
-	ReadStdioInput();
+	ListGraph G;
+	ReadStdioInput(G);
 
 	int n = countNodes(G);
 	int m = countEdges(G);
@@ -58,15 +59,15 @@ void RunStdioInput(){
 
 	GRBModel frac_model(env);
 	GRBVar frac_vars[m];
-	BuildFractional(frac_model, frac_vars);
+	BuildFractional(frac_model, frac_vars, G);
 
 	GRBModel int_model(env);
 	GRBVar int_vars[m];
-	BuildIntegral(int_model, int_vars);
-	MinimumCut cb = MinimumCut(int_vars, n, m);
+	BuildIntegral(int_model, int_vars, G);
+	MinimumCut cb = MinimumCut(int_vars, n, m, G);
 	int_model.setCallback(&cb);
 
-	SolveMapInstance(FracSol, IntSol, BDSSol, frac_model, frac_vars, int_model, int_vars);
+	SolveMapInstance(FracSol, IntSol, BDSSol, frac_model, frac_vars, int_model, int_vars, G);
 
 	int cost_Int = 0;
 	int cost_BDS = 0;
