@@ -240,13 +240,13 @@ void PrintLogProgress(int n, int cnt){
 	build a LEMON graph and the log files, and calls the function
 	that iterates through all matchings.
 */
-void RunNautyInput(int start){
+void RunNautyInput(int start, int n_threads = 1){
 	__best_IP = __best_BDS = 1;
 	__best_IP_graph_id = __best_IP_matching_id = __best_BDS_graph_id = __best_BDS_matching_id = 1;
 
 	int cnt = 0;
 
-    #pragma omp parallel num_threads(NUM_THREADS) \
+    #pragma omp parallel num_threads(n_threads) \
     private(__found_feasible, __cur_graph_id, g_out, log_out)\
     shared(cnt, __best_BDS_graph_id, __best_BDS_matching_id, __best_IP_graph_id, __best_IP_matching_id, __best_IP, __best_BDS)
 	{

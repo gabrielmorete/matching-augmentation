@@ -399,6 +399,7 @@ signed main(int argc, char *argv[]){
 
 	bool stdio = 0;
 	int start = 0;
+	int n_threads = 1;
 
 	for (int i = 1; i < argc; i++){
 		string s = argv[i];
@@ -410,8 +411,12 @@ signed main(int argc, char *argv[]){
 			s = argv[i + 1];
 			start = stoi(s);
 			i++;
+		} else if (s == "-threads"){
+			s = argv[i + 1];
+			n_threads = stoi(s);
+			i++;
 		} else {
-			cout<<"Usage: -stdio -verbose -start n"<<endl;
+			cout<<"Usage: -stdio -verbose -start n -threads t"<<endl;
 			return 0;
 		}
 	}
@@ -419,6 +424,6 @@ signed main(int argc, char *argv[]){
 	// if (stdio)
 	// 	RunStdioInput();
 	// else
-		RunNautyInput(start);
+		RunNautyInput(start, n_threads);
 }
 
