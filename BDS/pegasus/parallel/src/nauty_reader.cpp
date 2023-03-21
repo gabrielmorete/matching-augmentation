@@ -1,9 +1,22 @@
+/*
+	Nauty Reader
+
+	Files to read graph6 input in parallel and generate all matchings.
+*/
+
 #include "lemon.h"
 #include "main.h"
 
 /*
-	Nauty Reader
+	gaps for each algorithm.
+		- IP gap is >= __IP_dividend/__IP_divisor
+		- BDS gap is > __BDS_dividend/__BDS_divisor
 */
+
+const double __IP_dividend = 4;
+const double __IP_divisor = 3;
+const double __BDS_dividend = 7;
+const double __BDS_divisor = 5;
 
 bool __found_feasible;
 int __cur_graph_id, __best_IP_graph_id, __best_IP_matching_id, __best_BDS_graph_id, __best_BDS_matching_id;
@@ -62,7 +75,7 @@ void SolveCurrentMatching(int matching_id,
 			- IP gap must be at least 4/3
 			- BDS gap must be more than 7/5
 	*/
-	if (sign(3.0 * cost_Int - 4.0 * cost_Frac) >= 0 or sign(5.0 * cost_BDS - 7.0 * cost_Frac) > 0){
+	if (sign(__IP_divisor * cost_Int - __IP_dividend * cost_Frac) >= 0 or sign(__BDS_divisor * cost_BDS - __BDS_dividend * cost_Frac) > 0){
 		if (__found_feasible == 0){ // First matching found for this graph
 			// create file "g"+cnt
 			g_out.open(to_string(countNodes(G)) + "/g" + to_string(__cur_graph_id));
@@ -245,6 +258,10 @@ void PrintLogProgress(int n, int cnt){
 void RunNautyInput(int start, int n_threads = 1){
 	__best_IP = __best_BDS = 1;
 	__best_IP_graph_id = __best_IP_matching_id = __best_BDS_graph_id = __best_BDS_matching_id = 1;
+
+	cout << "Running with " << "-start = " << start << "-threads = " << n_threads << endl;
+	cout << " IP gap >= " << __IP_dividend << "/" << __IP_divisor << endl;
+	cout << " BDS gap > " << __BDS_dividend << "/" << __BDS_divisor << endl;
 
 	int cnt = 0;
 
