@@ -107,7 +107,7 @@ void SolveCurrentMatching(int matching_id,
 		#pragma omp critical
 		{
 			// Generate entry in the log file
-			ofstream log_out.open(to_string(countNodes(G)) + "/log",  ios::app); // open in append mode
+			ofstream log_out(to_string(countNodes(G)) + "/log",  ios::app); // open in append mode
 			log_out << "Found feasible example g" << __cur_graph_id << " matching id " << matching_id << endl;
 			log_out << "Int/Frc = " << (double) cost_Int/cost_Frac << " BDS/Frc = " << (double) cost_BDS/cost_Frac << endl;
 			log_out << endl;
@@ -248,10 +248,10 @@ void RunNautyInput(int start, int n_threads = 1){
 
 	if (start == 0){ // Create folder to log files, create log stream
 		std::experimental::filesystem::create_directory("./" + to_string(n));
-		ofstream log_out.open(to_string(countNodes(G)) + "/log",  ios::app); // clear log file
+		ofstream log_out(to_string(countNodes(G)) + "/log",  ios::app); // clear log file
 		log_out.close();
 	}	
-	
+
     #pragma omp parallel num_threads(n_threads) \
     private(__found_feasible, __cur_graph_id, g_out)\
     shared(cnt, __best_BDS_graph_id, __best_BDS_matching_id, __best_IP_graph_id, __best_IP_matching_id, __best_IP, __best_BDS)
