@@ -10,7 +10,6 @@ int __cur_graph_id, __best_IP_graph_id, __best_IP_matching_id, __best_BDS_graph_
 double __best_IP, __best_BDS;
 
 #pragma omp threadprivate(__found_feasible, __cur_graph_id)
-#pragma omp threadshared(log_out)
 
 /*
 	This function calls the LP, IP and BDS algorithms to
