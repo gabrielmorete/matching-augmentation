@@ -289,7 +289,7 @@ void BDSAlgorithm(ListGraph::EdgeMap<int> &cost,
 		[](ListGraph::OutArcIt a, ListGraph::OutArcIt b){
 			return FracSol[a] > FracSol[b];
 		}
-	)
+	);
 
 
 	// Step 1, find a DFS Tree
