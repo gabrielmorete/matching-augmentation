@@ -291,7 +291,6 @@ void RunNautyInput(int start, int n_threads = 1){
 			*/
 			__found_feasible = 0;
 			__cur_graph_id = my_cnt;
-			dbg(__cur_graph_id);
 
 			SolveAllMatchings(G);
 
