@@ -282,15 +282,16 @@ void BDSAlgorithm(ListGraph::EdgeMap<int> &cost,
 				p = i;
 			}
 		swap(adj[v][0], adj[v][p]);	
-	}	
 
-	// sort by decreasing lp value
-	sort(adj[v].begin() + matched, adj[v].end(),
+		// sort by decreasing lp value
+		sort(adj[v].begin() + matched, adj[v].end(),
 		[](ListGraph::OutArcIt a, ListGraph::OutArcIt b){
 			return FracSol[a] > FracSol[b];
 		}
 	);
 
+
+	}	
 
 	// Step 1, find a DFS Tree
 	ListGraph::NodeMap<ListGraph::Node> parent(G);
