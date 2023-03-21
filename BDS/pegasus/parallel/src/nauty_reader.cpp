@@ -8,7 +8,7 @@
 bool __found_feasible;
 int __cur_graph_id, __best_IP_graph_id, __best_IP_matching_id, __best_BDS_graph_id, __best_BDS_matching_id;
 double __best_IP, __best_BDS;
-ofstream g_out, log_out;
+ofstream g_out;
 
 /*
 	This function calls the LP, IP and BDS algorithms to
@@ -56,10 +56,10 @@ void SolveCurrentMatching(int matching_id,
 
 	/* 
 		Found a feasible example, print to file
-			- IP gap must be at least 6/5
+			- IP gap must be at least 4/3
 			- BDS gap must be better than 4/3
 	*/
-	if (sign(5.0 * cost_Int - 6.0 * cost_Frac) >= 0 or sign(3.0 * cost_BDS - 4.0 * cost_Frac) > 0){
+	if (sign(3.0 * cost_Int - 4.0 * cost_Frac) >= 0 or sign(3.0 * cost_BDS - 4.0 * cost_Frac) > 0){
 		if (__found_feasible == 0){ // First matching found for this graph
 			// create file "g"+cnt
 			g_out.open(to_string(countNodes(G)) + "/g" + to_string(__cur_graph_id));
@@ -107,9 +107,11 @@ void SolveCurrentMatching(int matching_id,
 		#pragma omp critical
 		{
 			// Generate entry in the log file
+			ofstream log_out.open(to_string(countNodes(G)) + "/log",  ios::app); // open in append mode
 			log_out << "Found feasible example g" << __cur_graph_id << " matching id " << matching_id << endl;
 			log_out << "Int/Frc = " << (double) cost_Int/cost_Frac << " BDS/Frc = " << (double) cost_BDS/cost_Frac << endl;
 			log_out << endl;
+			log_out.close();
 		}
 	}
 
@@ -209,8 +211,6 @@ void SolveAllMatchings(ListGraph &G){
 }
 
 
-int NUM_THREADS = 10;
-
 bool ReadGraph(int &cnt, int &my_cnt, ListGraph &G){
 	bool ok = 1;
 	#pragma omp critical 
@@ -227,7 +227,7 @@ void PrintLogProgress(int n, int cnt){
 	#pragma omp critical
 	{
 		ofstream log_progress(to_string(n) + "/log_progress");
-		log_progress << "Last read graph" << cnt << endl;
+		log_progress << "Last read graph" << cnt << endl; // Careful with this, I'm not using mutex
 		log_progress << "Best IP/Frac: " << __best_IP << " g" << __best_IP_graph_id << " matching " << __best_IP_matching_id << endl;
 		log_progress << "Best BDS/Frac: " << __best_BDS << " g" << __best_BDS_graph_id << " matching " << __best_BDS_matching_id << endl;
 		log_progress.close();	
@@ -246,8 +246,14 @@ void RunNautyInput(int start, int n_threads = 1){
 
 	int cnt = 0;
 
+	if (start == 0){ // Create folder to log files, create log stream
+		std::experimental::filesystem::create_directory("./" + to_string(n));
+		ofstream log_out.open(to_string(countNodes(G)) + "/log",  ios::app); // clear log file
+		log_out.close();
+	}	
+	
     #pragma omp parallel num_threads(n_threads) \
-    private(__found_feasible, __cur_graph_id, g_out, log_out)\
+    private(__found_feasible, __cur_graph_id, g_out)\
     shared(cnt, __best_BDS_graph_id, __best_BDS_matching_id, __best_IP_graph_id, __best_IP_matching_id, __best_IP, __best_BDS)
 	{
 		ListGraph G; // Declare global Graph
@@ -260,11 +266,6 @@ void RunNautyInput(int start, int n_threads = 1){
 
 			if (cnt < start) continue;
 
-
-			if (cnt == 1 and start == 0){ // Create folder to log files, create log stream
-				std::experimental::filesystem::create_directory("./" + to_string(n));
-				log_out.open(to_string(n) + "/log"); // overwrite existing log
-			}
 			else if (start == cnt)
 				log_out.open(to_string(n) + "/log", ios::app); // open in append mode
 

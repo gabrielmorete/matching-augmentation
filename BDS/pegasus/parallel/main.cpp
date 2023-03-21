@@ -3,7 +3,6 @@
 		- Linear Relaxation
 		- Integer Formulation
 		- BDS Approximation Algorithm 
-
 	
 	Author : Gabriel Morete
 */
@@ -67,10 +66,10 @@ vector<GRBLinExpr> FindMinCuts(double *sol, GRBVar *vars, int n, int m, ListGrap
 /*
 	Constructor of min cut class
 */
-MinimumCut::MinimumCut(GRBVar* xvars, int xn, int xm, ListGraph &_G){
-	vars = xvars;
-	n = xn;
-	m = xm;
+MinimumCut::MinimumCut(GRBVar* _vars, int _n, int _m, ListGraph &_G){
+	vars = _vars;
+	n = _n;
+	m = _m;
 	G = &_G;
 }
 
