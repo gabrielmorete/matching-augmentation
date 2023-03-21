@@ -9,7 +9,7 @@
 */
 #include "src/main.h"
 #include "src/lemon.h"
-// #include "src/bds.cpp"
+#include "src/bds.cpp"
 #include "src/nauty_reader.cpp"
 // #include "src/stdio_reader.cpp"
 
@@ -375,7 +375,7 @@ void SolveMapInstance(
 	if (sign(FracSol[G.edgeFromId(0)]) == -1)
 		return;
 
-	// BDSAlgorithm(cost, FracSol, BDSSol);
+	BDSAlgorithm(cost, FracSol, BDSSol, G);
 
 	// If fractional solution is integral, no need to solve a MIP
 	bool is_integral = 1;
