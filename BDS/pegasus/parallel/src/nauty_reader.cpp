@@ -15,7 +15,7 @@
 
 const double __IP_dividend = 4;
 const double __IP_divisor = 3;
-const double __BDS_dividend = 5;
+const double __BDS_dividend = 4;
 const double __BDS_divisor = 4;
 
 bool __found_feasible;
@@ -259,7 +259,7 @@ void RunNautyInput(int start, int n_threads = 1){
 	__best_IP = __best_BDS = 1;
 	__best_IP_graph_id = __best_IP_matching_id = __best_BDS_graph_id = __best_BDS_matching_id = 1;
 
-	cout << "Running with " << "-start " << start << " -threads " << n_threads << endl;
+	cout << " Running solver with " << "-start " << start << " -threads " << n_threads << endl;
 	cout << " IP gap >= " << __IP_dividend << "/" << __IP_divisor << endl;
 	cout << " BDS gap > " << __BDS_dividend << "/" << __BDS_divisor << endl;
 
