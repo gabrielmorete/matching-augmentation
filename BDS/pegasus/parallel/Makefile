@@ -16,7 +16,7 @@ STL = -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC -D_FORTIFY_SOURCE=2
 
 
 % : %.cpp
-	$(CPP) $(CARGS) $(STD) -o $@ $< -I$(INC) $(GUROBI_CPPLIB) -lm -lemon -fopenmp
+	$(CPP) $(CARGS) $(STD) -o $@ $< -I$(INC) $(GUROBI_CPPLIB) -lm -lemon -fopenmp -lstdc++fs
 #	$(CPP) -o $@ $
 
 # clean:
