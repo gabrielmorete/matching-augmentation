@@ -81,8 +81,6 @@ void SolveCurrentMatching(int matching_id,
 
 		g_out << matching_id << ": ";
 
-		cout<<"oi"<<endl;
-
 		bool first = 1;
 		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
 			if (cost[e] == 0){
@@ -112,7 +110,6 @@ void SolveCurrentMatching(int matching_id,
 
 		g_out.close();
 		
-		cout<<"ola"<<endl;
 		#pragma omp critical
 		{
 			ofstream log_out(to_string(countNodes(G)) + "/log", ios::app); // clear log file
