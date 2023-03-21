@@ -246,12 +246,6 @@ void RunNautyInput(int start, int n_threads = 1){
 
 	int cnt = 0;
 
-	if (start == 0){ // Create folder to log files, create log stream
-		std::experimental::filesystem::create_directory("./" + to_string(n));
-		ofstream log_out(to_string(countNodes(G)) + "/log",  ios::app); // clear log file
-		log_out.close();
-	}	
-
     #pragma omp parallel num_threads(n_threads) \
     private(__found_feasible, __cur_graph_id, g_out)\
     shared(cnt, __best_BDS_graph_id, __best_BDS_matching_id, __best_IP_graph_id, __best_IP_matching_id, __best_IP, __best_BDS)
@@ -260,14 +254,20 @@ void RunNautyInput(int start, int n_threads = 1){
 		int my_cnt;
 		while (ReadGraph(cnt, my_cnt, G)){	
 
+			#pragma omp critical
+			{	
+				if (start == 0){ // Create folder to log files, create log stream
+					std::experimental::filesystem::create_directory("./" + to_string(n));
+					ofstream log_out(to_string(countNodes(G)) + "/log",  ios::app); // clear log file
+					log_out.close();
+					start++;
+				}	
+			}
 
 			int n = countNodes(G);
 			int m = countEdges(G);
 
 			if (cnt < start) continue;
-
-			else if (start == cnt)
-				log_out.open(to_string(n) + "/log", ios::app); // open in append mode
 
 			// Next loop makes shure that lemon graph is consistent with the algorithm input
 			int nvtx = n - 1, ok = 1;
