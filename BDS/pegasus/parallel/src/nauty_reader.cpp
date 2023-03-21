@@ -210,7 +210,7 @@ void SolveAllMatchings(ListGraph &G){
 }
 
 
-int NUM_THREADS = 1;
+int NUM_THREADS = 5;
 
 bool ReadGraph(int &cnt, int &my_cnt, ListGraph &G){
 	bool ok = 1;
