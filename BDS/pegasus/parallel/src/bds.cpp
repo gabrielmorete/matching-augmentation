@@ -285,7 +285,7 @@ void BDSAlgorithm(ListGraph::EdgeMap<int> &cost,
 
 		// sort by decreasing lp value
 		sort(adj[G.id(v)].begin() + matched, adj[G.id(v)].end(),
-		[&FracSol](ListGraph::OutArcIt &a, ListGraph::OutArcIt &b){
+		[&FracSol](ListGraph::OutArc &a, ListGraph::OutArc &b){
 			return FracSol[a] > FracSol[b];
 		}
 	);
