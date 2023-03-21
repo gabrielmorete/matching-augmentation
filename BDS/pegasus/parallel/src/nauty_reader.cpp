@@ -8,9 +8,9 @@
 bool __found_feasible;
 int __cur_graph_id, __best_IP_graph_id, __best_IP_matching_id, __best_BDS_graph_id, __best_BDS_matching_id;
 double __best_IP, __best_BDS;
-ofstream g_out;
+ofstream log_out;
 
-#pragma omp threadprivate(__found_feasible, __cur_graph_id, g_out)
+#pragma omp threadprivate(__found_feasible, __cur_graph_id)
 
 /*
 	This function calls the LP, IP and BDS algorithms to
@@ -56,6 +56,8 @@ void SolveCurrentMatching(int matching_id,
 		cost_BDS +=  (int)BDSSol[e] * cost[e];
 	}
 
+	ofstream g_out;
+
 	/* 
 		Found a feasible example, print to file
 			- IP gap must be at least 4/3
@@ -73,6 +75,8 @@ void SolveCurrentMatching(int matching_id,
 			
 			g_out << "----------" << endl << endl;
 		}
+		else
+			g_out.open(to_string(countNodes(G)) + "/g" + to_string(__cur_graph_id), ios::app);
 
 		__found_feasible = 1;
 
@@ -105,15 +109,13 @@ void SolveCurrentMatching(int matching_id,
 			g_out << BDSSol[e] << ' ';
 		g_out << endl << endl;
 
+		g_out.close();
 		
 		#pragma omp critical
 		{
-			// Generate entry in the log file
-			ofstream log_out(to_string(countNodes(G)) + "/log",  ios::app); // open in append mode
 			log_out << "Found feasible example g" << __cur_graph_id << " matching id " << matching_id << endl;
 			log_out << "Int/Frc = " << (double) cost_Int/cost_Frac << " BDS/Frc = " << (double) cost_BDS/cost_Frac << endl;
 			log_out << endl;
-			log_out.close();
 		}
 	}
 
@@ -265,9 +267,8 @@ void RunNautyInput(int start, int n_threads = 1){
 			{	
 				if (start == 0){ // Create folder to log files, create log stream
 					std::experimental::filesystem::create_directory("./" + to_string(n));
-					ofstream log_out(to_string(countNodes(G)) + "/log",  ios::app); // clear log file
-					log_out.close();
-					start++;
+					ofstream log_out(to_string(countNodes(G)) + "/log"); // clear log file
+					start == -1;
 				}	
 			}
 
@@ -298,10 +299,8 @@ void RunNautyInput(int start, int n_threads = 1){
 
 			SolveAllMatchings(G);
 
-			if (__found_feasible)
-				g_out.close();
-
 			PrintLogProgress(n, cnt);
 		}
 	}
+	log_out.close();
 }
