@@ -13,7 +13,7 @@
 		...
 		a_m b_m c_m 
 */
-void ReadStdioInput(ListGraph::EdgeMap<int> cost, ListGraph &G){
+void ReadStdioInput(ListGraph::EdgeMap<int> &cost, ListGraph &G){
 	int n, m;
 	cin>>n>>m;
 	
