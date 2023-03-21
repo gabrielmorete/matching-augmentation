@@ -89,7 +89,8 @@ int UpLinkDP(Node v, ListGraph::NodeMap<int> &memo,
 	ListGraph::NodeMap<int> &out,
 	ListGraph::EdgeMap<bool> &BDSSol,
 	ListGraph::EdgeMap<double> &FracSol,
-	SubGraph<ListGraph> &T){
+	SubGraph<ListGraph> &T,
+	ListGraph &G){
 	
 	if (memo[v] != -1)
 		return memo[v];
@@ -119,7 +120,7 @@ int UpLinkDP(Node v, ListGraph::NodeMap<int> &memo,
 
 						if (y != lst and y != parent[h]){
 							// cout<<" Transition "<<G.id(v) + 1<<' '<<G.id(y) + 1<<endl;
-							subtree_cost += UpLinkDP(y, memo, dp_edge, cost, parent, in, out, BDSSol, FracSol, T);
+							subtree_cost += UpLinkDP(y, memo, dp_edge, cost, parent, in, out, BDSSol, FracSol, T, G);
 						}
 					}	
 
@@ -247,7 +248,7 @@ void UpLinkAugmentation(
 
 
 	for (SubGraph<ListGraph>::OutArcIt a(T, G.nodeFromId(0)); a != INVALID; ++a){
-		UpLinkDP(T.target(a), memo, dp_edge, cost, parent, in, out, BDSSol, FracSol, T);
+		UpLinkDP(T.target(a), memo, dp_edge, cost, parent, in, out, BDSSol, FracSol, T, G);
 		RecoverUpLinkSol(T.target(a), dp_edge, parent, in, out, BDSSol, T);
 	}
 }
