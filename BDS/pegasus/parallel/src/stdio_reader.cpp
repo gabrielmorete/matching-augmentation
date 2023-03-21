@@ -9,7 +9,7 @@
 	This function reads the Graph from Stdio. Graph is 0-indexed
 	The input format will be
 		n m       number of nodes, edges
-		a_1 b_1 c_1     edge bertween a_1, b_1 with cost c_1
+		a_1 b_1 c_1     edge between a_1, b_1 with cost c_1
 		...
 		a_m b_m c_m 
 */
