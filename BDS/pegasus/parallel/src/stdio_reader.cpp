@@ -48,7 +48,7 @@ void ReadStdioInput(ListGraph::EdgeMap<int> cost, ListGraph &G){
 
 void RunStdioInput(){
 	ListGraph G;
-	ListGraph::EdgeMap<int> cost;
+	ListGraph::EdgeMap<int> cost(G);
 
 	ReadStdioInput(cost, G);
 
