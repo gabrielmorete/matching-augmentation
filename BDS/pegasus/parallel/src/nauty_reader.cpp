@@ -155,7 +155,6 @@ void FindAllMatchings(int e_id, int &n, int &m, int &n_matched, int &total_match
 		return;
 	}
 
-
 	// Case 1 : won't add edge e_id to the matching
 	FindAllMatchings(e_id + 1, n, m, n_matched, total_matchings, matched, cost, frac_model, frac_vars, int_model, int_vars, G); 
 
@@ -263,7 +262,7 @@ void RunNautyInput(int start){
 
 
 			if (cnt == 1 and start == 0){ // Create folder to log files, create log stream
-				// std::experimental::filesystem::create_directory("./" + to_string(n));
+				std::experimental::filesystem::create_directory("./" + to_string(n));
 				log_out.open(to_string(n) + "/log"); // overwrite existing log
 			}
 			else if (start == cnt)
