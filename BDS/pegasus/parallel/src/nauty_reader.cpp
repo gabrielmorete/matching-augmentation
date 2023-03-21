@@ -249,7 +249,7 @@ void RunNautyInput(int start, int n_threads = 1){
 	int cnt = 0;
 
     #pragma omp parallel num_threads(n_threads) \
-    shared(cnt, __best_BDS_graph_id, __best_BDS_matching_id, __best_IP_graph_id, __best_IP_matching_id, __best_IP, __best_BDS, log_out)
+    shared(cnt, __best_BDS_graph_id, __best_BDS_matching_id, __best_IP_graph_id, __best_IP_matching_id, __best_IP, __best_BDS)
 	{
 		ListGraph G; // Declare global Graph
 		int my_cnt;
@@ -262,7 +262,7 @@ void RunNautyInput(int start, int n_threads = 1){
 			{	
 				if (start == 0){ // Create folder to log files, create log stream
 					std::experimental::filesystem::create_directory("./" + to_string(n));
-					ofstrem log_out(to_string(countNodes(G)) + "/log"); // clear log file
+					ofstream log_out(to_string(countNodes(G)) + "/log"); // clear log file
 					log_out.close();
 					start == -1;
 				}	
