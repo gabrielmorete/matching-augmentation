@@ -10,6 +10,8 @@ int __cur_graph_id, __best_IP_graph_id, __best_IP_matching_id, __best_BDS_graph_
 double __best_IP, __best_BDS;
 ofstream g_out;
 
+#pragma omp threadprivate(__found_feasible, __cur_graph_id, g_out)
+
 /*
 	This function calls the LP, IP and BDS algorithms to
 	solve the MAP problem and compares their outputs.
@@ -59,7 +61,7 @@ void SolveCurrentMatching(int matching_id,
 			- IP gap must be at least 4/3
 			- BDS gap must be better than 4/3
 	*/
-	if (sign(3.0 * cost_Int - 4.0 * cost_Frac) >= 0 or sign(3.0 * cost_BDS - 4.0 * cost_Frac) > 0){
+	if (sign(3.0 * cost_Int - 4.0 * cost_Frac) >= 0 or sign(3.0 * cost_BDS - 4.0 * cost_Frac) >= 0){
 		if (__found_feasible == 0){ // First matching found for this graph
 			// create file "g"+cnt
 			g_out.open(to_string(countNodes(G)) + "/g" + to_string(__cur_graph_id));
