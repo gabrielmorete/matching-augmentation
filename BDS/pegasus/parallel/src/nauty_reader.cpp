@@ -300,6 +300,4 @@ void RunNautyInput(int start, int n_threads = 1){
 			PrintLogProgress(n, cnt);
 		}
 	}
-
-	log_out.close();
 }
