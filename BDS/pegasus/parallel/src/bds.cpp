@@ -266,7 +266,7 @@ void BDSAlgorithm(ListGraph::EdgeMap<int> &cost,
 
 	int n = countNodes(G);
 
-	vector<vector<ListGraph::Arc>> adj;
+	vector<vector<ListGraph::Arc>> adj(n);
 
 	for (ListGraph::NodeIt v(G); v != INVALID; ++v)
 		for (ListGraph::OutArcIt a(G, v); a != INVALID; ++a)
@@ -276,15 +276,15 @@ void BDSAlgorithm(ListGraph::EdgeMap<int> &cost,
 	// Matching edge is the first one	
 	for (ListGraph::NodeIt v(G); v != INVALID; ++v){
 		int p = 0;
-		for (int i = 0; i < adj[v].size(); i++)	
-			if (cost[adj[v][i]] == 0){
+		for (int i = 0; i < adj[G.id(v)].size(); i++)	
+			if (cost[adj[G.id(v)][i]] == 0){
 				matched = 1;
 				p = i;
 			}
-		swap(adj[v][0], adj[v][p]);	
+		swap(adj[G.id(v)][0], adj[G.id(v)][p]);	
 
 		// sort by decreasing lp value
-		sort(adj[v].begin() + matched, adj[v].end(),
+		sort(adj[G.id(v)].begin() + matched, adj[G.id(v)].end(),
 		[&FracSol](ListGraph::OutArcIt a, ListGraph::OutArcIt b){
 			return FracSol[a] > FracSol[b];
 		}
