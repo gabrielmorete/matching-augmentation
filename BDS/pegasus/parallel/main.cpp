@@ -356,22 +356,6 @@ void SolveMapInstance(
 
 	FractionalSolution(cost, FracSol, frac_model, frac_vars, G);
 
-	IntegerSolution(cost, IntSol, BDSSol, int_model, int_vars, G);
-
-	cout<<"--------"<<endl;
-	ListGraph::EdgeMap<bool> BoolIntSol(G);
-
-	for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
-		cout<<FracSol[e]<<' '<<IntSol[e]<<endl;
-		BoolIntSol[e] = IntSol[e];
-	}
-
-	ListGraph::NodeMap<bool> ones(G, 1);
-
-	SubGraph<ListGraph> H(G, ones, BoolIntSol);
-	assert(biEdgeConnected(H) == 1);
-
-
 	if (sign(FracSol[G.edgeFromId(0)]) == -1)
 		return;
 
@@ -404,6 +388,7 @@ void SolveMapInstance(
 		return;
 	}
 
+	IntegerSolution(cost, IntSol, BDSSol, int_model, int_vars, G);
 }
 
 
