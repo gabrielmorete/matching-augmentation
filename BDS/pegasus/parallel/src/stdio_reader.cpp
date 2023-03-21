@@ -13,7 +13,7 @@
 		...
 		a_m b_m c_m 
 */
-void ReadStdioInput(ListGraph &G){
+void ReadStdioInput(ListGraph::EdgeMap<int> cost, ListGraph &G){
 	int n, m;
 	cin>>n>>m;
 	
@@ -48,7 +48,9 @@ void ReadStdioInput(ListGraph &G){
 
 void RunStdioInput(){
 	ListGraph G;
-	ReadStdioInput(G);
+	ListGraph::EdgeMap<int> cost;
+
+	ReadStdioInput(cost, G);
 
 	int n = countNodes(G);
 	int m = countEdges(G);
@@ -67,7 +69,7 @@ void RunStdioInput(){
 	MinimumCut cb = MinimumCut(int_vars, n, m, G);
 	int_model.setCallback(&cb);
 
-	SolveMapInstance(FracSol, IntSol, BDSSol, frac_model, frac_vars, int_model, int_vars, G);
+	SolveMapInstance(cost, FracSol, IntSol, BDSSol, frac_model, frac_vars, int_model, int_vars, G);
 
 	int cost_Int = 0;
 	int cost_BDS = 0;
