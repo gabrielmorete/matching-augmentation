@@ -358,7 +358,7 @@ void SolveMapInstance(
 	if (sign(FracSol[G.edgeFromId(0)]) == -1)
 		return;
 
-	// BDSAlgorithm BDS(G);
+	BDSAlgorithm BDS(G);
 	// BDS.Update(cost, FracSol, G);
 	// BDS.Run(BDSSol, FracSol, G);
 
