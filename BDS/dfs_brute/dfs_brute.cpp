@@ -181,10 +181,10 @@ void AllDFS(){
 			for (int i = 0; i < m; i++)
 				cur_cost += in_sol[i] * edge_cost[i];
 
-			if (cur_cost > max_cost){
-				cout<<"Start "<<v<<endl;
-				print();
-			}
+			// if (cur_cost > max_cost){
+			// 	cout<<"Start "<<v<<endl;
+			// 	print();
+			// }
 
 			max_cost = max(max_cost, cur_cost);
 			min_cost = min(min_cost, cur_cost);
