@@ -361,6 +361,7 @@ void SolveMapInstance(
 	BDSAlgorithm BDS(G);
 	BDS.Update(cost, FracSol, G);
 	BDS.Run(BDSSol, FracSol, G);
+	cout<<"chapa"<<endl;
 
 	// BDSAlgorithm(cost, FracSol, BDSSol, G);
 
