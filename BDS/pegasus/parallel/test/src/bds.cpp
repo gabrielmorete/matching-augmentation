@@ -158,12 +158,14 @@ class BDSAlgorithm{
 			n = countNodes(G);
 			m = countEdges(G);
 
+			dbg(n);
+			dbg(m);
+
 			adj.resize(n);
 			tree_adj.resize(n);
 
 			for (int i = 0; i < n; i++)
 				adj[i].clear();
-
 
 			in.resize(n);
 			parent.resize(n);
