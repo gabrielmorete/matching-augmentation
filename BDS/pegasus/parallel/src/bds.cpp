@@ -195,6 +195,10 @@ class BDS{
 			adj.resize(n);
 			tree_adj.resize(n);
 
+			for (int i = 0; i < n; i++)
+				adj[i].clear(), tree_adj[i].clear();
+
+
 			in.resize(n);
 			parent.resize(n);
 			out.resize(n);
@@ -211,8 +215,8 @@ class BDS{
 				int eid = G.id(e);
 				e_u[eid] = G.id(G.u(e));
 				e_v[eid] = G.id(G.v(e));
-				adj[e_v[eid]].pb(eid);
-				adj[e_u[eid]].pb(eid);
+				adj[e_v[eid]].push_back(eid);
+				adj[e_u[eid]].push_back(eid);
 			}
 			updated = false;
 		}
