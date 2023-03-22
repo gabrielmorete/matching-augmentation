@@ -360,7 +360,7 @@ void SolveMapInstance(
 
 	BDSAlgorithm BDS(G);
 	BDS.Update(cost, FracSol, G);
-	// BDS.Run(BDSSol, FracSol, G);
+	BDS.Run(BDSSol, FracSol, G);
 
 	// BDSAlgorithm(cost, FracSol, BDSSol, G);
 
