@@ -62,7 +62,7 @@ for name in os.listdir(path):
 		file_in = file_in + name + " " + m_id + "\n"	
 		
 		# print("---")
-		print(file_in)
+		# print(file_in)
 
 		command ="echo \"" + file_in + " \"  | ./dfs_brute" # command to be executed
 		out = str(subprocess.check_output(command, shell=True))
