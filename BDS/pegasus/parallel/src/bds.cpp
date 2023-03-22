@@ -16,7 +16,7 @@
 	Declare the structure onde per graph. 
 	Then just updateit for different costs and lp solutions.
 */
-class BDS{
+class BDSAlgorithm{
 	protected:
 		bool updated;
 		int n, m, clk;
@@ -154,7 +154,7 @@ class BDS{
 			Builds structure for new graph
 		*/
 
-		BDS(ListGraph &G){
+		BDSAlgorithm(ListGraph &G){
 			n = countNodes(G);
 			m = countEdges(G);
 
