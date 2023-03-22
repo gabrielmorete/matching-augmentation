@@ -79,7 +79,7 @@ class BDSAlgorithm{
 
 			O(n|L|)
 		*/
-		int UpLinkDP(int v){
+		void UpLinkDP(int v){
 			for (auto x : tree_adj[v])
 				UpLinkDP(x);
 
