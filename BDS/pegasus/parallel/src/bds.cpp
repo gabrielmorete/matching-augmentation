@@ -238,16 +238,17 @@ class BDS{
 				for (int e = 0; e < adj[v].size(); e++)
 					if (cost[e] == 0 and sign(lp[e]) > 0) // If matched edge is zero, skip
 						p = e;
-				swap(adj[v][0], adj[v][e]);	
+				
+				swap(adj[v][0], adj[v][p]);	
+			
+				int matched = 1 - cost[adj[v][0]];
+
+				sort(adj[v].begin() + matched, adj[v].end(),
+					[this](int a, int b){ // Sort by increase lp value, skip matching edge
+						return lp[a] > lp[v];
+					}
+				)
 			}
-
-			int matched = 1 - cost[adj[v][0]];
-
-			sort(adj[v].begin() + matched, adj[v].end(),
-				[this](int a, int b){ // Sort by increase lp value, skip matching edge
-					return lp[a] > lp[v];
-				}
-			)
 		}
 };
 
