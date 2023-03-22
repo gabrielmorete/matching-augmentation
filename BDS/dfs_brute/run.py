@@ -85,7 +85,7 @@ for name in os.listdir(path):
 			match_best = m_id
 			size_best = m
 	cnt = cnt + 1		
-	if cnt % 100000 == 0:
+	if cnt % 10000 == 0:
 		print("Progress: ", cnt, " | ", gap_best,"|", name_best,"-",match_best)	
 
 print("Largest gap:", gap_best,"|", name_best,"-",match_best)
