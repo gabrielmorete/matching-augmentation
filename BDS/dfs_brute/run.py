@@ -33,7 +33,7 @@ for name in files:
 	g.readline()
 	g.readline()
 	s = g.readline()
-	while s[0] != 'N':
+	while len(s) > 0 and s[0] != 'N':
 		cost = [1] * m
 		t1, t2 = s.split(':')
 		m_id = t1
