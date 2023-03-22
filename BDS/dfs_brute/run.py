@@ -16,6 +16,7 @@ match_best = "none"
 gap_best = 1;
 size_best = 10000
 
+cnt = 0
 for name in os.listdir(path):
 	if os.path.isfile(os.path.join(path, name)) == 0 or name[0] != 'g':
 		continue
@@ -72,7 +73,7 @@ for name in os.listdir(path):
 		f_max = float(f_max)
 		lp_val = float(lp_val[:-3])
 
-		print(name, m_id, f_min, f_max, lp_val)
+		# print(name, m_id, f_min, f_max, lp_val)
 
 		if f_max > gap_best:
 			gap_best = f_max
@@ -83,5 +84,8 @@ for name in os.listdir(path):
 			name_best = name
 			match_best = m_id
 			size_best = m
+	cnt = cnt + 1		
+	if cnt % 100000 == 0:
+		print("Progress: ", cnt, " | ", gap_best,"|", name_best,"-",match_best)	
 
 print("Largest gap:", gap_best,"|", name_best,"-",match_best)
