@@ -6,7 +6,6 @@ import string
 # subprocess.call("make dfs_brute", shell=True)
 
 path = "."
-files = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
 # files is a list with the name of all FILES
 
 # variables for smallest example with gap >= 1.4
@@ -17,8 +16,8 @@ match_best = "none"
 gap_best = 1;
 size_best = 10000
 
-for name in files:
-	if name[0] != 'g':
+for name in os.listdir(path):
+	if os.path.isfile(os.path.join(path, name)) == 0 or name[0] != 'g':
 		continue
 		
 	g = open(name)
