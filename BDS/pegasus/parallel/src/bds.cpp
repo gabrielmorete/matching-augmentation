@@ -149,7 +149,7 @@ class BDS{
 	public:
 
 
-		void run(ListGraph::EdgeMap<bool> &BDSSol, ListGraph &G){
+		void run(ListGraph::EdgeMap<bool> &BDSSol, ListGraph::EdgeMap<double> &FracSol, ListGraph &G){
 			assert(updated);
 			updated = 0;
 
