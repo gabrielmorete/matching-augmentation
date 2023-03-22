@@ -211,8 +211,8 @@ class BDS{
 				int eid = G.id(e);
 				e_u[eid] = G.id(G.u(e));
 				e_v[eid] = G.id(G.v(e));
-				adj[v].pb(eid);
-				adj[u].pb(eid);
+				adj[e_v[eid]].pb(eid);
+				adj[e_u[eid]].pb(eid);
 			}
 			updated = false;
 		}
