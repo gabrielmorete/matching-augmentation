@@ -9,7 +9,7 @@
 class BDS{
 	protected:
 		int n, m, clk;
-		vector<vector<int>> adj;
+		vector<vector<int>> adj, tree_adj;
 		vector<bool> cost, in_sol;
 		vector<int> e_u, e_v, in, out, parent, memo;
 		vector<double> lp;
@@ -191,6 +191,8 @@ class BDS{
 			m = countEdges(G);
 
 			adj.resize(n);
+			tree_adj.resize(n);
+
 			in.resize(n);
 			parent.resize(n);
 			out.resize(n);
