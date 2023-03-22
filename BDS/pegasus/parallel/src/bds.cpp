@@ -75,7 +75,7 @@ class BDS{
 
 			if (parent[v] != 0)
 				for (int e : cover[parent[v]])
-					if (Dec(e_u[e], v) == 0 and Dec(e_v[e], u) == 0)
+					if (Dec(e_u[e], v) == 0 and Dec(e_v[e], v) == 0)
 						memo_edge[e] += memo_edge[ dp_edge[v] ];
 		}
 
