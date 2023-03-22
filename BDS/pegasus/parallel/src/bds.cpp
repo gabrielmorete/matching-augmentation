@@ -245,7 +245,7 @@ class BDS{
 
 				sort(adj[v].begin() + matched, adj[v].end(),
 					[this](int a, int b){ // Sort by increase lp value, skip matching edge
-						return lp[a] > lp[v];
+						return lp[a] > lp[b];
 					}
 				)
 			}
