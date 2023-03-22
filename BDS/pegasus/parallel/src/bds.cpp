@@ -1,79 +1,161 @@
 #include "main.h"
 #include "lemon.h"
 
-
 /*
-	DFS Step of BDS Algorithm. The next tree edge is chosen by the following criteria.
-		- Matching edge
-		- Heavy edge that maximizes x^*_e
-	
-	O(n^2)
+	I need lemon to find global min cut in a eficient and stable way
+	For bds I can implement it more efficiently without lemon.
 */
-void BDSDFS(ListGraph::Node v, 
-	ListGraph::NodeMap<ListGraph::Node> &parent,
-	ListGraph::EdgeMap<int> &cost,
-	ListGraph::EdgeMap<double> &FracSol, 
-	ListGraph::EdgeMap<bool> &BDSSol,
-	int &clk,
-	ListGraph::NodeMap<int> &in,
-	ListGraph::NodeMap<int> &out,
-	ListGraph &G){
 
-	in[v] = clk++;
-	
-	bool found_next = 0;
-	do {
-		ListGraph::Arc next_arc;
+class BDS{
+	public:
+		int n, m, clk;
+		vector<vector<int>> adj;
+		vector<bool> cost, in_sol;
+		vector<int> e_u, e_v, in, out, parent, memo;
+		vector<double> lp;
+		bool updated;
 
-		found_next = 0;
+		BDS(ListGraph &G){
+			n = countNodes(G);
+			m = countEdges(G);
 
-		// Here we iterate through the arcs leaving node v.
-		for (ListGraph::OutArcIt a(G, v); a != INVALID; ++a){
-			ListGraph::Node u = G.target(a);
+			adj.resize(n);
+			in.resize(n);
+			parent.resize(n);
+			out.resize(n);
+			memo.resize(n);
 
-			if (sign(FracSol[a]) <= 0) // Run algorithm on the support
-				continue;
+			cost.resize(m);
+			in_sol.resize(m);
+			lp.resize(m);
 
-			if (parent[u] == u and G.id(u) != 0){ // Unvisited non root node
 
-				if ((!found_next) or (cost[a] == 0)){
-					found_next = 1;
-					next_arc = a;
-				}
-				
-				else if (cost[next_arc] == 1 and FracSol[next_arc] < FracSol[a])
-						next_arc = a;
+			for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
+				int eid = G.id(e);
+				int e_u[eid] = G.id(G.u(e));
+				int e_v[eid] = G.id(G.v(e));
+				adj[v].pb(eid);
+				adj[u].pb(eid);
 			}
+			updated = false;
 		}
 
-		if (found_next){
-			BDSSol[next_arc] = 1;
+		void update(ListGraph::EdgeMap<int> &_cost, ListGraph::EdgeMap<double> &_FracSol, ListGraph &G){
+			updated = true;
+
+			for (ListGraph::EdgeIt e(G); e != INVALID; e++){
+				int eid = G.id(e);
+				lp[eid] = FracSol[e];
+				cost[eid] = _cost[e];
+				in_sol[eid] = 0; 
+			}
+
+			// Matched edge is the first
+			for (int v = 0; v < n; v++){
+				int p = 0;
+
+				for (int e = 0; e < adj[v].size(); e++)
+					if (cost[e] == 0 and sign(lp[e]) > 0) // If matched edge is zero, skip
+						p = e;
+				swap(adj[v][0], adj[v][e]);	
+			}
+
+			int matched = 1 - cost[adj[v][0]];
+
+			sort(adj[v].begin() + matched, adj[v].end(),
+				[](int a, int b){ // Sort by increase lp value, skip matching edge
+					return lp[a] > lp[v];
+				}
+			)
+		}
+
+		/*
+			DFS Step of BDS Algorithm. The next tree edge is chosen by the following criteria.
+				- Matching edge
+				- Heavy edge that maximizes x^*_e
 			
-			ListGraph::Node u = G.target(next_arc);
+			O(n + m)
+		*/
 
-			parent[u] = v;
+		void dfs(int v){
+			in[v] = clk++;
 
-			BDSDFS(u, parent, cost, FracSol, BDSSol, clk, in, out, G);
+			for (int e : adj[v]){
+				if (sign(lp[e]) <= 0) // edges are sorted
+					break;
+
+				int u = e_u[e] + e_v[e] - v;
+				if (parent[u] == u and u != 0){
+					parent[u] = v;
+					in_sol[e] = 1;
+					tree_adj[v].push_back(u);
+
+					dfs(u);
+				}
+			}
+
+			out[v] = clk++;
 		}
 
-	} while (found_next);
+		/*
+			Retuns true if v is a proper descendent of u.
+		*/
+		inline bool StrictDec(int u, int v){ // is v strict dec of u
+			return (in[u] < in[v]) and (out[v] < out[u]);
+		}
 
-	out[v] = clk++;
-}
+		/*
+			Retuns true if v is a descendent of u.
+		*/
+		inline bool Dec(int u, int v){ // is v strict dec of u
+			return (in[u] <= in[v]) and (out[v] <= out[u]);
+		}
 
-/*
-	Retuns true if v is a proper descendent of u.
-*/
-bool StrictDec(Node u, Node v, ListGraph::NodeMap<int> &in, ListGraph::NodeMap<int> &out){ // is v strict dec of u
-	return (in[u] < in[v]) and (out[v] < out[u]);
-}
 
-/*
-	Retuns true if v is a descendent of u.
-*/
-bool Dec(Node u, Node v, ListGraph::NodeMap<int> &in, ListGraph::NodeMap<int> &out){ // is v strict dec of u
-	return (in[u] <= in[v]) and (out[v] <= out[u]);
-}
+		void run(ListGraph::EdgeMap<bool> &BDSSol; ListGraph &G){
+			assert(updated);
+			updated = 0;
+
+
+			// Step 1, find a DFS Tree
+			for (int v = 0; v < n; v++)
+				parent[v] = v;
+
+			clk = 0;
+			dfs(0);
+
+			if (__verbose_mode){
+				cout << "BDS Tree Found" << endl;
+				for (int v = 0; v < n; v++)
+					cout << parent[v] << " <-- " << v << endl;	
+			}
+
+
+			// Step 2, uplink only augmentation
+			UpLinkAugmentation(cost, BDSSol, FracSol, parent, in, out, T, G);
+
+
+			for (ListGraph::EdgeIt e(G); e != INVALID; e++)
+				BDSSol[e] = in_sol[G.id(e)];
+
+			ListGraph::NodeMap<bool> ones(G, 1);
+
+			// Sanity check, checks if BDS returned a feasible solution
+			SubGraph<ListGraph> H(G, ones, BDSSol);
+			assert(biEdgeConnected(H) == 1);
+
+			// Sanity check, checks if edges are from the support
+			for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+				if (BDSSol[e] and (sign(FracSol[e]) <= 0))
+					assert(0);
+
+	}
+
+	protected:
+
+
+};
+
 
 /*
 	Dynamic Programming algorithm to solving the up-link only 
@@ -259,79 +341,3 @@ void UpLinkAugmentation(
 
 	O(n^2|L|)
 */
-void BDSAlgorithm(ListGraph::EdgeMap<int> &cost,
-	ListGraph::EdgeMap<double> &FracSol, 
-	ListGraph::EdgeMap<bool> &BDSSol,
-	ListGraph &G){
-
-	int n = countNodes(G);
-
-	vector<vector<ListGraph::Arc>> adj(n);
-
-	for (ListGraph::NodeIt v(G); v != INVALID; ++v)
-		for (ListGraph::OutArcIt a(G, v); a != INVALID; ++a)
-			adj[G.id(v)].push_back(a);
-
-	bool matched = 0;	
-	// Matching edge is the first one	
-	for (ListGraph::NodeIt v(G); v != INVALID; ++v){
-		int p = 0;
-		for (int i = 0; i < adj[G.id(v)].size(); i++)	
-			if (cost[adj[G.id(v)][i]] == 0){
-				matched = 1;
-				p = i;
-			}
-		swap(adj[G.id(v)][0], adj[G.id(v)][p]);	
-
-		// sort by decreasing lp value
-		sort(adj[G.id(v)].begin() + matched, adj[G.id(v)].end(),
-		[&FracSol](ListGraph::OutArc &a, ListGraph::OutArc &b){
-			return FracSol[a] > FracSol[b];
-		}
-	);
-
-
-	}	
-
-	// Step 1, find a DFS Tree
-	ListGraph::NodeMap<ListGraph::Node> parent(G);
-	ListGraph::NodeMap<int> in(G), out(G); 
-
-	for (ListGraph::NodeIt v(G); v != INVALID; ++v)
-		parent[v] = v;
-
-	int cnt = 0;
-	BDSDFS(G.nodeFromId(0), parent, cost, FracSol, BDSSol, cnt, in, out, G);
-
-	if (__verbose_mode){
-		cout << "BDS Tree Found" << endl;
-		for (NodeIt v(G); v != INVALID; ++v)
-			cout << G.id(parent[v]) << " <-- " << G.id(v) << endl;	
-	}
-
-
-	ListGraph::NodeMap<bool> ones(G, 1); // Subgraph must be spanning
-
-	ListGraph::EdgeMap<bool> tree_edges(G); // Graph adaptor changes with edge map
-	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
-		tree_edges[e] = BDSSol[e];
-
-	// Build DFS Tree
-	SubGraph<ListGraph> T(G, ones, tree_edges);
-	
-	assert(biEdgeConnected(G) == 1);
-	assert(connected(T) == 1);
-
-
-	// Step 2, uplink only augmentation
-	UpLinkAugmentation(cost, BDSSol, FracSol, parent, in, out, T, G);
-
-	// Sanity check, checks if BDS returned a feasible solution
-	SubGraph<ListGraph> H(G, ones, BDSSol);
-	assert(biEdgeConnected(H) == 1);
-
-	// Sanity check, checks if edges are from the support
-	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
-		if (BDSSol[e] and (sign(FracSol[e]) <= 0))
-			assert(0);
-}
