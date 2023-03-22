@@ -11,7 +11,8 @@ class BDS{
 		int n, m, clk;
 		vector<vector<int>> adj, tree_adj;
 		vector<bool> cost, in_sol;
-		vector<int> e_u, e_v, in, out, parent, memo;
+		vector<int> e_u, e_v, memo_edge; 
+		vector<int> in, out, parent, memo, dp_edge;
 		vector<double> lp;
 		bool updated;
 
@@ -186,7 +187,8 @@ class BDS{
 					assert(0);
 
 		}
-			BDS(ListGraph &G){
+		
+		BDS(ListGraph &G){
 			n = countNodes(G);
 			m = countEdges(G);
 
@@ -196,11 +198,13 @@ class BDS{
 			in.resize(n);
 			parent.resize(n);
 			out.resize(n);
+			dp_edge.resize(n);
 			memo.resize(n);
 
 			cost.resize(m);
 			in_sol.resize(m);
 			lp.resize(m);
+			memo_edge.resize(m);
 
 
 			for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
