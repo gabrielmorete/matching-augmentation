@@ -173,6 +173,8 @@ class BDSAlgorithm{
 			dp_edge.resize(n);
 			cover.resize(n);
 
+			e_u.resize(m);
+			e_v.resize(m);
 			cost.resize(m);
 			in_sol.resize(m);
 			lp.resize(m);
