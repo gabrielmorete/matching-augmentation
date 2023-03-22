@@ -1,6 +1,15 @@
 #include "main.h"
 #include "lemon.h"
-
+#include <iostream>
+#include <fstream>
+#include <experimental/filesystem>
+#include <vector>
+#include <array>
+#include <cassert>
+#include <string>
+#include <set>
+#include <algorithm>
+#include <cmath>
 /*
 	I need lemon to find global min cut in a eficient and stable way.
 	For bds I can implement it more efficiently without lemon.
