@@ -209,8 +209,8 @@ class BDS{
 
 			for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
 				int eid = G.id(e);
-				int e_u[eid] = G.id(G.u(e));
-				int e_v[eid] = G.id(G.v(e));
+				e_u[eid] = G.id(G.u(e));
+				e_v[eid] = G.id(G.v(e));
 				adj[v].pb(eid);
 				adj[u].pb(eid);
 			}
