@@ -172,7 +172,7 @@ class BDS{
 			UpLinkAugmentation();
 
 
-			for (ListGraph::EdgeIt e(G); e != INVALID; e++)
+			for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
 				BDSSol[e] = in_sol[G.id(e)];
 
 			ListGraph::NodeMap<bool> ones(G, 1);
