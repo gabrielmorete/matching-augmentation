@@ -226,7 +226,7 @@ class BDS{
 
 			for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
 				int eid = G.id(e);
-				lp[eid] = FracSol[e];
+				lp[eid] = _FracSol[e];
 				cost[eid] = _cost[e];
 				in_sol[eid] = 0; 
 			}
