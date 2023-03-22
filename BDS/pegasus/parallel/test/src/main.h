@@ -87,7 +87,7 @@ void SolveMapInstance(
 	GRBModel &int_model,
 	GRBVar *int_vars,
 	ListGraph &G,
-	BDSAlgorithm &G);
+	BDSAlgorithm &BDS);
 
 
 /*
