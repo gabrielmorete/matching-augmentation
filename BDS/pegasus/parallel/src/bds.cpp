@@ -234,12 +234,10 @@ class BDS{
 			int matched = 1 - cost[adj[v][0]];
 
 			sort(adj[v].begin() + matched, adj[v].end(),
-				[](int a, int b){ // Sort by increase lp value, skip matching edge
+				[this](int a, int b){ // Sort by increase lp value, skip matching edge
 					return lp[a] > lp[v];
 				}
 			)
 		}
-
-
 };
 
