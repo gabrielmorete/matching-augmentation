@@ -224,7 +224,7 @@ class BDS{
 		void update(ListGraph::EdgeMap<int> &_cost, ListGraph::EdgeMap<double> &_FracSol, ListGraph &G){
 			updated = true;
 
-			for (ListGraph::EdgeIt e(G); e != INVALID; e++){
+			for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
 				int eid = G.id(e);
 				lp[eid] = FracSol[e];
 				cost[eid] = _cost[e];
