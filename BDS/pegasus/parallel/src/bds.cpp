@@ -247,7 +247,7 @@ class BDS{
 					[this](int a, int b){ // Sort by increase lp value, skip matching edge
 						return lp[a] > lp[b];
 					}
-				)
+				);
 			}
 		}
 };
