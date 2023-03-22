@@ -18,14 +18,15 @@
 */
 class BDS{
 	protected:
+		bool updated;
 		int n, m, clk;
-		vector<vector<int>> adj, tree_adj;
 		vector<bool> cost, in_sol;
 		vector<int> e_u, e_v, memo_edge; 
-		vector<int> in, out, parent, memo, dp_edge;
+		vector<int> in, out, parent, dp_edge;
 		vector<double> lp;
-		bool updated;
 
+		vector<vector<int>> adj, tree_adj, cover;
+		
 		/*
 			DFS Step of BDS Algorithm. The next tree edge is chosen by the following criteria.
 				- Matching edge
@@ -37,7 +38,8 @@ class BDS{
 			in[v] = clk++;
 
 			for (int e : adj[v]){
-				if (sign(lp[e]) <= 0) // edges are sorted
+				// Edges are sorted and the algorithm runs in the support
+				if (sign(lp[e]) <= 0)
 					break;
 
 				int u = e_u[e] + e_v[e] - v;
@@ -67,10 +69,15 @@ class BDS{
 			return (in[u] <= in[v]) and (out[v] <= out[u]);
 		}
 
-		vector<vector<int>> cover;
 
 		/*
-			Dynamic programming on a tree, follows reverse topological sort
+			Dynamic programming on a tree, follows reverse topological sort.
+
+			memo_edge is ists original cost + the cost of covering every danglind subtree.
+			At time it is coveding {v, parent[v]}, the cost of the esdge ist he same as
+			memo[v]
+
+			O(n|L|)
 		*/
 		int UpLinkDP(int v){
 			for (auto x : tree_adj[v])
@@ -100,7 +107,6 @@ class BDS{
 			int u = e_u[eid];
 			int w = e_v[eid];
 
-
 			if (Dec(w, u)) // w is the lower vertex
 				swap(u, w);
 
@@ -117,14 +123,11 @@ class BDS{
 
 
 		void UpLinkAugmentation(){
-			fill(memo.begin(), memo.end(), -1);
-
-			cover.resize(n); // do this above
 			for (int v = 0; v < n; v++)
 				cover[v].clear();
 
 			for (int i = 0; i < m; i++)
-				if (!in_sol[i]){
+				if (!in_sol[i] and sign(lp[i]) > 0){
 					int u = e_u[i];
 					int v = e_v[i];
 					if (Dec(u, v)) // u is the lower vertex
@@ -159,14 +162,14 @@ class BDS{
 			tree_adj.resize(n);
 
 			for (int i = 0; i < n; i++)
-				adj[i].clear(), tree_adj[i].clear();
+				adj[i].clear();
 
 
 			in.resize(n);
 			parent.resize(n);
 			out.resize(n);
 			dp_edge.resize(n);
-			memo.resize(n);
+			cover.resize(n);
 
 			cost.resize(m);
 			in_sol.resize(m);
@@ -227,8 +230,10 @@ class BDS{
 
 
 			// Step 1, find a DFS Tree
-			for (int v = 0; v < n; v++)
+			for (int v = 0; v < n; v++){
+				tree_adj[v].clear();
 				parent[v] = v;
+			}
 
 			clk = 0;
 			Dfs(0);
@@ -257,7 +262,6 @@ class BDS{
 			for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
 				if (BDSSol[e] and (sign(FracSol[e]) <= 0))
 					assert(0);
-
 		}
 };
 
