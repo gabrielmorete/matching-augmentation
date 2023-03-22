@@ -8,7 +8,7 @@
 */
 #include "src/main.h"
 #include "src/lemon.h"
-#include "src/bds.cpp"
+// #include "src/bds.cpp"
 #include "src/nauty_reader.cpp"
 #include "src/stdio_reader.cpp"
 
@@ -351,14 +351,14 @@ void SolveMapInstance(
 	GRBVar *frac_vars,
 	GRBModel &int_model,
 	GRBVar *int_vars,
-	ListGraph &G){
+	ListGraph &G,
+	BDSAlgorithm &BDS){
 
 	FractionalSolution(cost, FracSol, frac_model, frac_vars, G);
 
 	if (sign(FracSol[G.edgeFromId(0)]) == -1)
 		return;
 
-	BDSAlgorithm BDS(G);
 	BDS.Update(cost, FracSol, G);
 	BDS.Run(BDSSol, FracSol, G);
 	cout<<"chapa"<<endl;
