@@ -2,10 +2,20 @@
 #include "lemon.h"
 
 /*
-	I need lemon to find global min cut in a eficient and stable way
+	I need lemon to find global min cut in a eficient and stable way.
 	For bds I can implement it more efficiently without lemon.
+	You may find a lemon based implementation in bds_lemon.cpp
 */
 
+/*
+	Implementation of the BDS MAP algorithm.
+	Must receive a extreme point solution of the cut LP.
+
+	O(n|L|)
+
+	Declare the structure onde per graph. 
+	Then just updateit for different costs and lp solutions.
+*/
 class BDS{
 	protected:
 		int n, m, clk;
@@ -23,8 +33,7 @@ class BDS{
 			
 			O(n + m)
 		*/
-
-		void dfs(int v){
+		void Dfs(int v){
 			in[v] = clk++;
 
 			for (int e : adj[v]){
@@ -37,7 +46,7 @@ class BDS{
 					in_sol[e] = 1;
 					tree_adj[v].push_back(u);
 
-					dfs(u);
+					Dfs(u);
 				}
 			}
 
@@ -63,7 +72,6 @@ class BDS{
 		/*
 			Dynamic programming on a tree, follows reverse topological sort
 		*/
-
 		int UpLinkDP(int v){
 			for (auto x : tree_adj[v])
 				UpLinkDP(x);
@@ -138,56 +146,11 @@ class BDS{
 			}
 		}
 
-
+	public:
 		/*
-			Implementation of the BDS MAP algorithm.
-			Must receive a extreme point solution of the cut LP.
-
-			O(n^2|L|)
+			Builds structure for new graph
 		*/
 
-	public:
-
-
-		void run(ListGraph::EdgeMap<bool> &BDSSol, ListGraph::EdgeMap<double> &FracSol, ListGraph &G){
-			assert(updated);
-			updated = 0;
-
-
-			// Step 1, find a DFS Tree
-			for (int v = 0; v < n; v++)
-				parent[v] = v;
-
-			clk = 0;
-			dfs(0);
-
-			if (__verbose_mode){
-				cout << "BDS Tree Found" << endl;
-				for (int v = 0; v < n; v++)
-					cout << parent[v] << " <-- " << v << endl;	
-			}
-
-
-			// Step 2, uplink only augmentation
-			UpLinkAugmentation();
-
-
-			for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
-				BDSSol[e] = in_sol[G.id(e)];
-
-			ListGraph::NodeMap<bool> ones(G, 1);
-
-			// Sanity check, checks if BDS returned a feasible solution
-			SubGraph<ListGraph> H(G, ones, BDSSol);
-			assert(biEdgeConnected(H) == 1);
-
-			// Sanity check, checks if edges are from the support
-			for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
-				if (BDSSol[e] and (sign(FracSol[e]) <= 0))
-					assert(0);
-
-		}
-		
 		BDS(ListGraph &G){
 			n = countNodes(G);
 			m = countEdges(G);
@@ -221,7 +184,10 @@ class BDS{
 			updated = false;
 		}
 
-		void update(ListGraph::EdgeMap<int> &_cost, ListGraph::EdgeMap<double> &_FracSol, ListGraph &G){
+		/*
+			Update costs and lp value
+		*/
+		void Update(ListGraph::EdgeMap<int> &_cost, ListGraph::EdgeMap<double> &_FracSol, ListGraph &G){
 			updated = true;
 
 			for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
@@ -249,6 +215,49 @@ class BDS{
 					}
 				);
 			}
+		}
+
+
+		/*
+			Run BDS algorithm
+		*/
+		void Run(ListGraph::EdgeMap<bool> &BDSSol, ListGraph::EdgeMap<double> &FracSol, ListGraph &G){
+			assert(updated);
+			updated = 0;
+
+
+			// Step 1, find a DFS Tree
+			for (int v = 0; v < n; v++)
+				parent[v] = v;
+
+			clk = 0;
+			Dfs(0);
+
+			if (__verbose_mode){
+				cout << "BDS Tree Found" << endl;
+				for (int v = 0; v < n; v++)
+					cout << parent[v] << " <-- " << v << endl;	
+			}
+
+
+			// Step 2, uplink only augmentation
+			UpLinkAugmentation();
+
+
+			for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+				BDSSol[e] = in_sol[G.id(e)];
+
+			ListGraph::NodeMap<bool> ones(G, 1);
+
+			// Sanity check, checks if BDS returned a feasible solution
+			SubGraph<ListGraph> H(G, ones, BDSSol);
+			assert(biEdgeConnected(H) == 1);
+
+			// Sanity check, checks if edges are from the support
+			for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+				if (BDSSol[e] and (sign(FracSol[e]) <= 0))
+					assert(0);
+
 		}
 };
 
