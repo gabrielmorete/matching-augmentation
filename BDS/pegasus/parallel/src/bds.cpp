@@ -68,7 +68,7 @@ class BDS{
 			for (auto x : tree_adj[v])
 				UpLinkDP(x);
 
-			dp_edge[v] = cover[v].begin();
+			dp_edge[v] = cover[v][0];
 			for (int e : cover[v])
 				if (memo_edge[e] < memo_edge[dp_edge[v]])
 					dp_edge[v] = e;
