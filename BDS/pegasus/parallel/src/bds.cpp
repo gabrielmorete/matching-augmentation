@@ -123,7 +123,7 @@ class BDS{
 						swap(u, v);
 
 					while (u != v){ // link i covers {v, parent[v]}
-						cover[u].push_back[i];
+						cover[u].push_back(i);
 						u = parent[u];
 					}
 
