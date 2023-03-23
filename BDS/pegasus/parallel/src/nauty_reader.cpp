@@ -317,7 +317,7 @@ void RunNautyInput(int start, int n_threads = 1){
 			SolveAllMatchings(G);
 
 			int min_id = __cur_graph_thread[0]; // not critical
-			for (int i = 1; i < num_threads; i++)
+			for (int i = 1; i < n_threads; i++)
 				min_id = min(min_id, __cur_graph_id);
 
 			PrintLogProgress(n, cnt, min_id);
