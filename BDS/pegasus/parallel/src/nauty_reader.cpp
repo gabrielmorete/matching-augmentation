@@ -232,8 +232,6 @@ bool ReadGraph(int &cnt, int &my_cnt, ListGraph &G){
 		ok = (bool)(readNautyGraph(G, cin));
 		cnt += ok;
 		my_cnt = cnt;
-		if (ok)
-			__cur_graphs.insert(cnt);
 	}
 	return ok;
 }
