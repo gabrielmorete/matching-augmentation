@@ -21,7 +21,7 @@ const double __BDS_divisor = 5;
 bool __found_feasible;
 int __cur_graph_id, __best_IP_graph_id, __best_IP_matching_id, __best_BDS_graph_id, __best_BDS_matching_id;
 double __best_IP, __best_BDS;
-set<int> __cur_graphs;
+int __cur_graph_thread[100];
 
 #pragma omp threadprivate(__found_feasible, __cur_graph_id)
 
@@ -238,13 +238,12 @@ bool ReadGraph(int &cnt, int &my_cnt, ListGraph &G){
 	return ok;
 }
 
-void PrintLogProgress(int n, int cnt){
-
+void PrintLogProgress(int n, int cnt, int last){
 	#pragma omp critical
 	{ // If you interrupt the algorithm, may be empty
 		ofstream log_progress(to_string(n) + "/log_progress");
 		log_progress << "Last read graph " << cnt << endl; // Careful with this, I'm not using mutex
-		log_progress << "Smallest unprocessed graph " << (*(__cur_graphs.rbegin())) << endl; // Careful with this, I'm not using mutex
+		log_progress << "Smallest unprocessed graph " << last << endl; // Careful with this, I'm not using mutex
 		log_progress << "Best IP/Frac: " << __best_IP << " g" << __best_IP_graph_id << " matching " << __best_IP_matching_id << endl;
 		log_progress << "Best BDS/Frac: " << __best_BDS << " g" << __best_BDS_graph_id << " matching " << __best_BDS_matching_id << endl;
 		log_progress.close();	
@@ -270,9 +269,12 @@ void RunNautyInput(int start, int n_threads = 1){
     #pragma omp parallel num_threads(n_threads) \
     shared(cnt, __best_BDS_graph_id, __best_BDS_matching_id, __best_IP_graph_id, __best_IP_matching_id, __best_IP, __best_BDS)
 	{
+		int id = omp_get_thread_num();	
 		ListGraph G; // Declare global Graph
 		int my_cnt;
 		while (ReadGraph(cnt, my_cnt, G)){	
+
+			__cur_graph_thread[id] = my_cnt;
 
 			int n = countNodes(G);
 			int m = countEdges(G);
@@ -314,12 +316,11 @@ void RunNautyInput(int start, int n_threads = 1){
 
 			SolveAllMatchings(G);
 
-			#pragma omp critical // This graph was processed
-			{
-				__cur_graphs.erase(my_cnt);
-			}
+			int min_id = __cur_graph_thread[0]; // not critical
+			for (int i = 1; i < num_threads; i++)
+				min_id = min(min_id, __cur_graph_id);
 
-			PrintLogProgress(n, cnt);
+			PrintLogProgress(n, cnt, min_id);
 		}
 	}
 }
