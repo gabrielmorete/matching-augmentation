@@ -9,7 +9,7 @@
 #include <cassert>
 #include <string>
 #include <set>
-#include <priosity_queue>
+#include <priority_queue>
 #include <algorithm>
 #include <cmath>
 #include "gurobi_c++.h"
