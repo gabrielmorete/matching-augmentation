@@ -244,7 +244,7 @@ void PrintLogProgress(int n, int cnt){
 	{ // If you interrupt the algorithm, may be empty
 		ofstream log_progress(to_string(n) + "/log_progress");
 		log_progress << "Last read graph " << cnt << endl; // Careful with this, I'm not using mutex
-		log_progress << "Smallest unprocessed graph " << (*(__cur_graphs.begin() + 1)) << endl; // Careful with this, I'm not using mutex
+		log_progress << "Smallest unprocessed graph " << (*(__cur_graphs.rbegin())) << endl; // Careful with this, I'm not using mutex
 		log_progress << "Best IP/Frac: " << __best_IP << " g" << __best_IP_graph_id << " matching " << __best_IP_matching_id << endl;
 		log_progress << "Best BDS/Frac: " << __best_BDS << " g" << __best_BDS_graph_id << " matching " << __best_BDS_matching_id << endl;
 		log_progress.close();	
