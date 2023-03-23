@@ -21,6 +21,7 @@ const double __BDS_divisor = 5;
 bool __found_feasible;
 int __cur_graph_id, __best_IP_graph_id, __best_IP_matching_id, __best_BDS_graph_id, __best_BDS_matching_id;
 double __best_IP, __best_BDS;
+priority_queue<int> __cur_graphs;
 
 #pragma omp threadprivate(__found_feasible, __cur_graph_id)
 
@@ -231,6 +232,7 @@ bool ReadGraph(int &cnt, int &my_cnt, ListGraph &G){
 		ok = (bool)(readNautyGraph(G, cin));
 		cnt += ok;
 		my_cnt = cnt;
+		__cur_graphs.push(cnt);
 	}
 	return ok;
 }
@@ -241,6 +243,7 @@ void PrintLogProgress(int n, int cnt){
 	{ // If you interrupt the algorithm, may be empty
 		ofstream log_progress(to_string(n) + "/log_progress");
 		log_progress << "Last read graph " << cnt << endl; // Careful with this, I'm not using mutex
+		log_progress << "Smallest unprocessed graph" << __cur_graph_id.front() << endl; // Careful with this, I'm not using mutex
 		log_progress << "Best IP/Frac: " << __best_IP << " g" << __best_IP_graph_id << " matching " << __best_IP_matching_id << endl;
 		log_progress << "Best BDS/Frac: " << __best_BDS << " g" << __best_BDS_graph_id << " matching " << __best_BDS_matching_id << endl;
 		log_progress.close();	
@@ -264,7 +267,7 @@ void RunNautyInput(int start, int n_threads = 1){
 	int cnt = 0;
 
     #pragma omp parallel num_threads(n_threads) \
-    shared(cnt, __best_BDS_graph_id, __best_BDS_matching_id, __best_IP_graph_id, __best_IP_matching_id, __best_IP, __best_BDS)
+    shared(cnt, __best_BDS_graph_id, __best_BDS_matching_id, __best_IP_graph_id, __best_IP_matching_id, __best_IP, __best_BDS, __cur_graphs)
 	{
 		ListGraph G; // Declare global Graph
 		int my_cnt;
@@ -309,6 +312,11 @@ void RunNautyInput(int start, int n_threads = 1){
 			__cur_graph_id = my_cnt;
 
 			SolveAllMatchings(G);
+
+			#pragma omp critical // This graph was processed
+			{
+				__cur_graphs.erase(my_cnt);
+			}
 
 			PrintLogProgress(n, cnt);
 		}
