@@ -265,7 +265,7 @@ void RunNautyInput(int start, int n_threads = 1){
 
 	int cnt = 0;
 
-	std::system("export GOMP_CPU_AFFINITY=32-64");
+	// std::system("export GOMP_CPU_AFFINITY=32-64");
 
 
     #pragma omp parallel num_threads(n_threads) \
