@@ -6,7 +6,7 @@
 
 #include "lemon.h"
 #include "main.h"
-#include <system.h>
+#include <cstdlib>
 
 /*
 	gaps for each algorithm.
