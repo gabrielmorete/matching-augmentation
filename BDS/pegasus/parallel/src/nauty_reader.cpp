@@ -6,6 +6,7 @@
 
 #include "lemon.h"
 #include "main.h"
+#include <system>
 
 /*
 	gaps for each algorithm.
@@ -267,6 +268,8 @@ void RunNautyInput(int start, int n_threads = 1){
     #pragma omp parallel num_threads(n_threads) \
     shared(cnt, __best_BDS_graph_id, __best_BDS_matching_id, __best_IP_graph_id, __best_IP_matching_id, __best_IP, __best_BDS)
 	{
+		std::system("taskset -c 33-63 ./B 100000000000");
+
 		int id = omp_get_thread_num();	
 		ListGraph G; // Declare global Graph
 		int my_cnt;
