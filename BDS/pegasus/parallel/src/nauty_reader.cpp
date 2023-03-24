@@ -6,7 +6,7 @@
 
 #include "lemon.h"
 #include "main.h"
-#include <system>
+#include <system.h>
 
 /*
 	gaps for each algorithm.
