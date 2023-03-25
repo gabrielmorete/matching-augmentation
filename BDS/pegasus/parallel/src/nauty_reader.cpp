@@ -278,13 +278,13 @@ int ReadLogProgress(int n){
 			if (i == 5)
 				__best_BDS_matching_id = stoi(s);
 		}
-		else{
-			cout << "Can't open log_progress file"<<endl;
-			exit(1);
-		}
+	}
+	else{
+		cout << "Can't open log_progress file"<<endl;
+		exit(1);
 	}
 
-	cou t<< "Log data" << endl;
+	cout << "Log data" << endl;
 	cout << "Start graph" << start << endl; // Careful with this, I'm not using mutex
 	cout << "Best IP/Frac: " << __best_IP << " g" << __best_IP_graph_id << " matching " << __best_IP_matching_id << endl;
 	cout << "Best BDS/Frac: " << __best_BDS << " g" << __best_BDS_graph_id << " matching " << __best_BDS_matching_id << endl;
@@ -306,6 +306,7 @@ void RunNautyInput(int start, int n_threads = 1){
 			cout << " Running solver with " << "-log_start -threads " << n_threads << endl;
 	else
 		cout << " Running solver with " << "-start " << start << " -threads " << n_threads << endl;
+	
 	cout << " IP gap >= " << __IP_dividend << "/" << __IP_divisor << endl;
 	cout << " BDS gap > " << __BDS_dividend << "/" << __BDS_divisor << endl;
 
