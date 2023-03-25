@@ -249,6 +249,36 @@ void PrintLogProgress(int n, int cnt, int last){
 	}
 }
 
+void ReadLogProgress(int n){
+	ifstream log_progress(to_string(n) + "/log_progress");
+	int start = 0;
+	if (log_progress){
+		string s;
+		s = getline(cin, s);
+		for (int i = 0; i < 4; i++)
+			cin>>s;
+		start = stoi(s);
+
+		// Best IP/Frac: 1.33333 g28260 matching 890
+		for (int i = 0; i < 6; i++){
+			cin>>s;
+			if (i == 2)
+				__best_IP = stod(s);
+			if (i == 3)
+				__best_IP_graph_id = stoi(s.substr(1));
+			if (i == 5)
+				__best_IP_matching_id = stoi(s);
+		}
+	}
+
+	dbg(start);
+	dbg(__best_IP);
+	dbg(__best_IP_graph_id);
+	dbg(__best_IP_matching_id);
+
+	exit(0);
+}
+
 
 /*
 	This functions receiv nauty's geng output from stdin(may modify this),
