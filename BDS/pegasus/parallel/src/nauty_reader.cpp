@@ -254,16 +254,16 @@ void ReadLogProgress(int n){
 	int start = 0;
 	if (log_progress){
 		string s;
-		getline(cin, s);
+		getline(log_progress, s);
 		dbg(s);
 		for (int i = 0; i < 4; i++)
-			cin>>s;
+			log_progress>>s;
 		dbg(s);
 		start = stoi(s);
 
 		// Best IP/Frac: 1.33333 g28260 matching 890
 		for (int i = 0; i < 6; i++){
-			cin>>s;
+			log_progress>>s;
 			if (i == 2)
 				__best_IP = stod(s);
 			if (i == 3)
