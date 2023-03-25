@@ -284,10 +284,10 @@ int ReadLogProgress(int n){
 		exit(1);
 	}
 
-	cout << "Log data" << endl;
-	cout << "Start graph" << start << endl; // Careful with this, I'm not using mutex
-	cout << "Best IP/Frac: " << __best_IP << " g" << __best_IP_graph_id << " matching " << __best_IP_matching_id << endl;
-	cout << "Best BDS/Frac: " << __best_BDS << " g" << __best_BDS_graph_id << " matching " << __best_BDS_matching_id << endl;
+	cout << " -- log_progress data --" << endl;
+	cout << " Start graph: g" << start << endl; // Careful with this, I'm not using mutex
+	cout << " Best IP/Frac: " << __best_IP << " g" << __best_IP_graph_id << " matching " << __best_IP_matching_id << endl;
+	cout << " Best BDS/Frac: " << __best_BDS << " g" << __best_BDS_graph_id << " matching " << __best_BDS_matching_id << endl;
 
 	return start;
 }
