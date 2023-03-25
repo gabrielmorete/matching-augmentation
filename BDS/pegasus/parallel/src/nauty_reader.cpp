@@ -272,7 +272,7 @@ void ReadLogProgress(int n){
 				__best_IP_matching_id = stoi(s);
 		}
 
-		or (int i = 0; i < 6; i++){
+		for (int i = 0; i < 6; i++){
 			log_progress>>s;
 			if (i == 2)
 				__best_BDS = stod(s);
