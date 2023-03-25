@@ -10,7 +10,7 @@ $ make main
 
 ##### Usage
 	-stdio
-		Read input on humam readable format, check stdio_reader.cpp for detais
+		Read input on human readable format, check stdio_reader.cpp for detais
 	-verbose
 		Display extra information
 	-log_start
