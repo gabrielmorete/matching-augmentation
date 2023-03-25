@@ -397,8 +397,10 @@ signed main(int argc, char *argv[]){
 	env.start();
 
 	bool stdio = 0;
+	bool log_start = 0;
 	int start = 0;
 	int n_threads = 1;
+
 
 	for (int i = 1; i < argc; i++){
 		string s = argv[i];
@@ -406,6 +408,8 @@ signed main(int argc, char *argv[]){
 			__verbose_mode = 1;
 		else if (s == "-stdio")
 			stdio = 1;
+		else if (s == "-log_start")
+			log_start = 1;
 		else if (s == "-start"){
 			s = argv[i + 1];
 			start = stoi(s);
@@ -415,10 +419,18 @@ signed main(int argc, char *argv[]){
 			n_threads = stoi(s);
 			i++;
 		} else {
-			cout<<"Usage: -stdio -verbose -start n -threads t"<<endl;
+			cout<<"Usage: -stdio -verbose -log_start -start n -threads t"<<endl;
 			return 0;
 		}
 	}
+
+	if (start != 0 and log_start){
+		cout << "Can't use both -start and -log_start" << endl;
+		exit(1);
+	}
+
+	if (log_start)
+		start = -1;
 
 	if (stdio)
 		RunStdioInput();
