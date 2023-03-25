@@ -249,19 +249,16 @@ void PrintLogProgress(int n, int cnt, int last){
 	}
 }
 
-void ReadLogProgress(int n){
+int ReadLogProgress(int n){
 	ifstream log_progress(to_string(n) + "/log_progress");
 	int start = 0;
 	if (log_progress){
 		string s;
 		getline(log_progress, s);
-		dbg(s);
 		for (int i = 0; i < 4; i++)
 			log_progress>>s;
-		dbg(s);
 		start = stoi(s);
 
-		// Best IP/Frac: 1.33333 g28260 matching 890
 		for (int i = 0; i < 6; i++){
 			log_progress>>s;
 			if (i == 2)
@@ -281,20 +278,18 @@ void ReadLogProgress(int n){
 			if (i == 5)
 				__best_BDS_matching_id = stoi(s);
 		}
-
+		else{
+			cout << "Can't open log_progress file"<<endl;
+			exit(1);
+		}
 	}
 
-	dbg(start);
-	dbg(__best_IP);
-	dbg(__best_IP_graph_id);
-	dbg(__best_IP_matching_id);
+	cou t<< "Log data" << endl;
+	cout << "Start graph" << start << endl; // Careful with this, I'm not using mutex
+	cout << "Best IP/Frac: " << __best_IP << " g" << __best_IP_graph_id << " matching " << __best_IP_matching_id << endl;
+	cout << "Best BDS/Frac: " << __best_BDS << " g" << __best_BDS_graph_id << " matching " << __best_BDS_matching_id << endl;
 
-	dbg(__best_BDS);
-	dbg(__best_BDS_graph_id);
-	dbg(__best_BDS_matching_id);
-
-
-	exit(0);
+	return start;
 }
 
 
@@ -307,7 +302,10 @@ void RunNautyInput(int start, int n_threads = 1){
 	__best_IP = __best_BDS = 1;
 	__best_IP_graph_id = __best_IP_matching_id = __best_BDS_graph_id = __best_BDS_matching_id = 1;
 
-	cout << " Running solver with " << "-start " << start << " -threads " << n_threads << endl;
+	if (start < 0)
+			cout << " Running solver with " << "-log_start -threads " << n_threads << endl;
+	else
+		cout << " Running solver with " << "-start " << start << " -threads " << n_threads << endl;
 	cout << " IP gap >= " << __IP_dividend << "/" << __IP_divisor << endl;
 	cout << " BDS gap > " << __BDS_dividend << "/" << __BDS_divisor << endl;
 
@@ -329,17 +327,16 @@ void RunNautyInput(int start, int n_threads = 1){
 			int n = countNodes(G);
 			int m = countEdges(G);
 
-			ReadLogProgress(n);
-
-
 			#pragma omp critical
 			{	
+				if (start == -1)
+					start = ReadLogProgress(n);
 				if (start == 0){ // Create folder to log files, create log stream
 					std::experimental::filesystem::create_directory("./" + to_string(n));
 					ofstream log_out(to_string(countNodes(G)) + "/log"); // clear log file
 					log_out.close();
-					start = -1;
-				}	
+					start = -2; // Invalid option	
+				}
 			}
 
 			if (cnt < start) continue;
