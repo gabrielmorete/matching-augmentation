@@ -271,12 +271,28 @@ void ReadLogProgress(int n){
 			if (i == 5)
 				__best_IP_matching_id = stoi(s);
 		}
+
+		or (int i = 0; i < 6; i++){
+			log_progress>>s;
+			if (i == 2)
+				__best_BDS = stod(s);
+			if (i == 3)
+				__best_BDS_graph_id = stoi(s.substr(1));
+			if (i == 5)
+				__best_BDS_matching_id = stoi(s);
+		}
+
 	}
 
 	dbg(start);
 	dbg(__best_IP);
 	dbg(__best_IP_graph_id);
 	dbg(__best_IP_matching_id);
+
+	dbg(__best_BDS);
+	dbg(__best_BDS_graph_id);
+	dbg(__best_BDS_matching_id);
+
 
 	exit(0);
 }
