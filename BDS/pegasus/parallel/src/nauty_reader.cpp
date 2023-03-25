@@ -311,6 +311,9 @@ void RunNautyInput(int start, int n_threads = 1){
 			int n = countNodes(G);
 			int m = countEdges(G);
 
+			ReadLogProgress(n);
+
+
 			#pragma omp critical
 			{	
 				if (start == 0){ // Create folder to log files, create log stream
