@@ -254,7 +254,7 @@ void ReadLogProgress(int n){
 	int start = 0;
 	if (log_progress){
 		string s;
-		s = getline(cin, s);
+		getline(cin, s);
 		for (int i = 0; i < 4; i++)
 			cin>>s;
 		start = stoi(s);
