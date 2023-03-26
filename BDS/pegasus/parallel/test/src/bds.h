@@ -1,15 +1,13 @@
 #ifndef BDS_DEF
 #define BDS_DEF
 
-
 #include <vector>
-#include <array>
 #include <cassert>
-#include <string>
 #include <set>
 #include <algorithm>
 #include <cmath>
 #include "lemon.h"
+
 using namespace std;
 
 
