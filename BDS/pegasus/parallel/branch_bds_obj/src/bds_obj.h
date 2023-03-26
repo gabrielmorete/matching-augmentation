@@ -12,7 +12,6 @@ using namespace std;
 
 class BDSAlgorithm{
 	protected:
-		bool updated;
 		int n, m, clk;
 		vector<bool> cost, in_sol;
 		vector<int> e_u, e_v, memo_edge; 
@@ -78,7 +77,10 @@ class BDSAlgorithm{
 		/*
 			Run BDS algorithm
 		*/
-		void Run(ListGraph::EdgeMap<bool> &BDSSol, ListGraph::EdgeMap<double> &FracSol, ListGraph &G);
+		void Run(ListGraph::EdgeMap<bool> &_cost, 
+			ListGraph::EdgeMap<bool> &BDSSol, 
+			ListGraph::EdgeMap<double> &FracSol, 
+			ListGraph &G)
 };
 
 

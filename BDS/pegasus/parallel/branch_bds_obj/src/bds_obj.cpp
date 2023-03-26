@@ -171,23 +171,18 @@ BDSAlgorithm::BDSAlgorithm(ListGraph &G){
 		adj[e_v[eid]].push_back(eid);
 		adj[e_u[eid]].push_back(eid);
 	}
-	updated = false;
 }
 
 /*
 	Update costs and lp value
 */
 void BDSAlgorithm::Update(ListGraph::EdgeMap<int> &_cost, ListGraph::EdgeMap<double> &_FracSol, ListGraph &G){
-	updated = true;
-
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
 		int eid = G.id(e);
 		lp[eid] = _FracSol[e];
 		cost[eid] = _cost[e];
 		in_sol[eid] = 0; 
 	}
-
-
 
 	// Matched edge is the first
 	for (int v = 0; v < n; v++){
@@ -225,10 +220,12 @@ void BDSAlgorithm::Update(ListGraph::EdgeMap<int> &_cost, ListGraph::EdgeMap<dou
 /*
 	Run BDS algorithm
 */
-void BDSAlgorithm::Run(ListGraph::EdgeMap<bool> &BDSSol, ListGraph::EdgeMap<double> &FracSol, ListGraph &G){
-	assert(updated);
-	updated = 0;
-
+void BDSAlgorithm::Run(ListGraph::EdgeMap<bool> &_cost, 
+	ListGraph::EdgeMap<bool> &BDSSol, 
+	ListGraph::EdgeMap<double> &FracSol, 
+	ListGraph &G){
+	
+	Update(cost, FracSol, G);	
 
 	// Step 1, find a DFS Tree
 	for (int v = 0; v < n; v++){
