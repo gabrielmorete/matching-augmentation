@@ -2,6 +2,18 @@ import os
 import subprocess
 import string 
 
+
+EPS = 1e-3
+def sign(x):
+	return (x > EPS) - (x < -EPS)
+
+def half_integral(lp):
+	ok = 1
+	for x in lp:
+		if sign(x) != 0 and sign(x - 0.5) != 0 and sign(x != 1):
+			ok = 0
+	return ok	
+
 # os.listdir(path) lists files and directories
 # subprocess.call("make dfs_brute", shell=True)
 
@@ -65,6 +77,8 @@ for name in os.listdir(path):
 		# print("---")
 		# print(file_in)
 
+		# continue
+
 		command ="echo \"" + file_in + " \"  | ./dfs_brute" # command to be executed
 		out = str(subprocess.check_output(command, shell=True))
 
@@ -73,7 +87,10 @@ for name in os.listdir(path):
 		f_max = float(f_max)
 		lp_val = float(lp_val[:-3])
 
-		# print(name, m_id, f_min, f_max, lp_val)
+		print(name, m_id, f_min, f_max, lp_val)
+
+		if (f_max >= 1.49 and half_integral(lp)):
+			print(name, m_id, "is a half integral CE")
 
 		if f_max > gap_best:
 			gap_best = f_max
@@ -89,3 +106,7 @@ for name in os.listdir(path):
 		print("Progress: ", cnt, " | ", gap_best,"|", name_best,"-",match_best)	
 
 print("Largest gap:", gap_best,"|", name_best,"-",match_best)
+
+
+
+	

@@ -19,10 +19,13 @@ int sign(double x) { return (x > EPS) - (x < -EPS); }
 
 const int MAXN = 20;
 
+bool __verbose_mode = 0;
+
 int n, m, eid;
 int is_matched[MAXN];
 int edge_cost[MAXN * MAXN], a[MAXN * MAXN], b[MAXN * MAXN];
 double lp[MAXN * MAXN];
+double min_v[MAXN], max_v[MAXN];
 vector< pair<int, int> > adj[MAXN];
 string name;
 void ReadGraph(){
@@ -181,12 +184,14 @@ void AllDFS(){
 			for (int i = 0; i < m; i++)
 				cur_cost += in_sol[i] * edge_cost[i];
 
-			// if (cur_cost > max_cost){
-			// 	cout<<"Start "<<v<<endl;
-			// 	print();
-			// }
+			if (max_cost < cur_cost){
+				max_cost = cur_cost;
+				if (__verbose_mode){
+					cout << "Start " << endl;
+					print();
+				}					
+			}
 
-			max_cost = max(max_cost, cur_cost);
 			min_cost = min(min_cost, cur_cost);
 		}
 	}
@@ -209,12 +214,15 @@ void Backtracking(int v, int stage){
 	} while (next_permutation(adj[v].begin() + sz[v][stage - 1], adj[v].begin() + sz[v][stage]));
 }
 
-
-
-signed main(){
+void solve(){
 	ReadGraph();
 	max_cost = 0; 
 	min_cost = m + 1;
+
+	for (int v = 0; v < n; v++){
+		min_v[v] = m + 1;
+		max_v[v] = 0;
+	}
 
 
 	for(int v = 0; v < n; v++){
@@ -296,4 +304,45 @@ signed main(){
 		log.close();
 	}
 
+	if (__verbose_mode){
+		cout << "min: ";
+		for (int v = 0; v < n; v++)
+			cout << min_v[v] << ' ';
+		cout << endl;
+
+		cout << "max: ";
+		for (int v = 0; v < n; v++)
+			cout << max_v[v] << ' ';
+		cout << endl;
+	}
+}
+
+
+signed main(int argc, char *argv[]){
+	bool stdio = 0;
+	int start = 0;
+	int n_threads = 1;
+
+
+	for (int i = 1; i < argc; i++){
+		string s = argv[i];
+		if (s == "-verbose")
+			__verbose_mode = 1;
+		else if (s == "-stdio")
+			stdio = 1;
+		else if (s == "-start"){
+			s = argv[i + 1];
+			start = stoi(s);
+			i++;
+		} else if (s == "-threads"){
+			s = argv[i + 1];
+			n_threads = stoi(s);
+			i++;
+		} else {
+			cout<<"Usage: -stdio -verbose -log_start -start n -threads t"<<endl;
+			return 0;
+		}
+	}
+	
+	solve();
 }
