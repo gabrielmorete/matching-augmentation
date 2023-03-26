@@ -1,4 +1,5 @@
 #include "bds.h"
+#include <vector>
 
 /*
 	I need lemon to find global min cut in a eficient and stable way.
