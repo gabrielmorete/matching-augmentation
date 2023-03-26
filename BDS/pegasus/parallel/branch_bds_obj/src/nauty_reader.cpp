@@ -329,8 +329,6 @@ void RunNautyInput(int start, int n_threads = 1){
 		int my_cnt;
 		while (ReadGraph(cnt, my_cnt, G)){	
 
-			cout<<my_cnt<<endl;
-
 			__cur_graph_thread[id] = my_cnt;
 
 			int n = countNodes(G);
