@@ -77,7 +77,7 @@ class BDSAlgorithm{
 		/*
 			Run BDS algorithm
 		*/
-		void Run(ListGraph::EdgeMap<bool> &_cost, 
+		void Run(ListGraph::EdgeMap<int> &_cost, 
 			ListGraph::EdgeMap<bool> &BDSSol, 
 			ListGraph::EdgeMap<double> &FracSol, 
 			ListGraph &G)

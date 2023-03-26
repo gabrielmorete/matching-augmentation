@@ -220,7 +220,7 @@ void BDSAlgorithm::Update(ListGraph::EdgeMap<int> &_cost, ListGraph::EdgeMap<dou
 /*
 	Run BDS algorithm
 */
-void BDSAlgorithm::Run(ListGraph::EdgeMap<bool> &_cost, 
+void BDSAlgorithm::Run(ListGraph::EdgeMap<int> &_cost, 
 	ListGraph::EdgeMap<bool> &BDSSol, 
 	ListGraph::EdgeMap<double> &FracSol, 
 	ListGraph &G){
