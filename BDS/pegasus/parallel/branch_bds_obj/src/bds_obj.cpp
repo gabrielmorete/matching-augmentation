@@ -206,7 +206,7 @@ void BDSAlgorithm::Update(ListGraph::EdgeMap<int> &_cost, ListGraph::EdgeMap<dou
 	for (int v = 0; v < n; v++){
 		cout<<v<<": ";
 		for (int u : adj[v])
-			cout<<(e_v[u] + e_u[u] - v) <<' ';
+			cout<<(u) <<' ';
 		cout<<endl;	 
 	}
 
