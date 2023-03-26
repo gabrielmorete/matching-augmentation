@@ -112,6 +112,7 @@ void BDSAlgorithm::RecoverUpLinkSol(int v){
 
 
 void BDSAlgorithm::UpLinkAugmentation(){
+	cout<<"oi"<<endl;
 	for (int v = 0; v < n; v++)
 		cover[v].clear();
 
@@ -131,7 +132,7 @@ void BDSAlgorithm::UpLinkAugmentation(){
 		}
 
 	dbg(tree_adj.size());	
-
+	cout<<"aahush"<<endl;
 
 	// Preprocess
 	for (auto u : tree_adj[0]){
