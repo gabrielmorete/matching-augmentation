@@ -19,7 +19,7 @@ int sign(double x) { return (x > EPS) - (x < -EPS); }
 
 const int MAXN = 20;
 
-bool __verbose_mode = 0;
+bool __verbose_mode = 0, __cuts = 0;
 
 int n, m, eid;
 int is_matched[MAXN];
@@ -218,6 +218,42 @@ void Backtracking(int v, int stage){
 	} while (next_permutation(adj[v].begin() + sz[v][stage - 1], adj[v].begin() + sz[v][stage]));
 }
 
+void brute_all_cuts(){
+	cout<<"id edge"<<endl;
+	for (int i = 0; i < m; i++)
+		cout<<i<<' '<<a[i]<<' '<<b[i]<<endl;		
+
+	for (int msk = 1; msk < (1<<n) - 1; msk++){
+		if (__builtin_popcount(msk) > (n + 1)/2)
+			continue;
+
+		double cap = 0;
+
+		for (int i = 0; i < m; i++){
+			bool in_u = (msk & (1<<a[i])) > 0;
+			bool in_v = (msk & (1<<b[i])) > 0;
+			if (in_u ^ in_v)
+				cap += lp[i];
+		}
+
+		assert(sign(cap - 2) >= 0);
+
+		if (sign(cap - 2) == 0){
+			for (int i = 0; i < m; i++){
+				bool in_u = (msk & (1<<a[i])) > 0;
+				bool in_v = (msk & (1<<b[i])) > 0;
+				if (in_u ^ in_v)
+					cout<<1<<' ';
+				else
+					cout<<0<<' ';
+			}
+
+			cout<<endl;
+		}
+	}
+}
+
+
 void solve(){
 	ReadGraph();
 	max_cost = 0; 
@@ -333,11 +369,13 @@ void solve(){
 			cout << max_v[v] << ' ';
 		cout << endl;
 	}
+
+	if (__cuts)
+		brute_all_cuts();
 }
 
 
 signed main(int argc, char *argv[]){
-	bool stdio = 0;
 	int start = 0;
 	int n_threads = 1;
 
@@ -346,8 +384,8 @@ signed main(int argc, char *argv[]){
 		string s = argv[i];
 		if (s == "-verbose")
 			__verbose_mode = 1;
-		else if (s == "-stdio")
-			stdio = 1;
+		else if (s == "-cuts")
+			__cuts = 1;
 		else if (s == "-start"){
 			s = argv[i + 1];
 			start = stoi(s);
