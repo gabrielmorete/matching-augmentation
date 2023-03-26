@@ -225,7 +225,7 @@ void BDSAlgorithm::Run(ListGraph::EdgeMap<int> &_cost,
 	ListGraph::EdgeMap<double> &FracSol, 
 	ListGraph &G){
 	
-	Update(cost, FracSol, G);	
+	Update(_cost, FracSol, G);	
 
 	// Step 1, find a DFS Tree
 	for (int v = 0; v < n; v++){
