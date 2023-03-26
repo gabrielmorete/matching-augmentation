@@ -32,7 +32,7 @@ void BDSAlgorithm::Dfs(int v){
 			break;
 
 		int u = e_u[e] + e_v[e] - v;
-		if (parent[u] == u and u != 0){
+		if (in[u] == 0){
 			parent[u] = v;
 			in_sol[e] = 1;
 			tree_adj[v].push_back(u);
@@ -221,9 +221,10 @@ void BDSAlgorithm::Run(ListGraph::EdgeMap<bool> &BDSSol, ListGraph::EdgeMap<doub
 	for (int v = 0; v < n; v++){
 		tree_adj[v].clear();
 		parent[v] = v;
+		in[v] = 0;
 	}
 
-	clk = 0;
+	clk = 1;
 	Dfs(0);
 
 	if (__verbose_mode){
