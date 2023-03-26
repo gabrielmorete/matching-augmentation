@@ -10,6 +10,8 @@
 #include <algorithm>
 #include <cmath>
 #include "lemon.h"
+using namespace std;
+
 
 class BDSAlgorithm{
 	protected:
