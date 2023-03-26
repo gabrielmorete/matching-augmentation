@@ -360,11 +360,9 @@ void SolveMapInstance(
 	if (sign(FracSol[G.edgeFromId(0)]) == -1)
 		return;
 
-	cout<<"start"<<endl;
 	BDS.Update(cost, FracSol, G);
-	cout<<"updated"<<endl;
 	BDS.Run(BDSSol, FracSol, G);
-	cout<<"end"<<endl;
+
 	// If fractional solution is integral, no need to solve a MIP
 	bool is_integral = 1;
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
