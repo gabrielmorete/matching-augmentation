@@ -242,6 +242,17 @@ void BDSAlgorithm::Update(ListGraph::EdgeMap<int> &_cost, ListGraph::EdgeMap<dou
 			}
 		);
 	}
+
+	for (int v = 0; v < n; v++){
+
+		for (int i = 0; i < adj[v].size(); i++)
+			cout<<"(" << cost[i] << ", " << lp[i] << ") ";
+		cout<<endl;
+
+		for (int i = 1; i < adj[v].size(); i++)
+			assert(sign(lp[adj[v][i - 1]] - lp[adj[v][i]]) >= 0);
+
+	}
 }
 
 
