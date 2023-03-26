@@ -25,7 +25,7 @@ int n, m, eid;
 int is_matched[MAXN];
 int edge_cost[MAXN * MAXN], a[MAXN * MAXN], b[MAXN * MAXN];
 double lp[MAXN * MAXN];
-double min_v[MAXN], max_v[MAXN];
+int min_v[MAXN], max_v[MAXN];
 vector< pair<int, int> > adj[MAXN];
 string name;
 void ReadGraph(){
@@ -193,6 +193,10 @@ void AllDFS(){
 			}
 
 			min_cost = min(min_cost, cur_cost);
+			
+			max_v[v] = max(max_v[v], cur_cost);
+			min_v[v] = min(min_v[v], cur_cost);
+
 		}
 	}
 }
@@ -289,6 +293,16 @@ void solve(){
 	Backtracking(0, 1);
 
 
+	double f_v_min_max = 0;
+	double f_v_max_min = m + 1;
+
+	for (int v = 0; v < n; v++){
+		f_v_max_min = min(f_v_max_min, (double)max_v[v]);
+		f_v_min_max = max(f_v_min_max, (double)min_v[v]);
+	}
+
+
+
 	double sol = 0;
 	for (int i = 0; i < m; i++)
 		sol += lp[i] * edge_cost[i];
@@ -296,7 +310,11 @@ void solve(){
 	double fmin = min_cost/sol;
 	double fmax = max_cost/sol;
 
-	cout<<fmin<<' '<<fmax<<' '<<sol<<endl;
+	f_v_max_min /= sol;
+	f_v_min_max /= sol;
+
+
+	cout << fmin << ' ' << fmax << ' ' << f_v_min_max << ' ' << f_v_max_min << ' ' << sol << endl;
 
 	if (sign(fmin - 1.4) >= 0 or sign(fmax - 1.4) > 0){
 		ofstream log("log_bds_brute", ios::app); // open in append mode

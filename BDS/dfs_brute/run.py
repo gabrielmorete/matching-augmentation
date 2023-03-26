@@ -82,12 +82,18 @@ for name in os.listdir(path):
 		command ="echo \"" + file_in + " \"  | ./dfs_brute" # command to be executed
 		out = str(subprocess.check_output(command, shell=True))
 
-		f_min, f_max, lp_val =  out.split()
+		f_min, f_max, f_v_min_max, f_v_max_min, lp_val =  out.split()
 		f_min = float(f_min[2:])
 		f_max = float(f_max)
+		f_v_min_max = float(f_v_min_max)
+		f_v_max_min = float(f_v_max_min);
 		lp_val = float(lp_val[:-3])
 
-		print(name, m_id, f_min, f_max, lp_val)
+		print("{:15s}: {:15s} | {:15s} | {}".format( str(name) + " - " + str(m_id), str(f_min) + " "  + str(f_max), str(f_v_min_max) + " "  + str(f_v_max_min), lp_val))
+		# print(name, "-", m_id, ":", f_min, f_max,"|", f_v_min_max, f_v_max_min,"|", lp_val)
+
+		if (f_v_max_min >= f_max - 0.01):
+			print("found a source unambigous conter example")
 
 		if (f_max >= 1.49 and half_integral(lp)):
 			print(name, m_id, "is a half integral CE")
