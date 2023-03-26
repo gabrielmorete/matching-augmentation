@@ -208,7 +208,11 @@ void BDSAlgorithm::Update(ListGraph::EdgeMap<int> &_cost, ListGraph::EdgeMap<dou
 		lp[eid] = _FracSol[e];
 		cost[eid] = _cost[e];
 		in_sol[eid] = 0; 
+
+		cout<<eid<<' '<<e_v[eid]<<' '<<e_u[eid]<<' '<<cost[eid]<<' '<<lp[eid]<<endl;
 	}
+
+
 
 	// Matched edge is the first
 	for (int v = 0; v < n; v++){
