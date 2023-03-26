@@ -80,7 +80,7 @@ class BDSAlgorithm{
 		void Run(ListGraph::EdgeMap<int> &_cost, 
 			ListGraph::EdgeMap<bool> &BDSSol, 
 			ListGraph::EdgeMap<double> &FracSol, 
-			ListGraph &G)
+			ListGraph &G);
 };
 
 
