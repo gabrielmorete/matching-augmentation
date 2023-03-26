@@ -134,6 +134,7 @@ void BDSAlgorithm::UpLinkAugmentation(){
 	// Preprocess
 	for (auto u : tree_adj[0]){
 		UpLinkDP(u);
+		cout<<"DP ok"<<endl;
 		RecoverUpLinkSol(u);
 	}
 }
