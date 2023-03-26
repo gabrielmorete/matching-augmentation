@@ -227,7 +227,7 @@ void BDSAlgorithm::Update(ListGraph::EdgeMap<int> &_cost, ListGraph::EdgeMap<dou
 		int p = 0;
 
 		for (int e = 0; e < adj[v].size(); e++)
-			if (cost[e] == 0 and (sign(lp[e]) > 0)) // If matched edge is zero, skip
+			if (cost[adj[v][e]] == 0 and (sign(lp[adj[v][e]]) > 0)) // If matched edge is zero, skip
 				p = e;
 		
 		swap(adj[v][0], adj[v][p]);	
