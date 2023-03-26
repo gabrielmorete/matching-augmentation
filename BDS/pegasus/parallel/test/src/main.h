@@ -13,7 +13,6 @@
 #include <cmath>
 #include "gurobi_c++.h"
 #include "lemon.h"
-#include "bds.h"
 #include <omp.h>
 
 using namespace std;
