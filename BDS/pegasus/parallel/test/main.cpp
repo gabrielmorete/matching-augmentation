@@ -425,9 +425,9 @@ signed main(int argc, char *argv[]){
 		}
 	}
 
-	// if (stdio)
-	// 	RunStdioInput();
-	else
+		// if (stdio)
+		// 	RunStdioInput();
+	// else
 		RunNautyInput(start, n_threads);
 }
 
