@@ -26,15 +26,6 @@
 void BDSAlgorithm::Dfs(int v){
 	in[v] = clk++;
 
-	for (int e : adj[v])
-		cout<<"(" << cost[e] << ", " << lp[e] << ") ";
-	cout<<endl;
-
-	int matched = 1 - cost[adj[v][0]];
-
-	for (int i = 1 + matched; i < adj[v].size(); i++)
-		assert(sign(lp[adj[v][i - 1]] - lp[adj[v][i]]) >= 0);
-
 	for (int e : adj[v]){
 		// Edges are sorted and the algorithm runs in the support
 		if (sign(lp[e]) <= 0)
@@ -121,13 +112,8 @@ void BDSAlgorithm::RecoverUpLinkSol(int v){
 
 
 void BDSAlgorithm::UpLinkAugmentation(){
-	cout<<"oi"<<endl;
 	for (int v = 0; v < n; v++)
 		cover[v].clear();
-
-	dbg(n);
-	dbg(m);
-	cout<<"passei do clean"<<endl;
 
 	for (int i = 0; i < m; i++)
 		if (!in_sol[i] and sign(lp[i]) > 0){
@@ -136,11 +122,6 @@ void BDSAlgorithm::UpLinkAugmentation(){
 			if (Dec(u, v)) // u is the lower vertex
 				swap(u, v);
 
-			dbg(u);
-			dbg(v);
-			dbg(parent[u]);
-			cout<<in[u]<<' '<<out[u]<<endl;
-			cout<<in[v]<<' '<<out[v]<<endl;
 			while (u != v){ // link i covers {v, parent[v]}
 				cover[u].push_back(i);
 				u = parent[u];
@@ -149,13 +130,9 @@ void BDSAlgorithm::UpLinkAugmentation(){
 			memo_edge[i] = cost[i];
 		}
 
-	dbg(tree_adj.size());	
-	cout<<"aahush"<<endl;
-
 	// Preprocess
 	for (auto u : tree_adj[0]){
 		UpLinkDP(u);
-		cout<<"DP ok"<<endl;
 		RecoverUpLinkSol(u);
 	}
 }
@@ -203,21 +180,11 @@ BDSAlgorithm::BDSAlgorithm(ListGraph &G){
 void BDSAlgorithm::Update(ListGraph::EdgeMap<int> &_cost, ListGraph::EdgeMap<double> &_FracSol, ListGraph &G){
 	updated = true;
 
-	for (int v = 0; v < n; v++){
-		cout<<v<<": ";
-		for (int u : adj[v])
-			cout<<(u) <<' ';
-		cout<<endl;	 
-	}
-
-
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
 		int eid = G.id(e);
 		lp[eid] = _FracSol[e];
 		cost[eid] = _cost[e];
 		in_sol[eid] = 0; 
-
-		cout<<eid<<' '<<e_v[eid]<<' '<<e_u[eid]<<' '<<cost[eid]<<' '<<lp[eid]<<endl;
 	}
 
 
@@ -234,8 +201,6 @@ void BDSAlgorithm::Update(ListGraph::EdgeMap<int> &_cost, ListGraph::EdgeMap<dou
 	
 		int matched = 1 - cost[adj[v][0]];
 
-		dbg(matched);
-
 		sort(adj[v].begin() + matched, adj[v].end(),
 			[this](int a, int b){ // Sort by increase lp value, skip matching edge
 				return lp[a] > lp[b];
@@ -243,18 +208,17 @@ void BDSAlgorithm::Update(ListGraph::EdgeMap<int> &_cost, ListGraph::EdgeMap<dou
 		);
 	}
 
-	for (int v = 0; v < n; v++){
+	// for (int v = 0; v < n; v++){
 
-		for (int e : adj[v])
-			cout<<"(" << cost[e] << ", " << lp[e] << ") ";
-		cout<<endl;
+	// 	for (int e : adj[v])
+	// 		cout<<"(" << cost[e] << ", " << lp[e] << ") ";
+	// 	cout<<endl;
 
-		int matched = 1 - cost[adj[v][0]];
+	// 	int matched = 1 - cost[adj[v][0]];
 
-		for (int i = 1 + matched; i < adj[v].size(); i++)
-			assert(sign(lp[adj[v][i - 1]] - lp[adj[v][i]]) >= 0);
-
-	}
+	// 	for (int i = 1 + matched; i < adj[v].size(); i++)
+	// 		assert(sign(lp[adj[v][i - 1]] - lp[adj[v][i]]) >= 0);
+	// }
 }
 
 
