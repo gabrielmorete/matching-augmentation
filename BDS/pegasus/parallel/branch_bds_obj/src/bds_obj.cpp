@@ -215,12 +215,14 @@ void BDSAlgorithm::Update(ListGraph::EdgeMap<int> &_cost, ListGraph::EdgeMap<dou
 		int p = 0;
 
 		for (int e = 0; e < adj[v].size(); e++)
-			if (cost[e] == 0 and sign(lp[e]) > 0) // If matched edge is zero, skip
+			if (cost[e] == 0 and (sign(lp[e]) > 0)) // If matched edge is zero, skip
 				p = e;
 		
 		swap(adj[v][0], adj[v][p]);	
 	
 		int matched = 1 - cost[adj[v][0]];
+
+		dbg(matched);
 
 		sort(adj[v].begin() + matched, adj[v].end(),
 			[this](int a, int b){ // Sort by increase lp value, skip matching edge
