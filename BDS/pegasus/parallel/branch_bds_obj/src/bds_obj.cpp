@@ -116,6 +116,10 @@ void BDSAlgorithm::UpLinkAugmentation(){
 	for (int v = 0; v < n; v++)
 		cover[v].clear();
 
+	dbg(n);
+	dbg(m);
+	cout<<"passei do clean"<<end;
+
 	for (int i = 0; i < m; i++)
 		if (!in_sol[i] and sign(lp[i]) > 0){
 			int u = e_u[i];
