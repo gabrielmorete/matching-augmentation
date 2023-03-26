@@ -32,7 +32,7 @@ void BDSAlgorithm::Dfs(int v){
 	cout<<endl;
 
 	for (int i = 1; i < adj[v].size(); i++)
-		assert(sign(lp[adj[v][i]] - lp[adj[v][i - 1]]) >= 0);
+		assert(sign(lp[adj[v][i - 1]] - lp[adj[v][i]]) >= 0);
 
 
 	for (int e : adj[v]){
