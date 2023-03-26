@@ -127,6 +127,10 @@ void BDSAlgorithm::UpLinkAugmentation(){
 			if (Dec(u, v)) // u is the lower vertex
 				swap(u, v);
 
+			dbg(u);
+			dbg(v);
+			dbg(parent[u]);
+
 			while (u != v){ // link i covers {v, parent[v]}
 				cover[u].push_back(i);
 				u = parent[u];
