@@ -93,7 +93,7 @@ for name in os.listdir(path):
 		# print(name, "-", m_id, ":", f_min, f_max,"|", f_v_min_max, f_v_max_min,"|", lp_val)
 
 		if (f_v_max_min >= f_max - 0.01):
-			print("found a source unambigous conter example")
+			print("found a unambigous conter example")
 
 		if (f_max >= 1.49 and half_integral(lp)):
 			print(name, m_id, "is a half integral CE")
