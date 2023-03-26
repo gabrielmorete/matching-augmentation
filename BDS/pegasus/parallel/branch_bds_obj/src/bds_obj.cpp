@@ -26,6 +26,11 @@
 void BDSAlgorithm::Dfs(int v){
 	in[v] = clk++;
 
+
+	for (int i = 0; i < adj[v].size(); i++)
+		cout<<"(" << cost[i] << ", " << lp[i] << ") ";
+	cout<<endl;
+
 	for (int i = 1; i < adj[v].size(); i++)
 		assert(sign(lp[adj[v][i]] - lp[adj[v][i - 1]]) >= 0);
 
