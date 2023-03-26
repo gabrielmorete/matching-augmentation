@@ -8,9 +8,9 @@
 */
 #include "src/main.h"
 #include "src/lemon.h"
-#include "src/bds.cpp"
+#include "src/bds_obj.cpp"
 #include "src/nauty_reader.cpp"
-#include "src/stdio_reader.cpp"
+// #include "src/stdio_reader.cpp"
 
 using namespace std;
 
@@ -351,15 +351,18 @@ void SolveMapInstance(
 	GRBVar *frac_vars,
 	GRBModel &int_model,
 	GRBVar *int_vars,
-	ListGraph &G){
+	ListGraph &G,
+	BDSAlgorithm &BDS){
+
 
 	FractionalSolution(cost, FracSol, frac_model, frac_vars, G);
 
 	if (sign(FracSol[G.edgeFromId(0)]) == -1)
 		return;
 
-	BDSAlgorithm(cost, FracSol, BDSSol, G);
-
+	BDS.Update(cost, FracSol, G);
+	BDS.Run(BDSSol, FracSol, G);
+	
 	// If fractional solution is integral, no need to solve a MIP
 	bool is_integral = 1;
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
@@ -432,9 +435,9 @@ signed main(int argc, char *argv[]){
 	if (log_start)
 		start = -1;
 
-	if (stdio)
-		RunStdioInput();
-	else
+	// if (stdio)
+	// 	RunStdioInput();
+	// else
 		RunNautyInput(start, n_threads);
 }
 

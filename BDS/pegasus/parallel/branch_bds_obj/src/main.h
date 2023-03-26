@@ -14,6 +14,7 @@
 #include <cmath>
 #include "gurobi_c++.h"
 #include "lemon.h"
+#include "bds_obj.h"
 #include <omp.h>
 
 using namespace std;
@@ -87,8 +88,8 @@ void SolveMapInstance(
 	GRBVar *frac_vars,
 	GRBModel &int_model,
 	GRBVar *int_vars,
-	ListGraph &G);
-
+	ListGraph &G,
+	BDSAlgorithm &BDS);
 
 /*
 	Callback function class.
