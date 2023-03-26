@@ -13,7 +13,7 @@
 
 	O(n|L|)
 
-	Declare the structure onde per graph. 
+	Declare the structure once per graph. 
 	Then just updateit for different costs and lp solutions.
 */
 
