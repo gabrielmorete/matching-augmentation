@@ -130,7 +130,8 @@ void BDSAlgorithm::UpLinkAugmentation(){
 			dbg(u);
 			dbg(v);
 			dbg(parent[u]);
-
+			cout<<in[u]<<' '<<out[u]<<endl;
+			cout<<in[v]<<' '<<out[v]<<endl;
 			while (u != v){ // link i covers {v, parent[v]}
 				cover[u].push_back(i);
 				u = parent[u];
