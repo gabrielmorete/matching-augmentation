@@ -130,6 +130,8 @@ void BDSAlgorithm::UpLinkAugmentation(){
 			memo_edge[i] = cost[i];
 		}
 
+	dbg(tree_adj.size());	
+
 
 	// Preprocess
 	for (auto u : tree_adj[0]){
