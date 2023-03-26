@@ -26,6 +26,10 @@
 void BDSAlgorithm::Dfs(int v){
 	in[v] = clk++;
 
+	for (int i = 1; i < adj[v].size; i++)
+		assert(sign(lp[i] - lp[i - 1]) >= 0);
+
+
 	for (int e : adj[v]){
 		// Edges are sorted and the algorithm runs in the support
 		if (sign(lp[e]) <= 0)
