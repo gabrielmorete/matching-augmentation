@@ -1,7 +1,14 @@
 #ifndef BDS_DEF
 #define BDS_DEF
 
-#include "main.h"
+
+#include <vector>
+#include <array>
+#include <cassert>
+#include <string>
+#include <set>
+#include <algorithm>
+#include <cmath>
 #include "lemon.h"
 
 class BDSAlgorithm{
