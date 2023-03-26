@@ -26,14 +26,14 @@
 void BDSAlgorithm::Dfs(int v){
 	in[v] = clk++;
 
-
-	for (int i = 0; i < adj[v].size(); i++)
-		cout<<"(" << cost[i] << ", " << lp[i] << ") ";
+	for (int e : adj[v])
+		cout<<"(" << cost[e] << ", " << lp[e] << ") ";
 	cout<<endl;
 
-	for (int i = 1; i < adj[v].size(); i++)
-		assert(sign(lp[adj[v][i - 1]] - lp[adj[v][i]]) >= 0);
+	int matched = 1 - cost[adj[v][0]];
 
+	for (int i = 1 + matched; i < adj[v].size(); i++)
+		assert(sign(lp[adj[v][i - 1]] - lp[adj[v][i]]) >= 0);
 
 	for (int e : adj[v]){
 		// Edges are sorted and the algorithm runs in the support
@@ -249,7 +249,9 @@ void BDSAlgorithm::Update(ListGraph::EdgeMap<int> &_cost, ListGraph::EdgeMap<dou
 			cout<<"(" << cost[e] << ", " << lp[e] << ") ";
 		cout<<endl;
 
-		for (int i = 1; i < adj[v].size(); i++)
+		int matched = 1 - cost[adj[v][0]];
+
+		for (int i = 1 + matched; i < adj[v].size(); i++)
 			assert(sign(lp[adj[v][i - 1]] - lp[adj[v][i]]) >= 0);
 
 	}
