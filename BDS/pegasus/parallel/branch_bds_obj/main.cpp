@@ -360,8 +360,7 @@ void SolveMapInstance(
 	if (sign(FracSol[G.edgeFromId(0)]) == -1)
 		return;
 
-	BDS.Update(cost, FracSol, G);
-	BDS.Run(BDSSol, FracSol, G);
+	BDS.Run(cost, BDSSol, FracSol, G);
 
 	// If fractional solution is integral, no need to solve a MIP
 	bool is_integral = 1;
