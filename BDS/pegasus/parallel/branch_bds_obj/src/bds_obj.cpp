@@ -79,7 +79,7 @@ void BDSAlgorithm::UpLinkDP(int v){
 
 	if (parent[v] != 0)
 		for (int e : cover[parent[v]])
-			if (Dec(e_u[e], v) == 0 and Dec(e_v[e], v) == 0)
+			if (Dec(v, e_u[e]) == 0 and Dec(v, e_v[e]) == 0)
 				memo_edge[e] += memo_edge[ dp_edge[v] ];
 }
 
