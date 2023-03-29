@@ -64,10 +64,11 @@ class BDSAlgorithm{
 		void UpLinkAugmentation();
 
 	public:
+		BDSAlgorithm::BDSAlgorithm()
+
 		/*
 			Builds structure for new graph
 		*/
-
 		BDSAlgorithm(ListGraph &G);
 		/*
 			Update costs and lp value
