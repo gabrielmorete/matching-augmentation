@@ -251,11 +251,11 @@ void BDSAlgorithm::Run(ListGraph::EdgeMap<int> &_cost,
 
 
 	// Step 2, uplink only augmentation
-	UpLinkAugmentation();
+	// UpLinkAugmentation();
 
 
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
-		BDSSol[e] = in_sol[G.id(e)];
+		BDSSol[e] = 1;//in_sol[G.id(e)];
 
 	ListGraph::NodeMap<bool> ones(G, 1);
 
