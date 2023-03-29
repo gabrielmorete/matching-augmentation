@@ -214,7 +214,7 @@ void SolveAllMatchings(ListGraph &G){
 		cost[e] = 1;
 
 	GRBModel frac_model(env);
-	GRBVar frac_vars[m];
+	GRBVar frac_vars = new GRBVar[m];
 	BuildFractional(frac_model, frac_vars, G);
 
 	GRBModel int_model(env);
@@ -229,6 +229,8 @@ void SolveAllMatchings(ListGraph &G){
 
 	int total_matchings = 1, n_matched = 0;
 	FindAllMatchings(0, n, m, n_matched, total_matchings, matched, cost, frac_model, frac_vars, int_model, int_vars, G, BDS);
+
+	delete[] frac_vars;
 }
 
 

@@ -27,7 +27,6 @@ class BDSAlgorithm{
 			
 			O(n + m)
 		*/
-
 		void Dfs(int v);
 
 		/*
@@ -60,18 +59,20 @@ class BDSAlgorithm{
 		*/
 		void RecoverUpLinkSol(int v);
 
-
+		/*
+			Wrapper function.
+		*/
 		void UpLinkAugmentation();
 
 	public:
 		void PrintAndCheck();
 
-		BDSAlgorithm();
-
 		/*
 			Builds structure for new graph
 		*/
+		BDSAlgorithm();
 		BDSAlgorithm(ListGraph &G);
+
 		/*
 			Update costs and lp value
 		*/
