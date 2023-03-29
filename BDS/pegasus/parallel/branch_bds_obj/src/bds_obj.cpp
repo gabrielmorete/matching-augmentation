@@ -130,6 +130,7 @@ void BDSAlgorithm::UpLinkAugmentation(){
 
 			while (u != v){ // link i covers {v, parent[v]}
 				cover[u].push_back(i);
+				assert(u != parent[u]);
 				u = parent[u];
 			}
 
