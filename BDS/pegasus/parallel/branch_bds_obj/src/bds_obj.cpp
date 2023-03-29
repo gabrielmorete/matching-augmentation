@@ -251,7 +251,7 @@ void BDSAlgorithm::Run(ListGraph::EdgeMap<int> &_cost,
 
 
 	// Step 2, uplink only augmentation
-	// UpLinkAugmentation();
+	UpLinkAugmentation();
 
 
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
