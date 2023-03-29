@@ -242,18 +242,6 @@ void BDSAlgorithm::Update(ListGraph::EdgeMap<int> &_cost, ListGraph::EdgeMap<dou
 			}
 		);
 	}
-
-	// for (int v = 0; v < n; v++){
-
-	// 	for (int e : adj[v])
-	// 		cout<<"(" << cost[e] << ", " << lp[e] << ") ";
-	// 	cout<<endl;
-
-	// 	int matched = 1 - cost[adj[v][0]];
-
-	// 	for (int i = 1 + matched; i < adj[v].size(); i++)
-	// 		assert(sign(lp[adj[v][i - 1]] - lp[adj[v][i]]) >= 0);
-	// }
 }
 
 #warning "remove returns"
@@ -290,9 +278,16 @@ void BDSAlgorithm::Run(ListGraph::EdgeMap<int> &_cost,
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
 		BDSSol[e] = in_sol[G.id(e)];
 
-	ListGraph::NodeMap<bool> ones(G, 1);
+
+	// Sanity check, checks if edges are from the support
+	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+		if (BDSSol[e] and (sign(FracSol[e]) <= 0))
+			assert(0);
+
 
 	// Sanity check, checks if BDS returned a feasible solution
+	ListGraph::NodeMap<bool> ones(G, 1);
+
 	SubGraph<ListGraph> H(G, ones, BDSSol);
 	assert(biEdgeConnected(H) == 1);
 }
