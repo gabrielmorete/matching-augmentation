@@ -11,8 +11,8 @@ CARGS = -m64 -O3
 GUROBI_CPPLIB = -L $(GUROBI_PATH)/lib -lgurobi_c++ -lgurobi81
 
 # The following flags are only for debuging purposes
-SAN = -fsanitize=address -fsanitize=undefined -fno-sanitize-recover
-STL = -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC -D_FORTIFY_SOURCE=2
+# SAN = -fsanitize=address -fsanitize=undefined -fno-sanitize-recover
+# STL = -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC -D_FORTIFY_SOURCE=2
 
 % : %.cpp
 	$(CPP) $(CARGS) $(STD) -o $@ $< -I$(INC) $(GUROBI_CPPLIB) -lm -lemon -fopenmp -lstdc++fs $(SAN) $(STL)
