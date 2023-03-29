@@ -148,8 +148,8 @@ void BDSAlgorithm::UpLinkAugmentation(){
 				if (parent[u] == u){
 					dbg(u);
 					dbg(lp[i]);
-					dbg(e_u[e]);
-					dbg(e_v[e]);
+					dbg(e_u[i]);
+					dbg(e_v[i]);
 					print();
 
 				}
