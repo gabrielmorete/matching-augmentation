@@ -118,7 +118,17 @@ void BDSAlgorithm::RecoverUpLinkSol(int v){
 
 
 void print(){
+	for (int v = 0; v < n; v++){
+		cout<<v<<": ";
+		for (int e : adj[v])
+			cout<<"(" << (e_v[e] + e_u[e] - v) << " " << cost[e] << ", " << lp[e] << ") ";
+		cout<<endl;
 
+		int matched = 1 - cost[adj[v][0]];
+
+		for (int i = 1 + matched; i < adj[v].size(); i++)
+			assert(sign(lp[adj[v][i - 1]] - lp[adj[v][i]]) >= 0);
+	}
 }
 
 void BDSAlgorithm::UpLinkAugmentation(){
@@ -138,6 +148,9 @@ void BDSAlgorithm::UpLinkAugmentation(){
 				if (parent[u] == u){
 					dbg(u);
 					dbg(lp[i]);
+					dbg(e_u[e]);
+					dbg(e_v[e]);
+					print();
 
 				}
 
@@ -156,17 +169,7 @@ void BDSAlgorithm::UpLinkAugmentation(){
 }
 
 BDSAlgorithm::BDSAlgorithm(){
-	for (int v = 0; v < n; v++){
-		cout<<v<<": ";
-		for (int e : adj[v])
-			cout<<"(" << (e_v[e] + e_u[e] - v) << " " << cost[e] << ", " << lp[e] << ") ";
-		cout<<endl;
 
-		int matched = 1 - cost[adj[v][0]];
-
-		for (int i = 1 + matched; i < adj[v].size(); i++)
-			assert(sign(lp[adj[v][i - 1]] - lp[adj[v][i]]) >= 0);
-	}
 }
 
 
