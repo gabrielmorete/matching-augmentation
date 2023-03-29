@@ -367,6 +367,8 @@ void SolveMapInstance(
 		if (BDSSol[e] and (sign(FracSol[e]) <= 0))
 			assert(0);
 
+	return;	
+
 	// If fractional solution is integral, no need to solve a MIP
 	bool is_integral = 1;
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
