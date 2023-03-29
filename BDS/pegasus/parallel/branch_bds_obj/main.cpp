@@ -362,6 +362,11 @@ void SolveMapInstance(
 
 	BDS.Run(cost, BDSSol, FracSol, G);
 
+	// Sanity check, checks if edges are from the support
+	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+		if (BDSSol[e] and (sign(FracSol[e]) <= 0))
+			assert(0);
+
 	// If fractional solution is integral, no need to solve a MIP
 	bool is_integral = 1;
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
