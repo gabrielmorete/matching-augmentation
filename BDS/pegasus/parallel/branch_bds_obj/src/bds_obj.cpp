@@ -26,6 +26,12 @@
 void BDSAlgorithm::Dfs(int v){
 	in[v] = clk++;
 
+	int matched = 1 - cost[adj[v][0]];
+
+	for (int i = 1 + matched; i < adj[v].size(); i++)
+		assert(sign(lp[adj[v][i - 1]] - lp[adj[v][i]]) >= 0);
+
+
 	for (int e : adj[v]){
 		// Edges are sorted and the algorithm runs in the support
 		if (sign(lp[e]) <= 0)
@@ -133,7 +139,7 @@ void BDSAlgorithm::UpLinkAugmentation(){
 	// Preprocess
 	for (auto u : tree_adj[0]){
 		UpLinkDP(u);
-		RecoverUpLinkSol(u);
+		// RecoverUpLinkSol(u);
 	}
 }
 
@@ -222,6 +228,7 @@ void BDSAlgorithm::Update(ListGraph::EdgeMap<int> &_cost, ListGraph::EdgeMap<dou
 	// }
 }
 
+#warning "remove returns"
 
 /*
 	Run BDS algorithm
@@ -249,12 +256,10 @@ void BDSAlgorithm::Run(ListGraph::EdgeMap<int> &_cost,
 			cout << parent[v] << " <-- " << v << endl;	
 	}
 
-	return;
-
-
 	// Step 2, uplink only augmentation
 	UpLinkAugmentation();
 
+	return; /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
 		BDSSol[e] = in_sol[G.id(e)];
