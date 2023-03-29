@@ -64,7 +64,7 @@ class BDSAlgorithm{
 		void UpLinkAugmentation();
 
 	public:
-		BDSAlgorithm::BDSAlgorithm();
+		BDSAlgorithm();
 
 		/*
 			Builds structure for new graph
