@@ -117,7 +117,7 @@ void BDSAlgorithm::RecoverUpLinkSol(int v){
 }
 
 
-void print(){
+void BDSAlgorithm::print(){
 	for (int v = 0; v < n; v++){
 		cout<<v<<": ";
 		for (int e : adj[v])

@@ -64,6 +64,8 @@ class BDSAlgorithm{
 		void UpLinkAugmentation();
 
 	public:
+		void print();
+
 		BDSAlgorithm();
 
 		/*
