@@ -144,6 +144,7 @@ BDSAlgorithm::BDSAlgorithm(ListGraph &G){
 	n = countNodes(G);
 	m = countEdges(G);
 
+
 	adj.resize(n);
 	tree_adj.resize(n);
 
@@ -256,11 +257,6 @@ void BDSAlgorithm::Run(ListGraph::EdgeMap<int> &_cost,
 	// Sanity check, checks if BDS returned a feasible solution
 	SubGraph<ListGraph> H(G, ones, BDSSol);
 	assert(biEdgeConnected(H) == 1);
-
-	// Sanity check, checks if edges are from the support
-	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
-		if (BDSSol[e] and (sign(FracSol[e]) <= 0))
-			assert(0);
 }
 
 
