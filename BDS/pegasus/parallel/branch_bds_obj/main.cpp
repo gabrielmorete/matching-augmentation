@@ -360,7 +360,7 @@ void SolveMapInstance(
 	if (sign(FracSol[G.edgeFromId(0)]) == -1)
 		return;
 
-	// BDS.Run(cost, BDSSol, FracSol, G);
+	BDS.Run(cost, BDSSol, FracSol, G);
 
 	// Sanity check, checks if edges are from the support
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)

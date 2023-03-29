@@ -225,7 +225,7 @@ void SolveAllMatchings(ListGraph &G){
 
 	ListGraph::NodeMap<bool> matched(G);
 
-	BDSAlgorithm BDS;
+	BDSAlgorithm BDS(G);
 
 	int total_matchings = 1, n_matched = 0;
 	FindAllMatchings(0, n, m, n_matched, total_matchings, matched, cost, frac_model, frac_vars, int_model, int_vars, G, BDS);
