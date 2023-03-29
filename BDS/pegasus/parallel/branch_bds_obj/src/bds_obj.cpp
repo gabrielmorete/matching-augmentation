@@ -26,12 +26,6 @@
 void BDSAlgorithm::Dfs(int v){
 	in[v] = clk++;
 
-	int matched = 1 - cost[adj[v][0]];
-
-	for (int i = 1 + matched; i < adj[v].size(); i++)
-		assert(sign(lp[adj[v][i - 1]] - lp[adj[v][i]]) >= 0);
-
-
 	for (int e : adj[v]){
 		// Edges are sorted and the algorithm runs in the support
 		if (sign(lp[e]) <= 0)
@@ -117,7 +111,7 @@ void BDSAlgorithm::RecoverUpLinkSol(int v){
 }
 
 
-void BDSAlgorithm::print(){
+void BDSAlgorithm::PrintAndCheck(){
 	for (int v = 0; v < n; v++){
 		cout<<v<<": ";
 		for (int e : adj[v])
@@ -135,7 +129,7 @@ void BDSAlgorithm::UpLinkAugmentation(){
 	for (int v = 0; v < n; v++)
 		cover[v].clear();
 
-	for (int i = 0; i < m; i++)
+	for (int i = 0; i < m; i++) // Preprocessing nodes
 		if (!in_sol[i] and sign(lp[i]) > 0){
 			int u = e_u[i];
 			int v = e_v[i];
@@ -144,33 +138,19 @@ void BDSAlgorithm::UpLinkAugmentation(){
 
 			while (u != v){ // link i covers {v, parent[v]}
 				cover[u].push_back(i);
-
-				if (parent[u] == u){
-					dbg(u);
-					dbg(lp[i]);
-					dbg(e_u[i]);
-					dbg(e_v[i]);
-					print();
-
-				}
-
-				assert(u != parent[u]);
 				u = parent[u];
 			}
 
 			memo_edge[i] = cost[i];
 		}
 
-	// Preprocess
 	for (auto u : tree_adj[0]){
 		UpLinkDP(u);
 		RecoverUpLinkSol(u);
 	}
 }
 
-BDSAlgorithm::BDSAlgorithm(){
-
-}
+BDSAlgorithm::BDSAlgorithm(){}
 
 
 /*
@@ -265,6 +245,12 @@ void BDSAlgorithm::Run(ListGraph::EdgeMap<int> &_cost,
 
 	clk = 1;
 	Dfs(0);
+
+	// Sanity check, found a tree
+	assert(parent[0] == 0);
+	for (int v = 1; v < n; v++)
+		assert(parent[v] != v);
+
 
 	if (__verbose_mode){
 		cout << "BDS Tree Found" << endl;
