@@ -121,7 +121,7 @@ void BDSAlgorithm::print(){
 	for (int v = 0; v < n; v++){
 		cout<<v<<": ";
 		for (int e : adj[v])
-			cout<<"(" << (e_v[e] + e_u[e] - v) << " " << cost[e] << ", " << lp[e] << ") ";
+			cout<<"(" << (e_v[e] + e_u[e] - v) << ", " << cost[e] << ", " << lp[e] << ") ";
 		cout<<endl;
 
 		int matched = 1 - cost[adj[v][0]];
@@ -231,7 +231,9 @@ void BDSAlgorithm::Update(ListGraph::EdgeMap<int> &_cost, ListGraph::EdgeMap<dou
 		
 		swap(adj[v][0], adj[v][p]);	
 	
-		int matched = 1 - cost[adj[v][0]];
+		int matched = 0;
+		if ((cost[adj[v][0]] == 0) and (sign(lp[ adj[v][0] ]) > 0) )
+			matched = 1;
 
 		sort(adj[v].begin() + matched, adj[v].end(),
 			[this](int a, int b){ // Sort by increase lp value, skip matching edge
