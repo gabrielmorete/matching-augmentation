@@ -255,7 +255,7 @@ void BDSAlgorithm::Run(ListGraph::EdgeMap<int> &_cost,
 
 
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
-		BDSSol[e] = 1;//in_sol[G.id(e)];
+		BDSSol[e] = in_sol[G.id(e)];
 
 	ListGraph::NodeMap<bool> ones(G, 1);
 
