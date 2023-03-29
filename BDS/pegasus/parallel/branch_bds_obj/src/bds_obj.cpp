@@ -157,7 +157,7 @@ void BDSAlgorithm::UpLinkAugmentation(){
 
 BDSAlgorithm::BDSAlgorithm(){
 	for (int v = 0; v < n; v++){
-		cout<<v<<": "
+		cout<<v<<": ";
 		for (int e : adj[v])
 			cout<<"(" << (e_v[e] + e_u[e] - v) << " " << cost[e] << ", " << lp[e] << ") ";
 		cout<<endl;
