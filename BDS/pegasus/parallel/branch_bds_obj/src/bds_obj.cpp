@@ -117,6 +117,10 @@ void BDSAlgorithm::RecoverUpLinkSol(int v){
 }
 
 
+void print(){
+
+}
+
 void BDSAlgorithm::UpLinkAugmentation(){
 	for (int v = 0; v < n; v++)
 		cover[v].clear();
@@ -152,7 +156,17 @@ void BDSAlgorithm::UpLinkAugmentation(){
 }
 
 BDSAlgorithm::BDSAlgorithm(){
-	
+	for (int v = 0; v < n; v++){
+		cout<<v<<": "
+		for (int e : adj[v])
+			cout<<"(" << (e_v[e] + e_u[e] - v) << " " << cost[e] << ", " << lp[e] << ") ";
+		cout<<endl;
+
+		int matched = 1 - cost[adj[v][0]];
+
+		for (int i = 1 + matched; i < adj[v].size(); i++)
+			assert(sign(lp[adj[v][i - 1]] - lp[adj[v][i]]) >= 0);
+	}
 }
 
 
