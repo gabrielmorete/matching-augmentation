@@ -15,4 +15,4 @@ SAN = -fsanitize=address -fsanitize=undefined -fno-sanitize-recover
 STL = -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC -D_FORTIFY_SOURCE=2
 
 % : %.cpp
-	$(CPP) $(CARGS) $(STD) $(SAN) $(STL) -o $@ $< -I$(INC) $(GUROBI_CPPLIB) -lm -lemon -fopenmp -lstdc++fs
+	$(CPP) $(CARGS) $(STD) -o $@ $< -I$(INC) $(GUROBI_CPPLIB) -lm -lemon -fopenmp -lstdc++fs $(SAN) $(STL)
