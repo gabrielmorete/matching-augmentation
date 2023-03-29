@@ -362,8 +362,6 @@ void SolveMapInstance(
 
 	BDS.Run(cost, BDSSol, FracSol, G);
 
-	return;
-
 	// Sanity check, checks if edges are from the support
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
 		if (BDSSol[e] and (sign(FracSol[e]) <= 0))

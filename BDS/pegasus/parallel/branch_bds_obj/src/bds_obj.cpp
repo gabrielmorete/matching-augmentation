@@ -231,6 +231,7 @@ void BDSAlgorithm::Update(ListGraph::EdgeMap<int> &_cost, ListGraph::EdgeMap<dou
 		
 		swap(adj[v][0], adj[v][p]);	
 	
+		// Be careful when matched edge ios the first but LP value is zero
 		int matched = 0;
 		if ((cost[adj[v][0]] == 0) and (sign(lp[ adj[v][0] ]) > 0) )
 			matched = 1;
@@ -285,8 +286,6 @@ void BDSAlgorithm::Run(ListGraph::EdgeMap<int> &_cost,
 
 	// Step 2, uplink only augmentation
 	UpLinkAugmentation();
-
-	return; /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
 		BDSSol[e] = in_sol[G.id(e)];
