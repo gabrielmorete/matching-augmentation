@@ -137,6 +137,11 @@ void BDSAlgorithm::UpLinkAugmentation(){
 	}
 }
 
+BDSAlgorithm::BDSAlgorithm(){
+	
+}
+
+
 /*
 	Builds structure for new graph
 */
