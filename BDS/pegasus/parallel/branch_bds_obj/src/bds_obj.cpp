@@ -224,8 +224,6 @@ void BDSAlgorithm::Update(ListGraph::EdgeMap<int> &_cost, ListGraph::EdgeMap<dou
 	}
 }
 
-#warning "remove returns"
-
 /*
 	Run BDS algorithm
 */
