@@ -175,6 +175,6 @@ signed main(int argc, char *argv[]){
 	// if (stdio)
 	// 	RunStdioInput();
 	// else
-		RunNautyInput(start, n_threads);
+	RunNautyInput(start, n_threads);
 }
 
