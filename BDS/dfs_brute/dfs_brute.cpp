@@ -267,6 +267,17 @@ void solve(){
 
 	for(int v = 0; v < n; v++){
 
+
+		sort(adj[v].begin(), adj[v].end(),
+			[](pair<int, int> a, pair<int, int> b){
+				return lp[a.second] > lp[b.second];
+			}
+		);
+
+		while ((adj[v].size() > 1) and ( sign( lp[adj[v].back().second] ) <= 0 ))
+			adj[v].pop_back();
+
+		// If matching edge has value zero, it will be deleted, if not
 		// Matching edge will be the first edge
 		int p = 0;
 		for (int i = 0; i < adj[v].size(); i++)
@@ -277,18 +288,7 @@ void solve(){
 
 		// Edges of the adj will be sorted by decreasing LP value.
 		// We will only permute edges with the same value
-
 		is_matched[v] = 1 - edge_cost[ adj[v][0].second ];
-
-		sort(adj[v].begin() + is_matched[v], adj[v].end(),
-			[](pair<int, int> a, pair<int, int> b){
-				return lp[a.second] > lp[b.second];
-			}
-		);
-
-		while ((adj[v].size() > 1) and ( sign( lp[adj[v].back().second] ) <= 0 ))
-			adj[v].pop_back();
-
 
 		// sz[v][i] will be the amount of edges with the ith lp value
 		// sz[v][0] = 0 since we will acumulate the sum
