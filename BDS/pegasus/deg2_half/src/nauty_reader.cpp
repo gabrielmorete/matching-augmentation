@@ -59,7 +59,7 @@ void SolveCurrentMatching(int matching_id,
 		if (sign(FracSol[e]) != 0 and sign(FracSol[e] - 0.5) != 0 sign(FracSol[e] - 1.0) != 0)
 			is_half_integral = 0;
 
-	ListGraph::NodeMap cut_val(G, 0);	
+	ListGraph::NodeMap<double> cut_val(G, 0);	
 
 	if (is_half_integral){
 		for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
