@@ -98,7 +98,7 @@ void SolveCurrentMatching(int matching_id,
 					obj_2 += FracSol_2[e];
 				}
 				
-				if (sign(obj_1 - obj_2) != 0){
+				if (sign(FracSol_2[G.edgeFromId(0)]) < 0){
 					cout << "v :" << G.id(v) << endl;
 					Print(cost, FracSol, G);
 					cout << "----" << endl;
