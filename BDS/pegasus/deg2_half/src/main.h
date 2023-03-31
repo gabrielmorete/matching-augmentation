@@ -51,6 +51,7 @@ vector<GRBLinExpr> FindMinCuts(double *sol, GRBVar *vars, int n, int m, ListGrap
 	This function builds a fractional cutLP model.
 */
 void BuildFractional(GRBModel &frac_model, GRBVar *frac_vars, ListGraph &G);
+void BuildFractional2(GRBModel &frac_model, GRBVar *frac_vars, ListGraph &G);
 
 /*
 	This function returns a optimum fractional solution to MAP.
@@ -60,20 +61,6 @@ void FractionalSolution(ListGraph::EdgeMap<int> &cost,
 	ListGraph::EdgeMap<double> &FracSol, 
 	GRBModel &frac_model, 
 	GRBVar *frac_vars, 
-	ListGraph &G);
-
-/*
-	This function builds a integral cutLP model.
-*/
-void BuildIntegral(GRBModel &int_model, GRBVar *int_vars, ListGraph &G);
-
-/*
-	This function returns a optimum integer solution to MAP.
-	If no solution is found, it returns a all -1 edge map.
-*/
-void IntegerSolution(ListGraph::EdgeMap<int> &IntSol, 
-	GRBModel &int_model, 
-	GRBVar *int_vars, 
 	ListGraph &G);
 
 /*

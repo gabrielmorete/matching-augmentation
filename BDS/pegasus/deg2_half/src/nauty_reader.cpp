@@ -49,6 +49,8 @@ void SolveCurrentMatching(int matching_id,
 	GRBVar *frac_vars,
 	ListGraph &G){
 
+	int m = countEdges(G);
+
 	ListGraph::EdgeMap<double> FracSol(G);
 	FractionalSolution(cost, FracSol, frac_model, frac_vars, G);
 
@@ -93,6 +95,8 @@ void SolveCurrentMatching(int matching_id,
 				if (sign(obj_1 - obj_2) != 0){
 					cout << "v :" << G.id(v) << endl;
 					Print(cost, FracSol, G);
+					cout << '----' << end;
+					Print(cost, FracSol_2, G);
 				}
 
 				assert(0);
