@@ -70,7 +70,7 @@ void SolveCurrentMatching(int matching_id,
 
 		for (ListGraph::NodeIt v(G); v != INVALID; ++v){
 			if (sign(cut_val[v] - 2.0) != 0){
-				cout << "v :" << v << endl;
+				cout << "v :" << G.id(v) << endl;
 				Print(cost, FracSol, G);
 				assert(0);
 			}
