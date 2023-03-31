@@ -37,8 +37,6 @@ void Print(ListGraph::EdgeMap<int> &cost, ListGraph::EdgeMap<double> &FracSol, L
 	}
 }
 
-
-
 /*
 	This function calls the LP, IP and BDS algorithms to
 	solve the MAP problem and compares their outputs.

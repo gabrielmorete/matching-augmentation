@@ -6,12 +6,11 @@
 	
 	Author : Gabriel Morete
 */
-
 #include "src/main.h"
 #include "src/lemon.h"
-// #include "src/bds.cpp"
+#include "src/bds.cpp"
 #include "src/nauty_reader.cpp"
-// #include "src/stdio_reader.cpp"
+#include "src/stdio_reader.cpp"
 
 using namespace std;
 
@@ -26,6 +25,43 @@ using namespace std;
 	For fractional sulution, we impose primal simplex method.	
 */
 
+
+
+/*
+	This function receives a LP solution and retuns the restrictions of
+	all st-cuts with capacity < 2.
+*/
+vector<GRBLinExpr> FindMinCuts(double *sol, GRBVar *vars, int n, int m, ListGraph &G){
+	vector<GRBLinExpr> restrictions;
+	ListGraph::EdgeMap<double> capacity(G);
+
+	// Build EdgeMap of capacities
+	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+		capacity[e] = sol[G.id(e)]; // Using current solution as capacity
+
+	// Build Gomory-Hu Tree
+	GomoryHu<ListGraph, ListGraph::EdgeMap<double> > GMH(G,capacity);
+	GMH.run();	                
+
+	// Find all cuts
+	for (int i = 0; i < n; i++){
+		ListGraph::Node v = G.nodeFromId(i);
+		for (int j = 0; j < i; j++){
+			ListGraph::Node u = G.nodeFromId(j);
+
+			if (sign(GMH.minCutValue(v, u) - 2) < 0){
+				GRBLinExpr cut = 0;
+				for (GomoryHu<ListGraph, ListGraph::EdgeMap<double> >::MinCutEdgeIt e(GMH, v, u); e != INVALID; ++e){
+					ListGraph::Edge f = e;
+					cut += vars[G.id(f)];
+				}
+				restrictions.push_back(cut);
+			}			
+		}
+	}
+	
+	return restrictions;
+}
 
 /*
 	This function builds a fractional cutLP model.
@@ -131,6 +167,58 @@ void FractionalSolution(ListGraph::EdgeMap<int> &cost,
 }
 
 
+/*
+	Wrapper function that call the solvers.
+*/
+void SolveMapInstance(
+	ListGraph::EdgeMap<int> &cost,
+	ListGraph::EdgeMap<double> &FracSol,
+	ListGraph::EdgeMap<int> &IntSol,
+	ListGraph::EdgeMap<bool> &BDSSol,
+	GRBModel &frac_model,
+	GRBVar *frac_vars,
+	GRBModel &int_model,
+	GRBVar *int_vars,
+	ListGraph &G){
+
+	FractionalSolution(cost, FracSol, frac_model, frac_vars, G);
+
+	if (sign(FracSol[G.edgeFromId(0)]) == -1)
+		return;
+
+	BDSAlgorithm(cost, FracSol, BDSSol, G);
+
+	// If fractional solution is integral, no need to solve a MIP
+	bool is_integral = 1;
+	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+		if ((sign(FracSol[e]) != 0) and (sign(FracSol[e] - 1.0) != 0)) // not 0 nor 1
+			is_integral = 0;
+
+	if (is_integral){
+		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+			IntSol[e] = FracSol[e];
+		return;
+	}
+
+	double frac_cost = 0, BDS_cost = 0;
+
+	for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
+		frac_cost += cost[e] * FracSol[e];
+		BDS_cost += cost[e] * ((int) BDSSol[e]);
+	}
+
+	// ceil(frac_cost) is a lower bound on the integral cost
+	if (sign(ceil(frac_cost) - BDS_cost) == 0){ // BDS sol is opt
+		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+			IntSol[e] = BDSSol[e];
+
+		return;
+	}
+
+	IntegerSolution(cost, IntSol, BDSSol, int_model, int_vars, G);
+}
+
+
 signed main(int argc, char *argv[]){
 	// Start a global gurobi enviroment
 	env.set(GRB_IntParam_OutputFlag, 0);
@@ -172,9 +260,9 @@ signed main(int argc, char *argv[]){
 	if (log_start)
 		start = -1;
 
-	// if (stdio)
-	// 	RunStdioInput();
-	// else
-	RunNautyInput(start, n_threads);
+	if (stdio)
+		RunStdioInput();
+	else
+		RunNautyInput(start, n_threads);
 }
 
