@@ -8,9 +8,7 @@
 */
 #include "src/main.h"
 #include "src/lemon.h"
-#include "src/bds.cpp"
 #include "src/nauty_reader.cpp"
-// #include "src/stdio_reader.cpp"
 
 using namespace std;
 
