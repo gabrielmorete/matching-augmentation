@@ -69,11 +69,35 @@ void SolveCurrentMatching(int matching_id,
 		}	
 
 		for (ListGraph::NodeIt v(G); v != INVALID; ++v){
+			bool ok = 0;
 			if (sign(cut_val[v] - 2.0) != 0){
-				cout << "v :" << G.id(v) << endl;
-				Print(cost, FracSol, G);
+				ok = 1;
+			}
+
+			if (ok){ // test if there is a change
+				GRBModel frac_model_2(env);
+				GRBVar frac_vars_2[m];
+				ListGraph::EdgeMap<double> FracSol_2(G);
+
+				BuildFractional2(frac_model_2, frac_vars_2, G);
+				FractionalSolution(cost, FracSol_2, frac_model_2, frac_vars_2, G);
+
+
+				double obj_1 = 0, obj_2 = 0;
+
+				for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
+					obj_1 += FracSol[e];
+					obj_2 += FracSol_2[e];
+				}
+				
+				if (sign(obj_1 - obj_2) != 0){
+					cout << "v :" << G.id(v) << endl;
+					Print(cost, FracSol, G);
+				}
+
 				assert(0);
 			}
+
 		}
 	}
 }

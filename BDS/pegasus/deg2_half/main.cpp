@@ -97,6 +97,37 @@ void BuildFractional(GRBModel &frac_model, GRBVar *frac_vars, ListGraph &G){
 		frac_model.addConstr(deg2[v] >= 2, "deg2_" + to_string(v));
 }
 
+void BuildFractional2(GRBModel &frac_model, GRBVar *frac_vars, ListGraph &G){
+	int n = countNodes(G);
+	int m = countEdges(G);
+
+	frac_model.set(GRB_IntParam_Method, 0); // Forcing Primal Simplex Method
+	// Important, since fractional solution must be an Extreme Point
+	
+	
+	// Creating variables	
+	for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
+		int u = G.id(G.u(e));
+		int v = G.id(G.v(e));
+		frac_vars[G.id(e)] = frac_model.addVar(0.0, 1.0, 0.0, GRB_CONTINUOUS, "x_" + to_string(u) + "_" + to_string(v));
+	}
+
+	// Add \delta(v) >= 2, constraints
+	GRBLinExpr deg2[n];
+	for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
+		int id = G.id(e);
+		int u = G.id(G.u(e));
+		int v = G.id(G.v(e));
+
+		deg2[u] += frac_vars[id];
+		deg2[v] += frac_vars[id];
+
+	}
+
+	for (int v = 0; v < n; v++)
+		frac_model.addConstr(deg2[v] == 2, "deg2_" + to_string(v));
+}
+
 /*
 	This function returns a optimum fractional solution to MAP.
 	If no solution is found, it returns a all -1 edge map.
