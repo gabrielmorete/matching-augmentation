@@ -103,11 +103,9 @@ void SolveCurrentMatching(int matching_id,
 					Print(cost, FracSol, G);
 					cout << "----" << endl;
 					Print(cost, FracSol_2, G);
+					assert(0);
 				}
-
-				assert(0);
 			}
-
 		}
 	}
 }
