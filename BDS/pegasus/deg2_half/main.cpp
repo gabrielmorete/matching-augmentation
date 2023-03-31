@@ -167,56 +167,6 @@ void FractionalSolution(ListGraph::EdgeMap<int> &cost,
 }
 
 
-/*
-	Wrapper function that call the solvers.
-*/
-void SolveMapInstance(
-	ListGraph::EdgeMap<int> &cost,
-	ListGraph::EdgeMap<double> &FracSol,
-	ListGraph::EdgeMap<int> &IntSol,
-	ListGraph::EdgeMap<bool> &BDSSol,
-	GRBModel &frac_model,
-	GRBVar *frac_vars,
-	GRBModel &int_model,
-	GRBVar *int_vars,
-	ListGraph &G){
-
-	FractionalSolution(cost, FracSol, frac_model, frac_vars, G);
-
-	if (sign(FracSol[G.edgeFromId(0)]) == -1)
-		return;
-
-	BDSAlgorithm(cost, FracSol, BDSSol, G);
-
-	// If fractional solution is integral, no need to solve a MIP
-	bool is_integral = 1;
-	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
-		if ((sign(FracSol[e]) != 0) and (sign(FracSol[e] - 1.0) != 0)) // not 0 nor 1
-			is_integral = 0;
-
-	if (is_integral){
-		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
-			IntSol[e] = FracSol[e];
-		return;
-	}
-
-	double frac_cost = 0, BDS_cost = 0;
-
-	for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
-		frac_cost += cost[e] * FracSol[e];
-		BDS_cost += cost[e] * ((int) BDSSol[e]);
-	}
-
-	// ceil(frac_cost) is a lower bound on the integral cost
-	if (sign(ceil(frac_cost) - BDS_cost) == 0){ // BDS sol is opt
-		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
-			IntSol[e] = BDSSol[e];
-
-		return;
-	}
-
-	IntegerSolution(cost, IntSol, BDSSol, int_model, int_vars, G);
-}
 
 
 signed main(int argc, char *argv[]){
