@@ -52,7 +52,7 @@ void SolveCurrentMatching(int matching_id,
 	ListGraph::EdgeMap<double> FracSol(G);
 	FractionalSolution(cost, FracSol, frac_model, frac_vars, G);
 
-	bool is_half_integral = 0;
+	bool is_half_integral = 1;
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
 		if ((sign(FracSol[e]) != 0) and (sign(FracSol[e] - 0.5) != 0) and (sign(FracSol[e] - 1.0) != 0))
 			is_half_integral = 0;
