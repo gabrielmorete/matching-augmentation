@@ -210,9 +210,6 @@ signed main(int argc, char *argv[]){
 	if (log_start)
 		start = -1;
 
-	if (stdio)
-		RunStdioInput();
-	else
-		RunNautyInput(start, n_threads);
+	RunNautyInput(start, n_threads);
 }
 
