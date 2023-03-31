@@ -56,7 +56,8 @@ void BuildFractional(GRBModel &frac_model, GRBVar *frac_vars, ListGraph &G);
 	This function returns a optimum fractional solution to MAP.
 	If no solution is found, it returns a all -1 edge map.
 */
-void FractionalSolution(ListGraph::EdgeMap<double> &FracSol, 
+void FractionalSolution(ListGraph::EdgeMap<int> &cost,
+	ListGraph::EdgeMap<double> &FracSol, 
 	GRBModel &frac_model, 
 	GRBVar *frac_vars, 
 	ListGraph &G);
