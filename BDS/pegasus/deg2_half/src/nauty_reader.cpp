@@ -67,8 +67,8 @@ void SolveCurrentMatching(int matching_id,
 
 	ListGraph::NodeMap<double> cut_val(G, 0);	
 
-	if (is_half_integral)
-		cout<<"oi"<<endl;
+	// if (is_half_integral)
+	// 	cout<<"oi"<<endl;
 
 	if (is_half_integral){
 		for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
