@@ -25,26 +25,16 @@ while len(s) > 0 and s[0] != 'N':
 	val = []			
 
 	t1, t2 = input().split('|')
-	
 	val.append(t1.split()[-1])
-
-	cnt = 0
 	lp = [float(x) for x in t2.split()]
 
 	t1, t2 = input().split('|')
-
 	val.append(t1.split()[-1])
-
-	
-	cnt = 0
 	ip = [float(x) for x in t2.split()]
 
+
 	t1, t2 = input().split('|')
-
 	val.append(t1.split()[-1])
-
-	
-	cnt = 0
 	bds = [float(x) for x in t2.split()]
 
 
