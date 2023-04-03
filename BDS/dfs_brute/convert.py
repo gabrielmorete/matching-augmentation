@@ -32,11 +32,17 @@ while len(s) > 0 and s[0] != 'N':
 	lp = [float(x) for x in t2.split()]
 
 	t1, t2 = input().split('|')
+
+	val.append(t1.split()[-1])
+
 	
 	cnt = 0
 	ip = [float(x) for x in t2.split()]
 
 	t1, t2 = input().split('|')
+
+	val.append(t1.split()[-1])
+
 	
 	cnt = 0
 	bds = [float(x) for x in t2.split()]
@@ -45,6 +51,9 @@ while len(s) > 0 and s[0] != 'N':
 	print(n, m)
 	for i in range(m):
 		print("{:10s} {:^5s} | {:^10s} {:^10s} {:^10s}".format( str(edges[i][0]) + " " + str(edges[i][1]), str(cost[i]), str(lp[i]), str(ip[i]), str(bds[i])))
+
+	print(val)
+
 
 	input() # blank line
 	s = input()
