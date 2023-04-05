@@ -79,7 +79,7 @@ void BDSAlgorithm::UpLinkDP(int v){
 
 	if (parent[v] != 0)
 		for (int e : cover[parent[v]])
-			if (Dec(v, e_u[e]) == 0 and Dec(v, e_v[e]) == 0)
+			if ((Dec(v, e_u[e]) == 0) and (Dec(v, e_v[e]) == 0))
 				memo_edge[e] += memo_edge[ dp_edge[v] ];
 }
 
@@ -129,7 +129,7 @@ void BDSAlgorithm::UpLinkAugmentation(){
 	for (int v = 0; v < n; v++)
 		cover[v].clear();
 
-	for (int i = 0; i < m; i++) // Preprocessing nodes
+	for (int i = 0; i < m; i++) // Preprocessing edges
 		if (!in_sol[i] and (sign(lp[i]) > 0)){
 			int u = e_u[i];
 			int v = e_v[i];
@@ -213,7 +213,7 @@ void BDSAlgorithm::Update(ListGraph::EdgeMap<int> &_cost, ListGraph::EdgeMap<dou
 	
 		// Be careful when matched edge is the first but LP value is zero
 		int matched = 0;
-		if ((cost[adj[v][0]] == 0) and (sign(lp[ adj[v][0] ]) > 0) )
+		if ((cost[ adj[v][0] ] == 0) and (sign(lp[ adj[v][0] ]) > 0) )
 			matched = 1;
 
 		sort(adj[v].begin() + matched, adj[v].end(),

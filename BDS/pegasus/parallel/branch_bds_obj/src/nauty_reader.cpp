@@ -49,6 +49,10 @@ void SolveCurrentMatching(int matching_id,
 
 	SolveMapInstance(cost, FracSol, IntSol, BDSSol, frac_model, frac_vars, int_model, int_vars, G, BDS);
 
+
+	if (__cur_graph_id == 978 and matching_id == 696)
+		BDS.PrintAndCheck();
+
 	if (sign(FracSol[G.edgeFromId(0)]) == -1 or IntSol[G.edgeFromId(0)] == -1){
 		#pragma omp critical
 		{
