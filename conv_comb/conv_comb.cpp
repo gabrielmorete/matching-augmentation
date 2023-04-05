@@ -69,12 +69,12 @@ istream &operator >>(istream &is, ExtremePoint &p){
 
 	if (is.eof()){
 		cerr << "IO Error: EOF" << endl;
-		exit(3);
+		// exit(3);
 	}
 
 	if (!getline(is, in)){
 		cerr << "IO Error: exception" << endl;
-		exit(3);
+		// exit(3);
     }
 
     p.clear();
@@ -181,10 +181,9 @@ signed main(int argc, char const *argv[]){
 
 
 	vector<ExtremePoint> int_points;
+	ExtremePoint p;
 	
-	while (!int_file.eof()){
-		ExtremePoint p;
-		int_file >> p;
+	while (int_file >> p){
 		cout << p << endl;
 		int_points.push_back(p);
 	}
