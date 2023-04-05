@@ -226,7 +226,7 @@ signed main(int argc, char const *argv[]){
 	}
 
 	
-	cout << "\n Running with coefficient " << __comb_dividend << "/" << __comb_divisor << endl;
+	cout << "\nRunning with coefficient " << __comb_dividend << "/" << __comb_divisor << endl;
 
 	if (verbose_mode)
 		cout << "\nFractional points" << endl;
