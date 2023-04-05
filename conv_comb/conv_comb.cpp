@@ -18,7 +18,7 @@
 #include <cassert>
 #include "gurobi_c++.h"
 
-
+// Utilities
 #define dbg(x)  cout << #x << " = " << x << endl
 
 // Safe handling doubles
@@ -33,6 +33,9 @@ int sign(double x) { return (x > EPS) - (x < -EPS); }
 GRBEnv env = GRBEnv(true);
 
 
+/*
+	Combination coefficient
+*/
 const double __comb_dividend = 4;
 const double __comb_divisor = 3;
 
@@ -161,9 +164,19 @@ int SolveModel(GRBModel &model,  GRBVar *lambda, GRBVar *frac_point, ExtremePoin
 
 signed main(int argc, char const *argv[]){
 
-	if (argc != 3){
-		cerr << "Usage : frac_points_file int_points_file" << endl;
+	if (argc < 3){
+		cerr << "Usage : frac_points_file int_points_file -verbose" << endl;
 		exit(1);
+	}
+
+	bool verbose_mode = 0;
+	if (argc == 4){
+		string vrb = argv[3];
+		if (vrb != "-verbose"){
+			cerr << "Usage : frac_points_file int_points_file -verbose" << endl;
+			exit(1);
+		}
+		verbose_mode = 1;	
 	}
 
 	fstream int_file(argv[2]);
@@ -176,8 +189,13 @@ signed main(int argc, char const *argv[]){
 	vector<ExtremePoint> int_points;
 	ExtremePoint p;
 	
+	if (verbose_mode)
+		cout << "Integer points" << endl;
+
 	while (int_file >> p){
-		cout << p << endl;
+		if (verbose_mode)
+			cout << p << endl;
+		
 		int_points.push_back(p);
 	}
 
@@ -206,10 +224,19 @@ signed main(int argc, char const *argv[]){
 	ExtremePoint fx;
 	int cnt = 0;
 	while (frac_file >> fx){
-		cout<<fx<<endl;
 		if (SolveModel(model, lambda, frac_point, fx)){
-			cout<<"good"<<endl;
+			if (verbose_mode){
+				cout << fx << ;
 
+				double *sol = frac_model.get(GRB_DoubleAttr_X, lambda, n);
+
+				cout <<  setprecision(3) << fixed;
+				for (int i = 0; i < n; i++)
+					cout << sol[i] << ' ';
+				cout<<endl;
+
+				delete[] sol;
+			}
 		}
 		else{
 			cout << "Point " << cnt << " cant be written as a convex combination" << endl;
