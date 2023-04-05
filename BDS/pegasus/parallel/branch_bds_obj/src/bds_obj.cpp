@@ -230,14 +230,15 @@ void BDSAlgorithm::Run(ListGraph::EdgeMap<int> &_cost,
 		assert(parent[v] != v);
 
 
+	// Step 2, uplink only augmentation
+	UpLinkAugmentation();
+
 	if (__verbose_mode){
 		cout << "BDS Tree Found" << endl;
 		for (int v = 0; v < n; v++)
 			cout << parent[v] << " <-- " << v << endl;	
+		PrintAndCheck();
 	}
-
-	// Step 2, uplink only augmentation
-	UpLinkAugmentation();
 
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
 		BDSSol[e] = in_sol[G.id(e)];
