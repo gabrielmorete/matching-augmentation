@@ -59,7 +59,7 @@ void SolveCurrentMatching(int matching_id,
 		for (int i = 0; i < countNodes(G); i++){
 			cout<<i<<": ";
 			for (auto e : BDS.cover[i])
-				cout<<"("<<BDS.e_v[e]<<" "<<BDS.e_u[e]<<", "<< BDS.memo_edge[e]<<", "<<BDS.in_sol[e]<<") ";
+				cout<<"("<<BDS.e_v[e]<<" "<<BDS.e_u[e]<<", "<<BDS.in_sol[e]<<") ";
 			cout<<endl;
 		}
 
