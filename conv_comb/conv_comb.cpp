@@ -208,7 +208,8 @@ signed main(int argc, char const *argv[]){
 	while (cin >> fx){
 	
 		if (SolveModel(model, lambda, frac_point, fx)){
-			// good
+			cout<<"good"<<endl;
+
 		}
 		else{
 			cout << "Point " << cnt << " cant be written as a convex combination" << endl;
