@@ -16,6 +16,7 @@
 #include <vector>
 #include <string>
 #include <cassert>
+#include <iomanip>
 #include "gurobi_c++.h"
 
 // Utilities
@@ -226,7 +227,7 @@ signed main(int argc, char const *argv[]){
 	while (frac_file >> fx){
 		if (SolveModel(model, lambda, frac_point, fx)){
 			if (verbose_mode){
-				cout << fx << ;
+				cout << fx;
 
 				double *sol = frac_model.get(GRB_DoubleAttr_X, lambda, n);
 
