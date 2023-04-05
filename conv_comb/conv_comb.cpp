@@ -168,6 +168,11 @@ signed main(int argc, char const *argv[]){
 	}
 
 	fstream int_file(argv[2]);
+	if (!int_file){
+		cerr << "Cant open integral points file" << endl;
+		exit(1);
+	}
+
 
 	vector<ExtremePoint> int_points;
 	
@@ -194,6 +199,10 @@ signed main(int argc, char const *argv[]){
 	BuildModel(model, lambda, frac_point, int_points);
 
 	fstream frac_file(argv[1]);
+	if (!frac_file){
+		cerr << "Cant open fractial points file" << endl;
+		exit(1);
+	}
 
 	// int cnt = 0;
 	// while (!frac_file.eof()){
