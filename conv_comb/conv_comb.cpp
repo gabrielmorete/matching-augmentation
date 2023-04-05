@@ -234,7 +234,7 @@ signed main(int argc, char const *argv[]){
 				cout <<  setprecision(3) << fixed;
 				for (int i = 0; i < n; i++)
 					cout << sol[i] << ' ';
-				cout<<endl;
+				cout << endl;
 
 				delete[] sol;
 			}
