@@ -62,7 +62,7 @@ class BDSAlgorithm{
 		int n, m, clk;
 		vector<bool> cost, in_sol;
 		vector<int> e_u, e_v; 
-		vector<int> in, out, parent covered;
+		vector<int> in, out, parent, covered;
 		vector<double> lp;
 
 		vector<pair<int, int>> link;
