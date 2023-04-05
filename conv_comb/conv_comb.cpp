@@ -185,6 +185,7 @@ signed main(int argc, char const *argv[]){
 	while (!int_file.eof()){
 		ExtremePoint p;
 		int_file >> p;
+		cout << p << endl;
 		int_points.push_back(p);
 	}
 
