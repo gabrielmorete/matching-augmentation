@@ -97,7 +97,7 @@ ostream &operator << (ostream &os, ExtremePoint &p)
 
 
 
-void BuildModel(GRBModel &model, GRBVar &lambda, GRBVar &frac_point, vector<ExtremePoint> &int_points){
+void BuildModel(GRBModel &model, GRBVar *lambda, GRBVar &frac_point, vector<ExtremePoint> &int_points){
 	ExtremePoint p;
 
 	int n = int_points.size(); // number of points
