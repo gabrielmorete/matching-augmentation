@@ -15,6 +15,7 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <cassert>
 #include "gurobi_c++.h"
 
 const double __comb_dividend = 4;
