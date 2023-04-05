@@ -66,8 +66,14 @@ class ExtremePoint{
 
 istream &operator >>(istream &is, ExtremePoint &p){
 	string in;
+
+	if (is.eof()){
+		cerr << "IO Error: EOF" << endl;
+		exit(3);
+	}
+
 	if (!getline(is, in)){
-		cerr << "Filo IO error in ExtPoint::operator >>.\n";
+		cerr << "IO Error: exception" << endl;
 		exit(3);
     }
 
