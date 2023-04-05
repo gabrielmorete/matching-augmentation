@@ -11,7 +11,7 @@
 #include "src/lemon.h"
 #include "src/bds_obj.cpp"
 #include "src/nauty_reader.cpp"
-// #include "src/stdio_reader.cpp"
+#include "src/stdio_reader.cpp"
 
 using namespace std;
 
@@ -440,9 +440,9 @@ signed main(int argc, char *argv[]){
 	if (log_start)
 		start = -1;
 
-	// if (stdio)
-	// 	RunStdioInput();
-	// else
+	if (stdio)
+		RunStdioInput();
+	else
 		RunNautyInput(start, n_threads);
 }
 

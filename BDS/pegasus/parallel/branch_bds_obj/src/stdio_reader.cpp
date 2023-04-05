@@ -69,7 +69,9 @@ void RunStdioInput(){
 	MinimumCut cb = MinimumCut(int_vars, n, m, G);
 	int_model.setCallback(&cb);
 
-	SolveMapInstance(cost, FracSol, IntSol, BDSSol, frac_model, frac_vars, int_model, int_vars, G);
+	BDSAlgorithm BDS(G);
+
+	SolveMapInstance(cost, FracSol, IntSol, BDSSol, frac_model, frac_vars, int_model, int_vars, G, BDS);
 
 	int cost_Int = 0;
 	int cost_BDS = 0;

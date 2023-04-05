@@ -130,7 +130,7 @@ void BDSAlgorithm::UpLinkAugmentation(){
 		cover[v].clear();
 
 	for (int i = 0; i < m; i++) // Preprocessing nodes
-		if (!in_sol[i] and sign(lp[i]) > 0){
+		if (!in_sol[i] and (sign(lp[i]) > 0)){
 			int u = e_u[i];
 			int v = e_v[i];
 			if (Dec(u, v)) // u is the lower vertex
