@@ -50,7 +50,7 @@ class BDSAlgorithm{
 
 			O(n + |L|)
 		*/
-		void UpLinkCover(int v);
+		int UpLinkCover(int v);
 
 
 		/*
