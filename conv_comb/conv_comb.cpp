@@ -195,18 +195,18 @@ signed main(int argc, char const *argv[]){
 
 	fstream frac_file(argv[1]);
 
-	int cnt = 0;
-	while (!frac_file.eof()){
-		ExtremePoint fx;
-		frac_file >> fx;
-		if (SolveModel(model, lambda, frac_point, fx)){
-			// good
-		}
-		else{
-			cout << "Point " << cnt << " cant be written as a convex combination" << endl;
-			cout << fx << endl; 
-		}
+	// int cnt = 0;
+	// while (!frac_file.eof()){
+	// 	ExtremePoint fx;
+	// 	frac_file >> fx;
+	// 	if (SolveModel(model, lambda, frac_point, fx)){
+	// 		// good
+	// 	}
+	// 	else{
+	// 		cout << "Point " << cnt << " cant be written as a convex combination" << endl;
+	// 		cout << fx << endl; 
+	// 	}
 
-		cnt++;
-	}
+	// 	cnt++;
+	// }
 }
