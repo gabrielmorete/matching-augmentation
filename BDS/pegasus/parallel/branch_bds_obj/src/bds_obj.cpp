@@ -148,7 +148,6 @@ BDSAlgorithm::BDSAlgorithm(ListGraph &G){
 	in.resize(n);
 	parent.resize(n);
 	out.resize(n);
-	dp_edge.resize(n);
 	cover.resize(n);
 
 	e_u.resize(m);
@@ -156,7 +155,6 @@ BDSAlgorithm::BDSAlgorithm(ListGraph &G){
 	cost.resize(m);
 	in_sol.resize(m);
 	lp.resize(m);
-	memo_edge.resize(m);
 
 
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
