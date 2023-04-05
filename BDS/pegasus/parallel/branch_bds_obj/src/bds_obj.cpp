@@ -68,47 +68,29 @@ inline bool BDSAlgorithm::Dec(int u, int v){ // is v strict dec of u
 
 	O(n|L|)
 */
-void BDSAlgorithm::UpLinkDP(int v){
-	for (auto x : tree_adj[v])
-		UpLinkDP(x);
-
-	dp_edge[v] = cover[v][0];
-	for (int e : cover[v])
-		if (memo_edge[e] < memo_edge[dp_edge[v]])
-			dp_edge[v] = e;
-
-	if (parent[v] != 0)
-		for (int e : cover[parent[v]])
-			if ((Dec(v, e_u[e]) == 0) and (Dec(v, e_v[e]) == 0))
-				memo_edge[e] += memo_edge[ dp_edge[v] ];
-}
-
-/*
-	Algorithm to recover the uplink DP solution.
-
-	O(n + m)
-*/
-void BDSAlgorithm::RecoverUpLinkSol(int v){
-	int eid = dp_edge[v];	
-
-	in_sol[eid] = 1;
-
-	int u = e_u[eid];
-	int w = e_v[eid];
-
-	if (Dec(w, u)) // w is the lower vertex
-		swap(u, w);
-
-	int lst = w;
-	while (w != parent[v]){
-		for (int h : tree_adj[w])
-			if (h != lst)
-				RecoverUpLinkSol(h);
-
-		lst = w;
-		w = parent[w];
+int BDSAlgorithm::UpLinkCover(int v){
+	int my_val = 0;
+	for (auto x : tree_adj[v]){
+		my_val += UpLinkCover(x);
+		
+		if (link[x].first != -1)
+			if ( link[v].first == -1 or in[ link[x].second ] < in[ link[v].second ] )
+				link[v] = link[x];
 	}
+
+	my_val += covered[v];
+
+	if (my_val == 0){
+		assert(link[v].first != -1);
+
+		covered[ link[v].second ] += -1;
+		my_val += 1;
+		in_sol[ link[v].first ] = 1;
+	}
+
+	return my_val;
 }
+
 
 
 void BDSAlgorithm::PrintAndCheck(){
@@ -127,7 +109,7 @@ void BDSAlgorithm::PrintAndCheck(){
 
 void BDSAlgorithm::UpLinkAugmentation(){
 	for (int v = 0; v < n; v++)
-		cover[v].clear();
+		link[v] = {-1, v};
 
 	for (int i = 0; i < m; i++) // Preprocessing edges
 		if (!in_sol[i] and (sign(lp[i]) > 0)){
@@ -136,18 +118,14 @@ void BDSAlgorithm::UpLinkAugmentation(){
 			if (Dec(u, v)) // u is the lower vertex
 				swap(u, v);
 
-			while (u != v){ // link i covers {v, parent[v]}
-				cover[u].push_back(i);
-				u = parent[u];
+			if (link[u].first == -1 or in[link[u].second] > in[v]){
+				link[u].first = i;
+				link[u].second = v;
 			}
-
-			memo_edge[i] = cost[i];
 		}
 
-	for (auto u : tree_adj[0]){
-		UpLinkDP(u);
-		RecoverUpLinkSol(u);
-	}
+	for (auto u : tree_adj[0])
+		UpLinkCover(u);
 }
 
 BDSAlgorithm::BDSAlgorithm(){}

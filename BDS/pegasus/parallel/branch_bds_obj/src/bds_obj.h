@@ -67,12 +67,14 @@ class BDSAlgorithm{
 	public:
 		int n, m, clk;
 		vector<bool> cost, in_sol;
-		vector<int> e_u, e_v, memo_edge; 
-		vector<int> in, out, parent, dp_edge;
+		vector<int> e_u, e_v; 
+		vector<int> in, out, parent covered;
 		vector<double> lp;
 
-		vector<vector<int>> adj, tree_adj, cover;
-		
+		vector<pair<int, int>> link;
+		vector<vector<int>> adj, tree_adj;
+
+
 		void PrintAndCheck();
 
 		/*
