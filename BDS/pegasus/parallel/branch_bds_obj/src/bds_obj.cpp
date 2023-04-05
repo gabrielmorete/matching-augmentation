@@ -98,7 +98,7 @@ void BDSAlgorithm::PrintAndCheck(){
 		cout<<v<<": ";
 		for (int e : adj[v])
 			cout<<"(" << (e_v[e] + e_u[e] - v) << ", " << cost[e] << ", " << lp[e] << ", " << in_sol[e] << ") ";
-		cout<<endl;
+		cout<<" | " << link[v].first << ", " << link[v].second << endl;
 
 		int matched = 1 - cost[adj[v][0]];
 
