@@ -222,6 +222,9 @@ signed main(int argc, char const *argv[]){
 		exit(1);
 	}
 
+	if (verbose_mode)
+		cout << "Fractional points" << endl;
+
 	ExtremePoint fx;
 	int cnt = 0;
 	while (frac_file >> fx){
