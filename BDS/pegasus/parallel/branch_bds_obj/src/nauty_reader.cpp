@@ -51,6 +51,9 @@ void SolveCurrentMatching(int matching_id,
 
 
 	if (__cur_graph_id == 978 and matching_id == 696){
+		for (int i = 0; i < countNodes(G); i++)
+			cout<<BDS.parent(i)<<' ';
+		cout<<endl;
 		BDS.PrintAndCheck();
 
 		for (int i = 0; i < countNodes(G); i++){
