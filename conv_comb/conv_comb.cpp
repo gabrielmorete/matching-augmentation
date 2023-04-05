@@ -229,7 +229,7 @@ signed main(int argc, char const *argv[]){
 			if (verbose_mode){
 				cout << fx;
 
-				double *sol = frac_model.get(GRB_DoubleAttr_X, lambda, n);
+				double *sol = model.get(GRB_DoubleAttr_X, lambda, n);
 
 				cout <<  setprecision(3) << fixed;
 				for (int i = 0; i < n; i++)
