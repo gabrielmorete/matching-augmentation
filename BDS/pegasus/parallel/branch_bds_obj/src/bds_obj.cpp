@@ -10,11 +10,99 @@
 	Implementation of the BDS MAP algorithm.
 	Must receive a extreme point solution of the cut LP.
 
-	O(n|L|)
+	O(n + |L|log(|L|))
 
 	Declare the structure once per graph. 
 	Then just updateit for different costs and lp solutions.
 */
+
+
+BDSAlgorithm::BDSAlgorithm(){}
+
+
+/*
+	Builds structure for new graph
+*/
+BDSAlgorithm::BDSAlgorithm(ListGraph &G){
+	n = countNodes(G);
+	m = countEdges(G);
+
+
+	adj.resize(n);
+	tree_adj.resize(n);
+
+	for (int i = 0; i < n; i++)
+		adj[i].clear();
+
+	in.resize(n);
+	parent.resize(n);
+	out.resize(n);
+	covered.resize(n);
+	link.resize(n);
+
+	e_u.resize(m);
+	e_v.resize(m);
+	cost.resize(m);
+	in_sol.resize(m);
+	lp.resize(m);
+
+	for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
+		int eid = G.id(e);
+		e_u[eid] = G.id(G.u(e));
+		e_v[eid] = G.id(G.v(e));
+		adj[e_v[eid]].push_back(eid);
+		adj[e_u[eid]].push_back(eid);
+	}
+}
+
+/*
+	Update costs and lp value
+*/
+void BDSAlgorithm::Update(ListGraph::EdgeMap<int> &_cost, ListGraph::EdgeMap<double> &_FracSol, ListGraph &G){
+	for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
+		int eid = G.id(e);
+		lp[eid] = _FracSol[e];
+		cost[eid] = _cost[e];
+		in_sol[eid] = 0; 
+	}
+
+	// Matched edge is the first
+	for (int v = 0; v < n; v++){
+		int p = 0;
+
+		for (int e = 0; e < adj[v].size(); e++)
+			if (cost[adj[v][e]] == 0 and (sign(lp[adj[v][e]]) > 0)) // If matched edge is zero, skip
+				p = e;
+		
+		swap(adj[v][0], adj[v][p]);	
+	
+		// Be careful when matched edge is the first but LP value is zero
+		int matched = 0;
+		if ((cost[ adj[v][0] ] == 0) and (sign(lp[ adj[v][0] ]) > 0) )
+			matched = 1;
+
+		sort(adj[v].begin() + matched, adj[v].end(),
+			[this](int a, int b){ // Sort by increase lp value, skip matching edge
+				return lp[a] > lp[b];
+			}
+		);
+	}
+}
+
+void BDSAlgorithm::PrintAndCheck(){
+	for (int v = 0; v < n; v++){
+		cout<<v<<": ";
+		for (int e : adj[v])
+			cout<<"(" << (e_v[e] + e_u[e] - v) << ", " << cost[e] << ", " << lp[e] << ", " << in_sol[e] << ") ";
+		cout<<" | " << link[v].first << ", " << link[v].second << endl;
+
+		int matched = 1 - cost[adj[v][0]];
+
+		for (int i = 1 + matched; i < adj[v].size(); i++)
+			assert(sign(lp[adj[v][i - 1]] - lp[adj[v][i]]) >= 0);
+	}
+}
+
 
 /*
 	DFS Step of BDS Algorithm. The next tree edge is chosen by the following criteria.
@@ -60,13 +148,9 @@ inline bool BDSAlgorithm::Dec(int u, int v){ // is v strict dec of u
 
 
 /*
-	Dynamic programming on a tree, follows reverse topological sort.
+	Unit edge tree covering
 
-	memo_edge is ists original cost + the cost of covering every danglind subtree.
-	At time it is coveding {v, parent[v]}, the cost of the esdge ist he same as
-	memo[v]
-
-	O(n|L|)
+	O(n + |L|)
 */
 int BDSAlgorithm::UpLinkCover(int v){
 	int my_val = 0;
@@ -92,21 +176,6 @@ int BDSAlgorithm::UpLinkCover(int v){
 }
 
 
-
-void BDSAlgorithm::PrintAndCheck(){
-	for (int v = 0; v < n; v++){
-		cout<<v<<": ";
-		for (int e : adj[v])
-			cout<<"(" << (e_v[e] + e_u[e] - v) << ", " << cost[e] << ", " << lp[e] << ", " << in_sol[e] << ") ";
-		cout<<" | " << link[v].first << ", " << link[v].second << endl;
-
-		int matched = 1 - cost[adj[v][0]];
-
-		for (int i = 1 + matched; i < adj[v].size(); i++)
-			assert(sign(lp[adj[v][i - 1]] - lp[adj[v][i]]) >= 0);
-	}
-}
-
 void BDSAlgorithm::UpLinkAugmentation(){
 	for (int v = 0; v < n; v++){
 		link[v] = {-1, v};
@@ -128,82 +197,6 @@ void BDSAlgorithm::UpLinkAugmentation(){
 
 	for (auto u : tree_adj[0])
 		UpLinkCover(u);
-
-
-
-}
-
-BDSAlgorithm::BDSAlgorithm(){}
-
-
-/*
-	Builds structure for new graph
-*/
-BDSAlgorithm::BDSAlgorithm(ListGraph &G){
-	n = countNodes(G);
-	m = countEdges(G);
-
-
-	adj.resize(n);
-	tree_adj.resize(n);
-
-	for (int i = 0; i < n; i++)
-		adj[i].clear();
-
-	in.resize(n);
-	parent.resize(n);
-	out.resize(n);
-	covered.resize(n);
-	link.resize(n);
-
-	e_u.resize(m);
-	e_v.resize(m);
-	cost.resize(m);
-	in_sol.resize(m);
-	lp.resize(m);
-
-
-	for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
-		int eid = G.id(e);
-		e_u[eid] = G.id(G.u(e));
-		e_v[eid] = G.id(G.v(e));
-		adj[e_v[eid]].push_back(eid);
-		adj[e_u[eid]].push_back(eid);
-	}
-}
-
-/*
-	Update costs and lp value
-*/
-void BDSAlgorithm::Update(ListGraph::EdgeMap<int> &_cost, ListGraph::EdgeMap<double> &_FracSol, ListGraph &G){
-	for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
-		int eid = G.id(e);
-		lp[eid] = _FracSol[e];
-		cost[eid] = _cost[e];
-		in_sol[eid] = 0; 
-	}
-
-	// Matched edge is the first
-	for (int v = 0; v < n; v++){
-		int p = 0;
-
-		for (int e = 0; e < adj[v].size(); e++)
-			if (cost[adj[v][e]] == 0 and (sign(lp[adj[v][e]]) > 0)) // If matched edge is zero, skip
-				p = e;
-		
-		swap(adj[v][0], adj[v][p]);	
-	
-		// Be careful when matched edge is the first but LP value is zero
-		int matched = 0;
-		if ((cost[ adj[v][0] ] == 0) and (sign(lp[ adj[v][0] ]) > 0) )
-			matched = 1;
-
-		sort(adj[v].begin() + matched, adj[v].end(),
-			[this](int a, int b){ // Sort by increase lp value, skip matching edge
-				return lp[a] > lp[b];
-			}
-		);
-	}
 }
 
 /*

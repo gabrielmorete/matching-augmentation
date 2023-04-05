@@ -12,14 +12,16 @@ using namespace std;
 
 class BDSAlgorithm{
 	protected:
-		// int n, m, clk;
-		// vector<bool> cost, in_sol;
-		// vector<int> e_u, e_v, memo_edge; 
-		// vector<int> in, out, parent, dp_edge;
-		// vector<double> lp;
+		int n, m, clk;
+		vector<bool> cost, in_sol;
+		vector<int> e_u, e_v; 
+		vector<int> in, out, parent, covered;
+		vector<double> lp;
 
-		// vector<vector<int>> adj, tree_adj, cover;
-		
+		vector<pair<int, int>> link;
+		vector<vector<int>> adj, tree_adj;
+
+
 		/*
 			DFS Step of BDS Algorithm. The next tree edge is chosen by the following criteria.
 				- Matching edge
@@ -42,12 +44,6 @@ class BDSAlgorithm{
 		
 
 		/*
-			Dynamic programming on a tree, follows reverse topological sort.
-
-			memo_edge is ists original cost + the cost of covering every danglind subtree.
-			At time it is coveding {v, parent[v]}, the cost of the esdge ist he same as
-			memo[v]
-
 			O(n + |L|)
 		*/
 		int UpLinkCover(int v);
@@ -59,14 +55,6 @@ class BDSAlgorithm{
 		void UpLinkAugmentation();
 
 	public:
-		int n, m, clk;
-		vector<bool> cost, in_sol;
-		vector<int> e_u, e_v; 
-		vector<int> in, out, parent, covered;
-		vector<double> lp;
-
-		vector<pair<int, int>> link;
-		vector<vector<int>> adj, tree_adj;
 
 
 		void PrintAndCheck();
