@@ -18,6 +18,21 @@
 #include <cassert>
 #include "gurobi_c++.h"
 
+
+#define dbg(x)  cout << #x << " = " << x << endl
+
+// Safe handling doubles
+const double EPS = 1e-4;
+/*
+	-1 if x < -EPS
+	0 if  -EPS <= x <= EPS
+	1 if EPS < x
+*/ 
+int sign(double x) { return (x > EPS) - (x < -EPS); } 
+
+GRBEnv env = GRBEnv(true);
+
+
 const double __comb_dividend = 4;
 const double __comb_divisor = 3;
 
