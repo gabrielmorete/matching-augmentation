@@ -164,18 +164,18 @@ signed main(int argc, char const *argv[]){
 	int n = int_points.size();
 	assert(n > 0);
 
-	int m = int_points[0].getDim();
-	assert(m > 0);
+	int d = int_points[0].getDim();
+	assert(d > 0);
 
 	env.set(GRB_IntParam_OutputFlag, 0);
 	env.start();
 
 	GRBModel model(env);
 	GRBVar lambda[n];
-	GRBVar x[n];
+	GRBVar frac_point[d];
 
 
-	BuildModel(model, lambda,  int_points);
+	BuildModel(model, lambda, frac_point,  int_points);
 
 
 
