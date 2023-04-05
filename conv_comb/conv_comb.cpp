@@ -144,20 +144,20 @@ void BuildModel(GRBModel &model, GRBVar *lambda, GRBVar *frac_point, vector<Extr
 	}
 }	
 
-// int SolveModel(GRBModel &model,  GRBVar &lambda, GRBVar &frac_point, ExtremePoint &fx){
-// 	int d = fx.getDim();
+int SolveModel(GRBModel &model,  GRBVar &lambda, GRBVar &frac_point, ExtremePoint &fx){
+	int d = fx.getDim();
 
-// 	for (int i = 0; i < d; i++){
-// 		frac_point[i].setAttr(GRB_DoubleAttr_LB, fx[i]);
-// 		frac_point[i].setAttr(GRB_DoubleAttr_UB, fx[i]);
-// 	}
+	for (int i = 0; i < d; i++){
+		frac_point[i].setAttr(GRB_DoubleAttr_LB, fx[i]);
+		frac_point[i].setAttr(GRB_DoubleAttr_UB, fx[i]);
+	}
 
-// 	model.optmize();
+	model.optmize();
 
-// 	if (model.get(GRB_IntAttr_SolCount) > 0)
-// 		return 1;
-// 	return 0;
-// }
+	if (model.get(GRB_IntAttr_SolCount) > 0)
+		return 1;
+	return 0;
+}
 
 
 signed main(int argc, char const *argv[]){
