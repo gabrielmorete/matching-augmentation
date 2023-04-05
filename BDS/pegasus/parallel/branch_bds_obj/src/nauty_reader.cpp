@@ -53,8 +53,8 @@ void SolveCurrentMatching(int matching_id,
 	if (__cur_graph_id == 978 and matching_id == 696){
 		BDS.PrintAndCheck();
 
-		for (int i = 0; i < n; i++){
-			cout<<i<<": "
+		for (int i = 0; i < countNodes(G); i++){
+			cout<<i<<": ";
 			for (auto e : BDS.cover[i])
 				cout<<"("<<(BDS.e_v[e] + BDS.e_u[e] - v)<<", "<< BDS.memo_edge[e]<<", "<<BDS.in_sol[e]<<") ";
 			cout<<endl;
