@@ -1,0 +1,189 @@
+/*
+	Program receivs two lists A, B of extreme points and tests if every 
+	element of the list A can be expressed as a convex combination of the 
+	elements of the list B.
+
+	Let a \in A, and q be a rational number
+
+		q . x >= \sum_{b in B} l_b b
+		\sum_{b in B} l_b = 1
+		l_b >= 0, b \in B
+*/
+
+#include <iostream>
+#include <sstream>
+#include <fstream>
+#include <vector>
+#include <string>
+#include "gurobi_c++.h"
+
+const double __comb_dividend = 4;
+const double __comb_divisor = 3;
+
+
+using namespace std;
+
+class ExtremePoint{
+	private:
+		vector<double> point;
+
+	public:
+		ExtremePoint () {}
+
+	    friend istream &operator >> (istream &is, ExtremePoint &e); 
+	    friend ostream &operator << (ostream &os, ExtremePoint &e);
+
+	    int getDim () {return point.size();}
+	    
+	    double operator[] (int i){
+	    	return point[i];
+	    }
+
+	    void clear(){
+	    	point.clear();
+	    }
+
+	    void append(double val){
+	    	point.push_back(val);	
+	    }
+};
+
+istream &operator >>(istream &is, ExtremePoint &p){
+	string in;
+	if (!getline(is, in)){
+		cerr << "Filo IO error in ExtPoint::operator >>.\n";
+		exit(3);
+    }
+
+    p.clear();
+
+    stringstream ss_in(in);
+
+    /*
+		the input is now in a stream, going to read 
+		each element (point coordinate) separately
+    */
+
+    while (ss_in >> in){
+    	// in contains a coordinate
+
+    	double val;
+
+    	if (in.find("/") != in.string::npos){ // fractional point
+    		int pos = in.find("/");
+    		val = stod(in.substr(0, pos)); // spliting the string in two parts
+    		val /= stod(in.substr(pos + 1));
+    	}
+    	else{
+    		val = stod(in);
+    	}
+
+    	p.append(val);
+    }
+
+    return is;
+}
+
+
+ostream &operator << (ostream &os, ExtremePoint &p) 
+{
+    os << "[ ";
+    for (int i = 0; i < p.getDim(); i++) {
+		os << p[i] << " ";
+    }
+    os << "]";
+    return os;
+}
+
+
+
+void BuildModel(GRBModel &model, GRBVar &lambda, GRBVar &frac_point, vector<ExtremePoint> &int_points){
+	ExtremePoint p;
+
+	int n = int_points.size(); // number of points
+	int d = int_points[0].getDim(); // dimension
+
+	// one variable to each int point
+	for (int i = 0; i < n; i++)
+		lambda[i] = model.addVar(0.0, 1.0, 0, GRB_CONTINUOUS, "l_" + to_string(i) );
+
+	GRBLinExpr conv;
+	for (int i = 0; i < n; i++)
+		conv += lambda[i];
+
+	model.addConstr(conv == 1, "conv_comb");
+
+	// one variable to each fractional coordinate
+	for (int i = 0; i < d; i++)
+		frac_point[i] = model.addVar(0.0, 1.0, 0, GRB_CONTINUOUS, "x_" + to_string(i));
+
+
+	for (int j = 0; j < d; j++){
+		GRBLinExpr comb = 0;
+		
+		for (int i = 0; i < n; i++)
+			comb += int_points[i][j] * lambda[i];
+
+		model.addConstr( comb <= (__comb_dividend/__comb_divisor) *  frac_point[j], "coord_" + to_string(j)); 
+	}
+}	
+
+// int SolveModel(GRBModel &model,  GRBVar &lambda, GRBVar &frac_point, ExtremePoint &fx){
+// 	int d = fx.getDim();
+
+// 	for (int i = 0; i < d; i++){
+// 		frac_point[i].setAttr(GRB_DoubleAttr_LB, fx[i]);
+// 		frac_point[i].setAttr(GRB_DoubleAttr_UB, fx[i]);
+// 	}
+
+// 	model.optmize();
+
+// 	if (model.get(GRB_IntAttr_SolCount) > 0)
+// 		return 1;
+// 	return 0;
+// }
+
+
+signed main(int argc, char const *argv[]){
+
+	if (argc != 3){
+		cerr << "Usage : frac_points_file int_points_file" << endl;
+		exit(1);
+	}
+
+	fstream int_file(argv[2]);
+
+	vector<ExtremePoint> int_points;
+	
+	while (!int_file.eof()){
+		ExtremePoint p;
+		int_file >> p;
+		int_points.push_back(p);
+	}
+
+	int n = int_points.size();
+	assert(n > 0);
+
+	int m = int_points[0].getDim();
+	assert(m > 0);
+
+	env.set(GRB_IntParam_OutputFlag, 0);
+	env.start();
+
+	GRBModel model(env);
+	GRBVar lambda[n];
+	GRBVar x[n];
+
+
+	BuildModel(model, lambda,  int_points);
+
+
+
+	ExtremePoint p;
+	int_file >> p;
+	cout << p << endl;	
+	int_file >> p;
+	cout << p << endl;
+
+	return 0;
+}
