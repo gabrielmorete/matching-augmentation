@@ -231,7 +231,7 @@ signed main(int argc, char const *argv[]){
 
 				double *sol = model.get(GRB_DoubleAttr_X, lambda, n);
 
-				cout <<  setprecision(3) << fixed;
+				cout <<  setprecision(3);
 				for (int i = 0; i < n; i++)
 					cout << sol[i] << ' ';
 				cout << endl;
