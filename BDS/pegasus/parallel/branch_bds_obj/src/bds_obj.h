@@ -48,16 +48,10 @@ class BDSAlgorithm{
 			At time it is coveding {v, parent[v]}, the cost of the esdge ist he same as
 			memo[v]
 
-			O(n|L|)
+			O(n + |L|)
 		*/
-		void UpLinkDP(int v);
+		void UpLinkCover(int v);
 
-		/*
-			Algorithm to recover the uplink DP solution.
-
-			O(n + m)
-		*/
-		void RecoverUpLinkSol(int v);
 
 		/*
 			Wrapper function.

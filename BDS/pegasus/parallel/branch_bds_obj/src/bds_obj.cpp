@@ -148,7 +148,8 @@ BDSAlgorithm::BDSAlgorithm(ListGraph &G){
 	in.resize(n);
 	parent.resize(n);
 	out.resize(n);
-	cover.resize(n);
+	covered.resize(n);
+	link.resize(n);
 
 	e_u.resize(m);
 	e_v.resize(m);
