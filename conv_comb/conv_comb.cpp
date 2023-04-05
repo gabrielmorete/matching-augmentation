@@ -30,8 +30,10 @@ const double EPS = 1e-4;
 	1 if EPS < x
 */ 
 int sign(double x) { return (x > EPS) - (x < -EPS); } 
+///
 
-GRBEnv env = GRBEnv(true);
+
+
 
 
 /*
@@ -206,6 +208,7 @@ signed main(int argc, char const *argv[]){
 	int d = int_points[0].getDim();
 	assert(d > 0);
 
+	GRBEnv env = GRBEnv(true);
 	env.set(GRB_IntParam_OutputFlag, 0);
 	env.start();
 
@@ -222,8 +225,13 @@ signed main(int argc, char const *argv[]){
 		exit(1);
 	}
 
+	
+	cout << "Running with coefficient " << __comb_dividend << "/" << __comb_divisor << endl;
+
 	if (verbose_mode)
 		cout << "\nFractional points" << endl;
+
+
 
 	ExtremePoint fx;
 	int cnt = 0;
