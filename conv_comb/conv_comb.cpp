@@ -206,7 +206,7 @@ signed main(int argc, char const *argv[]){
 	ExtremePoint fx;
 	int cnt = 0;
 	while (cin >> fx){
-	
+		cout<<fx<<endl;
 		if (SolveModel(model, lambda, frac_point, fx)){
 			cout<<"good"<<endl;
 
