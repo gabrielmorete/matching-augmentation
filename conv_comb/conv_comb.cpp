@@ -148,8 +148,8 @@ int SolveModel(GRBModel &model,  GRBVar *lambda, GRBVar *frac_point, ExtremePoin
 	int d = fx.getDim();
 
 	for (int i = 0; i < d; i++){
-		frac_point[i].setAttr(GRB_DoubleAttr_LB, fx[i]);
-		frac_point[i].setAttr(GRB_DoubleAttr_UB, fx[i]);
+		frac_point[i].set(GRB_DoubleAttr_LB, fx[i]);
+		frac_point[i].set(GRB_DoubleAttr_UB, fx[i]);
 	}
 
 	model.optimize();
