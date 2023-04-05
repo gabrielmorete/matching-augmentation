@@ -12,13 +12,13 @@ using namespace std;
 
 class BDSAlgorithm{
 	protected:
-		int n, m, clk;
-		vector<bool> cost, in_sol;
-		vector<int> e_u, e_v, memo_edge; 
-		vector<int> in, out, parent, dp_edge;
-		vector<double> lp;
+		// int n, m, clk;
+		// vector<bool> cost, in_sol;
+		// vector<int> e_u, e_v, memo_edge; 
+		// vector<int> in, out, parent, dp_edge;
+		// vector<double> lp;
 
-		vector<vector<int>> adj, tree_adj, cover;
+		// vector<vector<int>> adj, tree_adj, cover;
 		
 		/*
 			DFS Step of BDS Algorithm. The next tree edge is chosen by the following criteria.
@@ -65,6 +65,14 @@ class BDSAlgorithm{
 		void UpLinkAugmentation();
 
 	public:
+		int n, m, clk;
+		vector<bool> cost, in_sol;
+		vector<int> e_u, e_v, memo_edge; 
+		vector<int> in, out, parent, dp_edge;
+		vector<double> lp;
+
+		vector<vector<int>> adj, tree_adj, cover;
+		
 		void PrintAndCheck();
 
 		/*
