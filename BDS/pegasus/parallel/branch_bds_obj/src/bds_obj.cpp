@@ -97,7 +97,7 @@ void BDSAlgorithm::PrintAndCheck(){
 	for (int v = 0; v < n; v++){
 		cout<<v<<": ";
 		for (int e : adj[v])
-			cout<<"(" << (e_v[e] + e_u[e] - v) << ", " << cost[e] << ", " << lp[e] << ") ";
+			cout<<"(" << (e_v[e] + e_u[e] - v) << ", " << cost[e] << ", " << lp[e] << ", " << in_sol[e] << ") ";
 		cout<<endl;
 
 		int matched = 1 - cost[adj[v][0]];
@@ -118,7 +118,7 @@ void BDSAlgorithm::UpLinkAugmentation(){
 			if (Dec(u, v)) // u is the lower vertex
 				swap(u, v);
 
-			if (link[u].first == -1 or in[link[u].second] > in[v]){
+			if (in[link[u].second] > in[v]){
 				link[u].first = i;
 				link[u].second = v;
 			}
@@ -126,6 +126,9 @@ void BDSAlgorithm::UpLinkAugmentation(){
 
 	for (auto u : tree_adj[0])
 		UpLinkCover(u);
+
+
+
 }
 
 BDSAlgorithm::BDSAlgorithm(){}
