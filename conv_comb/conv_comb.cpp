@@ -223,7 +223,7 @@ signed main(int argc, char const *argv[]){
 	}
 
 	if (verbose_mode)
-		cout << "Fractional points" << endl;
+		cout << "\nFractional points" << endl;
 
 	ExtremePoint fx;
 	int cnt = 0;
