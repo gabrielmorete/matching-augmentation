@@ -35,7 +35,7 @@ int sign(double x) { return (x > EPS) - (x < -EPS); }
 /*
 	Combination coefficient
 */
-const double __comb_dividend = 3;
+const double __comb_dividend = 4;
 const double __comb_divisor = 3;
 
 
