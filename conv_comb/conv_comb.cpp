@@ -33,7 +33,8 @@ int sign(double x) { return (x > EPS) - (x < -EPS); }
 ///
 
 /*
-	Combination coefficient
+	Combination coefficients
+	If run with -coef dividend divisor this values are overwritten
 */
 double __comb_dividend = 5;
 double __comb_divisor = 4;
@@ -164,7 +165,7 @@ int SolveModel(GRBModel &model,  GRBVar *lambda, GRBVar *frac_point, ExtremePoin
 signed main(int argc, char const *argv[]){
 
 	if (argc < 3){
-		cerr << "Usage : frac_points_file int_points_file -verbose -coef a b" << endl;
+		cerr << "Usage : frac_points_file int_points_file -verbose  -coef dividend divisor" << endl;
 		exit(1);
 	}
 
@@ -186,7 +187,7 @@ signed main(int argc, char const *argv[]){
 				i += 2;
 			}
 			else{
-				cerr << "Usage : frac_points_file int_points_file -verbose -coef a b" << endl;
+				cerr << "Usage : frac_points_file int_points_file -verbose -coef dividend divisor" << endl;
 				exit(1);
 			}
 		}
