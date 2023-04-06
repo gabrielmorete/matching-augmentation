@@ -445,6 +445,8 @@ signed main(int argc, char *argv[]){
 		exit(1);
 	}
 
+	cout<<"isiawheihwe"<<endl;
+
 	if (log_start)
 		start = -1;
 
