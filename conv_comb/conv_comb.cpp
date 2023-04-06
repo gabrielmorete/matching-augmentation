@@ -1,5 +1,5 @@
 /*
-	Program receivs two lists A, B of extreme points and tests if every 
+	Program receivs two lists A, B of points and tests if every 
 	element of the list A can be expressed as a convex combination of the 
 	elements of the list B.
 
@@ -8,6 +8,12 @@
 		q . x >= \sum_{b in B} l_b b
 		\sum_{b in B} l_b = 1
 		l_b >= 0, b \in B
+
+	To run the program, flags -verbose -coef are not mandatory.
+	Use -verbose for extra information
+	Use -coef to overwrite the defoult values of the coefficients
+
+	Author : Gabriel Morete	
 */
 
 #include <iostream>
@@ -18,6 +24,8 @@
 #include <cassert>
 #include <iomanip>
 #include "gurobi_c++.h"
+using namespace std;
+
 
 // Utilities
 #define dbg(x)  cout << #x << " = " << x << endl
@@ -38,9 +46,6 @@ int sign(double x) { return (x > EPS) - (x < -EPS); }
 */
 double __comb_dividend = 5;
 double __comb_divisor = 4;
-
-
-using namespace std;
 
 class ExtremePoint{
 	private:
@@ -70,7 +75,7 @@ class ExtremePoint{
 istream &operator >>(istream &is, ExtremePoint &p){
 	string in;
 
-	if (!getline(is, in))
+	if (!getline(is, in)) // use istream standar error
 		return is;
 
     p.clear();
@@ -87,14 +92,13 @@ istream &operator >>(istream &is, ExtremePoint &p){
 
     	double val;
 
-    	if (in.find("/") != in.string::npos){ // fractional point
+    	if (in.find("/") != in.string::npos){ // fractional coordinate
     		int pos = in.find("/");
     		val = stod(in.substr(0, pos)); // spliting the string in two parts
     		val /= stod(in.substr(pos + 1));
     	}
-    	else{
+    	else // integer coordinate
     		val = stod(in);
-    	}
 
     	p.append(val);
     }
@@ -114,7 +118,10 @@ ostream &operator << (ostream &os, ExtremePoint &p)
 }
 
 
+/*
+	Build the model to check if the convex combination exists
 
+*/
 void BuildModel(GRBModel &model, GRBVar *lambda, GRBVar *frac_point, vector<ExtremePoint> &int_points){
 	ExtremePoint p;
 
@@ -135,7 +142,7 @@ void BuildModel(GRBModel &model, GRBVar *lambda, GRBVar *frac_point, vector<Extr
 	for (int i = 0; i < d; i++)
 		frac_point[i] = model.addVar(0.0, 1.0, 0, GRB_CONTINUOUS, "x_" + to_string(i));
 
-
+	// combination constraint
 	for (int j = 0; j < d; j++){
 		GRBLinExpr comb = 0;
 		
@@ -146,19 +153,20 @@ void BuildModel(GRBModel &model, GRBVar *lambda, GRBVar *frac_point, vector<Extr
 	}
 }	
 
-int SolveModel(GRBModel &model,  GRBVar *lambda, GRBVar *frac_point, ExtremePoint &fx){
+/*
+	checks for a given point fx if the convex combination exists
+*/
+bool SolveModel(GRBModel &model,  GRBVar *lambda, GRBVar *frac_point, ExtremePoint &fx){
 	int d = fx.getDim();
 
-	for (int i = 0; i < d; i++){
+	for (int i = 0; i < d; i++){ // set fractional point value
 		frac_point[i].set(GRB_DoubleAttr_LB, fx[i]);
 		frac_point[i].set(GRB_DoubleAttr_UB, fx[i]);
 	}
 
 	model.optimize();
 
-	if (model.get(GRB_IntAttr_SolCount) > 0)
-		return 1;
-	return 0;
+	return (model.get(GRB_IntAttr_SolCount) > 0); // returns 1 if there is a feasible convex combination
 }
 
 
@@ -177,7 +185,7 @@ signed main(int argc, char const *argv[]){
 
 			if (s == "-verbose")
 				verbose_mode = 1;
-			else if (s == "-coef"){
+			else if (s == "-coef"){ // overwrite default coefficients
 				s = argv[i + 1];
 				__comb_dividend = stod(s);
 
@@ -191,18 +199,13 @@ signed main(int argc, char const *argv[]){
 				exit(1);
 			}
 		}
-
-
-
-	
 	}
 
 	fstream int_file(argv[2]);
 	if (!int_file){
-		cerr << "Cant open integral points file" << endl;
+		cerr << "Can't open integral points file" << endl;
 		exit(1);
 	}
-
 
 	vector<ExtremePoint> int_points;
 	ExtremePoint p;
@@ -236,7 +239,7 @@ signed main(int argc, char const *argv[]){
 
 	fstream frac_file(argv[1]);
 	if (!frac_file){
-		cerr << "Cant open fractial points file" << endl;
+		cerr << "Can't open fractial points file" << endl;
 		exit(1);
 	}
 
@@ -266,8 +269,8 @@ signed main(int argc, char const *argv[]){
 			}
 		}
 		else{
-			cout << "Point " << cnt << " cant be written as a convex combination" << endl;
-			cout << fx << endl; 
+			cout << "Point " << cnt << " can't be written as a convex combination with coefficient" << __comb_dividend << "/" << __comb_divisor << endl;
+			cout << fx << endl;
 		}
 
 		cnt++;
