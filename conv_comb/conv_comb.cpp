@@ -252,7 +252,7 @@ signed main(int argc, char const *argv[]){
 				cout <<  setprecision(3);
 				for (int i = 0; i < n; i++)
 					if (sign(sol[i]) > 0)
-						cout << '\t' << sol[i] << int_points[i] << endl;
+						cout << '\t' << sol[i] << " x " << int_points[i] << endl;
 				cout << endl;	
 
 				delete[] sol;
