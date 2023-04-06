@@ -243,7 +243,7 @@ bool ReadGraph(int &cnt, int &my_cnt, ListGraph &G){
 	return ok;
 }
 
-void PrintLogProgress(int n, int cnt, int last){
+void PrintLogProgress(int n, int cnt, int n_threads){
 	int min_id = __cur_graph_thread[0]; // not critical
 	for (int i = 1; i < n_threads; i++)
 		min_id = min(min_id, __cur_graph_id);
@@ -401,9 +401,9 @@ void RunNautyInput(int start, int n_threads = 1){
 
 
 			if (my_cnt % 10000 == 0) // speedup
-				PrintLogProgress(n, cnt);
+				PrintLogProgress(n, cnt, n_threads);
 		}
 		
-		PrintLogProgress(n, cnt);
+		PrintLogProgress(n, cnt, n_threads);
 	}
 }
