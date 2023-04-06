@@ -88,6 +88,10 @@ void RunStdioInput(){
 	ListGraph::EdgeMap<int> cost(G);
 
 	if (__all_matchings){
+		ReadStdioGraph(G);
+		SolveAllMatchings(G);
+	}
+	else {
 		ReadStdioInput(cost, G);
 
 		int n = countNodes(G);
@@ -129,9 +133,5 @@ void RunStdioInput(){
 		cout<<"Cost Integral "<<cost_Int<<endl;
 		cout<<"Cost BDS "<<cost_BDS<<endl;
 
-	}
-	else{
-		ReadStdioGraph(G);
-		SolveAllMatchings(G);
 	}
 }
