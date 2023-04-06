@@ -111,7 +111,7 @@ ostream &operator << (ostream &os, ExtremePoint &p)
 /*
 	Build the model to check if the convex combination exists
 */
-void BuildModel(GRBModel &model, GRBVar *lambda, GRBVar *frac_point, vector<ExtremePoint> &int_points){
+void BuildModel(GRBModel &model, GRBVar &coef, GRBVar *lambda, GRBVar *frac_point, vector<ExtremePoint> &int_points){
 	ExtremePoint p;
 
 	int n = int_points.size(); // number of points
@@ -131,6 +131,9 @@ void BuildModel(GRBModel &model, GRBVar *lambda, GRBVar *frac_point, vector<Extr
 	for (int i = 0; i < d; i++)
 		frac_point[i] = model.addVar(0.0, 1.0, 0, GRB_CONTINUOUS, "x_" + to_string(i));
 
+	// Model will thy to optmize the coefficient of the combination
+	coef = model.addVar(0.0, GRB_INFINITY, 1, GRB_CONTINUOUS, "coef");
+
 	// combination constraint
 	for (int j = 0; j < d; j++){
 		GRBLinExpr comb = 0;
@@ -138,14 +141,14 @@ void BuildModel(GRBModel &model, GRBVar *lambda, GRBVar *frac_point, vector<Extr
 		for (int i = 0; i < n; i++)
 			comb += int_points[i][j] * lambda[i];
 
-		model.addConstr( comb <= (__comb_dividend/__comb_divisor) *  frac_point[j], "coord_" + to_string(j)); 
+		model.addConstr( comb <= coef *  frac_point[j], "coord_" + to_string(j)); 
 	}
 }	
 
 /*
 	checks for a given point fx if the convex combination exists
 */
-bool SolveModel(GRBModel &model,  GRBVar *lambda, GRBVar *frac_point, ExtremePoint &fx){
+double SolveModel(GRBModel &model, GRBVar &coef, GRBVar *lambda, GRBVar *frac_point, ExtremePoint &fx){
 	int d = fx.getDim();
 
 	for (int i = 0; i < d; i++){ // set fractional point value
@@ -154,8 +157,11 @@ bool SolveModel(GRBModel &model,  GRBVar *lambda, GRBVar *frac_point, ExtremePoi
 	}
 
 	model.optimize();
+	assert(model.get(GRB_IntAttr_SolCount) > 0);
 
-	return (model.get(GRB_IntAttr_SolCount) > 0); // returns 1 if there is a feasible convex combination
+	double min_coef = model.get(GRB_DoubleAttr_X, coef);
+
+	return min_coef;
 }
 
 
@@ -199,12 +205,7 @@ signed main(int argc, char const *argv[]){
 	vector<ExtremePoint> int_points;
 	ExtremePoint p;
 	
-	if (verbose_mode)
-		cout << "Integer points" << endl;
-
 	while (int_file >> p){
-		if (verbose_mode)
-			cout << p << endl;
 		
 		int_points.push_back(p);
 	}
@@ -222,9 +223,10 @@ signed main(int argc, char const *argv[]){
 	GRBModel model(env);
 	GRBVar lambda[n];
 	GRBVar frac_point[d];
+	GRBVar coef;
 
 
-	BuildModel(model, lambda, frac_point, int_points);
+	BuildModel(model, coef, lambda, frac_point, int_points);
 
 	fstream frac_file(argv[1]);
 	if (!frac_file){
@@ -245,7 +247,7 @@ signed main(int argc, char const *argv[]){
 	while (frac_file >> fx){
 		assert(fx.getDim() == int_points[0].getDim());
 
-		if (SolveModel(model, lambda, frac_point, fx)){ // Convex comb exists
+		if (sign( SolveModel(model, lambda, frac_point, fx) - (__comb_dividend/__comb_divisor) ) >= 0){ // Convex comb exists
 			if (verbose_mode){
 				cout << fx << endl;
 
@@ -261,7 +263,7 @@ signed main(int argc, char const *argv[]){
 			}
 		}
 		else{
-			cout << "Point " << cnt << " can't be written as a convex combination with coefficient" << __comb_dividend << "/" << __comb_divisor << endl;
+			cout << "Point " << cnt << " can't be written as a convex combination with coefficient at most" << __comb_dividend << "/" << __comb_divisor << endl;
 			cout << fx << endl;
 		}
 
