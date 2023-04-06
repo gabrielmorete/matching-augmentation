@@ -30,5 +30,12 @@ elif opt == 2:
 			print(i, (i + 2) % (2 * n + 1), 1)
 
 	print(2 * n, 2, 1)
+
+elif opt == 3:
+	assert n % 2 == 0
+
+	for i in range(1, 2 * n, 4)
+		print(i, i + 2)
+
 else:
 	print("?")				
