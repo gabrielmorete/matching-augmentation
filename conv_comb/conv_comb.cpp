@@ -254,7 +254,7 @@ signed main(int argc, char const *argv[]){
 	ExtremePoint fx;
 	int cnt = 0;
 	while (frac_file >> fx){
-		if (SolveModel(model, lambda, frac_point, fx)){
+		if (SolveModel(model, lambda, frac_point, fx)){ // Convex comb exists
 			if (verbose_mode){
 				cout << fx << "   ";
 
