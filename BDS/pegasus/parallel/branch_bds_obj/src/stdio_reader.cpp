@@ -88,14 +88,23 @@ void RunStdioInput(){
 	ListGraph::EdgeMap<int> cost(G);
 
 	if (__all_matchings){
-		ReadStdioGraph(G);
-		SolveAllMatchings(G);
 		
+		__best_IP = __best_BDS = 1;
+		__best_IP_graph_id = __best_IP_matching_id = __best_BDS_graph_id = __best_BDS_matching_id = 1;
+
+
+		ReadStdioGraph(G);
+
 		int n = countNodes(G);
 		cout << "Warning: overwriting files in folder " << n << endl;
 		std::experimental::filesystem::create_directory("./" + to_string(n));
 		ofstream log_out(to_string(countNodes(G)) + "/log"); // clear log file
 		log_out.close();
+
+		SolveAllMatchings(G);
+
+		PrintLogProgress(n, 0, 0)
+
 	}
 	else {
 		ReadStdioInput(cost, G);
