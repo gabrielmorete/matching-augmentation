@@ -103,8 +103,7 @@ void RunStdioInput(){
 
 		SolveAllMatchings(G);
 
-		PrintLogProgress(n, 0, 0)
-
+		PrintLogProgress(n, 0, 0);
 	}
 	else {
 		ReadStdioInput(cost, G);
