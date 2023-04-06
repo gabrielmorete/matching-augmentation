@@ -27,7 +27,6 @@ using namespace std;
 */
 
 
-
 /*
 	This function receives a LP solution and retuns the restrictions of
 	all st-cuts with capacity < 2.

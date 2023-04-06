@@ -331,6 +331,9 @@ void RunNautyInput(int start, int n_threads = 1){
 	cout << " IP gap >= " << __IP_dividend << "/" << __IP_divisor << endl;
 	cout << " BDS gap > " << __BDS_dividend << "/" << __BDS_divisor << endl;
 
+	if (!__all_matchings)
+		cout << "\n Warning: Only solving empty matchings. Use -all_matchings to generate all matchings" << endl;
+
 	int cnt = 0;
 
 	// std::system("export GOMP_CPU_AFFINITY=32-65");
@@ -397,7 +400,8 @@ void RunNautyInput(int start, int n_threads = 1){
 			for (int i = 1; i < n_threads; i++)
 				min_id = min(min_id, __cur_graph_id);
 
-			PrintLogProgress(n, cnt, min_id);
+			if (my_cnt % 10000 == 0) // speedup
+				PrintLogProgress(n, cnt, min_id);
 		}
 	}
 }
