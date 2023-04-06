@@ -4,7 +4,7 @@
 
 #include "lemon.h"
 #include "main.h"
-#include "nauty_reader.cpp"
+// #include "nauty_reader.cpp"
 
 /*
 	This function reads the Graph and esge costs from Stdio. Graph is 0-indexed
