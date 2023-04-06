@@ -1,5 +1,5 @@
 /*
-	Program receivs two lists A, B of points and tests if every 
+	Program receives two lists A, B of points and tests if every 
 	element of the list A can be expressed as a convex combination of the 
 	elements of the list B.
 
@@ -11,7 +11,7 @@
 
 	To run the program, flags -verbose -coef are not mandatory.
 	Use -verbose for extra information
-	Use -coef to overwrite the defoult values of the coefficients
+	Use -coef to overwrite the default values of the coefficients
 
 	Author : Gabriel Morete	
 */
@@ -27,22 +27,9 @@
 using namespace std;
 
 
-// Utilities
-#define dbg(x)  cout << #x << " = " << x << endl
-
-// Safe handling doubles
-const double EPS = 1e-4;
-/*
-	-1 if x < -EPS
-	0 if  -EPS <= x <= EPS
-	1 if EPS < x
-*/ 
-int sign(double x) { return (x > EPS) - (x < -EPS); } 
-///
-
 /*
 	Combination coefficients
-	If run with -coef dividend divisor this values are overwritten
+	If run with -coef dividend divisor these values are overwritten
 */
 double __comb_dividend = 5;
 double __comb_divisor = 4;
@@ -75,7 +62,7 @@ class ExtremePoint{
 istream &operator >>(istream &is, ExtremePoint &p){
 	string in;
 
-	if (!getline(is, in)) // use istream standar error
+	if (!getline(is, in)) // use istream standard error
 		return is;
 
     p.clear();
@@ -94,7 +81,7 @@ istream &operator >>(istream &is, ExtremePoint &p){
 
     	if (in.find("/") != in.string::npos){ // fractional coordinate
     		int pos = in.find("/");
-    		val = stod(in.substr(0, pos)); // spliting the string in two parts
+    		val = stod(in.substr(0, pos)); // splitting the string in two parts
     		val /= stod(in.substr(pos + 1));
     	}
     	else // integer coordinate
@@ -120,7 +107,6 @@ ostream &operator << (ostream &os, ExtremePoint &p)
 
 /*
 	Build the model to check if the convex combination exists
-
 */
 void BuildModel(GRBModel &model, GRBVar *lambda, GRBVar *frac_point, vector<ExtremePoint> &int_points){
 	ExtremePoint p;
@@ -128,7 +114,7 @@ void BuildModel(GRBModel &model, GRBVar *lambda, GRBVar *frac_point, vector<Extr
 	int n = int_points.size(); // number of points
 	int d = int_points[0].getDim(); // dimension
 
-	// one variable to each int point
+	// one variable for each int point (combination coefficient)
 	for (int i = 0; i < n; i++)
 		lambda[i] = model.addVar(0.0, 1.0, 0, GRB_CONTINUOUS, "l_" + to_string(i) );
 
@@ -173,7 +159,7 @@ bool SolveModel(GRBModel &model,  GRBVar *lambda, GRBVar *frac_point, ExtremePoi
 signed main(int argc, char const *argv[]){
 
 	if (argc < 3){
-		cerr << "Usage : frac_points_file int_points_file -verbose  -coef dividend divisor" << endl;
+		cerr << "Usage : frac_points_file int_points_file -verbose -coef dividend divisor" << endl;
 		exit(1);
 	}
 
