@@ -88,7 +88,7 @@ void RunStdioInput(){
 	ListGraph::EdgeMap<int> cost(G);
 
 	if (__all_matchings){
-		n = countNodes(G);
+		int n = countNodes(G);
 		cout << "Warning: overwriting files in folder " << n << endl;
 		std::experimental::filesystem::create_directory("./" + to_string(n));
 		ofstream log_out(to_string(countNodes(G)) + "/log"); // clear log file
