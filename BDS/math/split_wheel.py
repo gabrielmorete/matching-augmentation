@@ -19,7 +19,7 @@ if opt == 1:
 
 	print(2 * n, 2)			
 
-if opt == 2:
+elif opt == 2:
 	for i in range(1, n + 1):
 		print(0, 2 * i - 1, 1)
 
