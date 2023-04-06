@@ -410,7 +410,7 @@ signed main(int argc, char *argv[]){
 	bool stdio = 0;
 	bool log_start = 0;
 	int start = 0;
-	int n_threads = 1;
+	int n_threads = 0;
 
 
 	for (int i = 1; i < argc; i++){
@@ -451,8 +451,12 @@ signed main(int argc, char *argv[]){
 	if (stdio)
 		RunStdioInput();
 	else{
-
 		cout << " Running solver with ";
+		if (n_threads == 0){
+			n_threads = 1;
+			cout << "-threads 1 ";
+		}
+
 		for (int i = 1; i < argc; i++)
 			cout << argv[i] << ' ';
 		cout << endl;	
