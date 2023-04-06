@@ -113,6 +113,8 @@ n = 0
 for x in edges:
 	n = max(n, x[0], x[1])
 
+n += 1	
+
 print(n, m)
 for x in edges:
 	print(x[0], x[1], 1)	
