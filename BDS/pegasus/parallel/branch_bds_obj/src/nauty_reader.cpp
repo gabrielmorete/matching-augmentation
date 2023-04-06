@@ -298,6 +298,26 @@ int ReadLogProgress(int n){
 	return start;
 }
 
+void SolveSingleMatching(ListGraph &G){
+	int n = countNodes(G);
+	int m = countEdges(G);
+
+	GRBModel frac_model(env);
+	GRBVar frac_vars[m];
+	BuildFractional(frac_model, frac_vars, G);
+
+	GRBModel int_model(env);
+	GRBVar int_vars[m];
+	BuildIntegral(int_model, int_vars, G);
+	MinimumCut cb = MinimumCut(int_vars, n, m, G);
+	int_model.setCallback(&cb);
+
+	BDSAlgorithm BDS(G);
+
+	ListGraph::EdgeMap<int> cost(G, 1); // Empty matching
+
+	SolveCurrentMatching(1, cost, frac_model, frac_vars, int_model, int_vars, G, BDS);
+}
 
 /*
 	This functions receiv nauty's geng output from stdin(may modify this),
@@ -309,12 +329,18 @@ void RunNautyInput(int start, int n_threads = 1){
 	__best_IP_graph_id = __best_IP_matching_id = __best_BDS_graph_id = __best_BDS_matching_id = 1;
 
 	if (start < 0)
-			cout << " Running solver with " << "-log_start -threads " << n_threads << endl;
+		cout << " Running solver with " << "-log_start -threads " << n_threads;
 	else
-		cout << " Running solver with " << "-start " << start << " -threads " << n_threads << endl;
+		cout << " Running solver with " << "-start " << start << " -threads " << n_threads
 	
+
+
+	cout << endl;
+
 	cout << " IP gap >= " << __IP_dividend << "/" << __IP_divisor << endl;
 	cout << " BDS gap > " << __BDS_dividend << "/" << __BDS_divisor << endl;
+
+
 
 	int cnt = 0;
 
@@ -371,7 +397,12 @@ void RunNautyInput(int start, int n_threads = 1){
 			__found_feasible = 0;
 			__cur_graph_id = my_cnt;
 
-			SolveAllMatchings(G);
+
+			if (__all_matchings)
+				SolveAllMatchings(G);
+			else
+				SolveSingleMatching(G);
+
 
 			int min_id = __cur_graph_thread[0]; // not critical
 			for (int i = 1; i < n_threads; i++)

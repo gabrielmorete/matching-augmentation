@@ -46,6 +46,30 @@ void ReadStdioInput(ListGraph::EdgeMap<int> &cost, ListGraph &G){
 	assert(*q.rbegin() == m - 1);
 }
 
+// void SolveSingleInstance( ListGraph::EdgeMap<double> &FracSol,
+// 	ListGraph::EdgeMap<int> &IntSol,
+// 	ListGraph::EdgeMap<bool> &BDSSol,
+// 	ListGraph::EdgeMap<int> &cost,
+// 	ListGraph &G){
+
+// 	int n = countNodes(G);
+// 	int m = countEdges(G);
+
+// 	GRBModel frac_model(env);
+// 	GRBVar frac_vars[m];
+// 	BuildFractional(frac_model, frac_vars, G);
+
+// 	GRBModel int_model(env);
+// 	GRBVar int_vars[m];
+// 	BuildIntegral(int_model, int_vars, G);
+// 	MinimumCut cb = MinimumCut(int_vars, n, m, G);
+// 	int_model.setCallback(&cb);
+
+// 	BDSAlgorithm BDS(G);
+
+// 	SolveMapInstance(cost, FracSol, IntSol, BDSSol, frac_model, frac_vars, int_model, int_vars, G, BDS);
+// }
+
 void RunStdioInput(){
 	ListGraph G;
 	ListGraph::EdgeMap<int> cost(G);
@@ -72,7 +96,6 @@ void RunStdioInput(){
 	BDSAlgorithm BDS(G);
 
 	SolveMapInstance(cost, FracSol, IntSol, BDSSol, frac_model, frac_vars, int_model, int_vars, G, BDS);
-
 	int cost_Int = 0;
 	int cost_BDS = 0;
 	double cost_Frac = 0;

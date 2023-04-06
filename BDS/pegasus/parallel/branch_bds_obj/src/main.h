@@ -34,6 +34,16 @@ int sign(double x) { return (x > EPS) - (x < -EPS); }
 // Print extra information
 bool __verbose_mode = 0;
 
+// Brute all matchings
+bool __all_matchings = 0;
+
+/*
+	Only solve BDS and IP if the support of the fractional
+	solution coincides with the graph (ie, x_e > 0 for every e in E)
+
+*/
+bool __support_only = 0;
+
 
 /*
 	I will define a global enviroment. 

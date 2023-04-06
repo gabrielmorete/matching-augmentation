@@ -358,8 +358,12 @@ void SolveMapInstance(
 
 	FractionalSolution(cost, FracSol, frac_model, frac_vars, G);
 
-	if (sign(FracSol[G.edgeFromId(0)]) == -1)
+	if (sign(FracSol[G.edgeFromId(0)]) == -1) // Exception
 		return;
+
+	for (ListGraph::EdgeIt e(G); e != INVALID; ++e) // Checks if every edge is in the support
+		if ((sign(FracSol[e]) <= 0) and __support_only)
+			return;
 
 	BDS.Run(cost, BDSSol, FracSol, G);
 
@@ -398,7 +402,6 @@ void SolveMapInstance(
 	IntegerSolution(cost, IntSol, BDSSol, int_model, int_vars, G);
 }
 
-
 signed main(int argc, char *argv[]){
 	// Start a global gurobi enviroment
 	env.set(GRB_IntParam_OutputFlag, 0);
@@ -426,8 +429,13 @@ signed main(int argc, char *argv[]){
 			s = argv[i + 1];
 			n_threads = stoi(s);
 			i++;
-		} else {
-			cout<<"Usage: -stdio -verbose -log_start -start n -threads t"<<endl;
+		} 
+		else if (s == "-all_matchings")
+			__all_matchings = 1;
+		else if (s == "-support")
+			__support_only = 1;
+		else {
+			cout<<"Usage: -stdio -verbose -log_start -all_matchings -support -start n -threads t"<<endl;
 			return 0;
 		}
 	}
@@ -442,7 +450,14 @@ signed main(int argc, char *argv[]){
 
 	if (stdio)
 		RunStdioInput();
-	else
+	else{
+
+		cout << " Running solver with ";
+		for (int i = 1; i < argc; i++)
+			cout << argv[i] << ' ';
+		cout << endl;	
+
 		RunNautyInput(start, n_threads);
+	}
 }
 
