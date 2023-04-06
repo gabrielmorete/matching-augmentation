@@ -88,6 +88,10 @@ void RunStdioInput(){
 	ListGraph::EdgeMap<int> cost(G);
 
 	if (__all_matchings){
+		std::experimental::filesystem::create_directory("./" + to_string(n));
+		ofstream log_out(to_string(countNodes(G)) + "/log"); // clear log file
+		log_out.close();
+		
 		ReadStdioGraph(G);
 		SolveAllMatchings(G);
 	}
