@@ -244,11 +244,15 @@ bool ReadGraph(int &cnt, int &my_cnt, ListGraph &G){
 }
 
 void PrintLogProgress(int n, int cnt, int last){
+	int min_id = __cur_graph_thread[0]; // not critical
+	for (int i = 1; i < n_threads; i++)
+		min_id = min(min_id, __cur_graph_id);
+
 	#pragma omp critical
 	{ // If you interrupt the algorithm, may be empty
 		ofstream log_progress(to_string(n) + "/log_progress");
 		log_progress << "Last read graph " << cnt << endl; // Careful with this, I'm not using mutex
-		log_progress << "Smallest unprocessed graph " << last << endl; // Careful with this, I'm not using mutex
+		log_progress << "Smallest unprocessed graph " << min_id << endl; // Careful with this, I'm not using mutex
 		log_progress << "Best IP/Frac: " << __best_IP << " g" << __best_IP_graph_id << " matching " << __best_IP_matching_id << endl;
 		log_progress << "Best BDS/Frac: " << __best_BDS << " g" << __best_BDS_graph_id << " matching " << __best_BDS_matching_id << endl;
 		log_progress.close();	
@@ -344,13 +348,13 @@ void RunNautyInput(int start, int n_threads = 1){
 	{
 		int id = omp_get_thread_num();	
 		ListGraph G; // Declare global Graph
-		int my_cnt;
+		int my_cnt, n, m;
 		while (ReadGraph(cnt, my_cnt, G)){	
 
 			__cur_graph_thread[id] = my_cnt;
 
-			int n = countNodes(G);
-			int m = countEdges(G);
+			n = countNodes(G);
+			m = countEdges(G);
 
 			#pragma omp critical
 			{	
@@ -396,13 +400,10 @@ void RunNautyInput(int start, int n_threads = 1){
 				SolveSingleMatching(G);
 
 
-			int min_id = __cur_graph_thread[0]; // not critical
-			for (int i = 1; i < n_threads; i++)
-				min_id = min(min_id, __cur_graph_id);
-
 			if (my_cnt % 10000 == 0) // speedup
-				PrintLogProgress(n, cnt, min_id);
+				PrintLogProgress(n, cnt);
 		}
-		PrintLogProgress(n, cnt, min_id);
+		
+		PrintLogProgress(n, cnt);
 	}
 }
