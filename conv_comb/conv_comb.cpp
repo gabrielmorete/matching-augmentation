@@ -35,8 +35,8 @@ int sign(double x) { return (x > EPS) - (x < -EPS); }
 /*
 	Combination coefficient
 */
-const double __comb_dividend = 5;
-const double __comb_divisor = 4;
+double __comb_dividend = 5;
+double __comb_divisor = 4;
 
 
 using namespace std;
@@ -164,18 +164,36 @@ int SolveModel(GRBModel &model,  GRBVar *lambda, GRBVar *frac_point, ExtremePoin
 signed main(int argc, char const *argv[]){
 
 	if (argc < 3){
-		cerr << "Usage : frac_points_file int_points_file -verbose" << endl;
+		cerr << "Usage : frac_points_file int_points_file -verbose -coef a b" << endl;
 		exit(1);
 	}
 
 	bool verbose_mode = 0;
-	if (argc == 4){
-		string vrb = argv[3];
-		if (vrb != "-verbose"){
-			cerr << "Usage : frac_points_file int_points_file -verbose" << endl;
-			exit(1);
+	if (argc > 3){
+
+		for (int i = 3; i < argc; i++){
+			string s = argv[i];
+
+			if (s == "-verbose")
+				verbose_mode = 1;
+			else if (s == "-coef"){
+				s = argv[i + 1];
+				__comb_dividend = stod(s);
+
+				s = argv[i + 2];
+				__comb_divisor = stod(s);
+
+				i += 2;
+			}
+			else{
+				cerr << "Usage : frac_points_file int_points_file -verbose -coef a b" << endl;
+				exit(1);
+			}
 		}
-		verbose_mode = 1;	
+
+
+
+	
 	}
 
 	fstream int_file(argv[2]);
