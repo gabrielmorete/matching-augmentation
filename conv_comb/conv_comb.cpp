@@ -159,9 +159,7 @@ double SolveModel(GRBModel &model, GRBVar &coef, GRBVar *lambda, GRBVar *frac_po
 	model.optimize();
 	assert(model.get(GRB_IntAttr_SolCount) > 0);
 
-	double min_coef = model.get(GRB_DoubleAttr_X, coef);
-
-	return min_coef;
+	return model.get(GRB_DoubleAttr_ObjVal);
 }
 
 
@@ -247,7 +245,7 @@ signed main(int argc, char const *argv[]){
 	while (frac_file >> fx){
 		assert(fx.getDim() == int_points[0].getDim());
 
-		if (sign( SolveModel(model, lambda, frac_point, fx) - (__comb_dividend/__comb_divisor) ) >= 0){ // Convex comb exists
+		if (sign( SolveModel(model, coef, lambda, frac_point, fx) - (__comb_dividend/__comb_divisor) ) >= 0){ // Convex comb exists
 			if (verbose_mode){
 				cout << fx << endl;
 
