@@ -26,6 +26,9 @@
 #include "gurobi_c++.h"
 using namespace std;
 
+// Working with doubles
+const double EPS = 1e-4;
+int sign(double x) { return (x > EPS) - (x < -EPS); }
 
 /*
 	Combination coefficients
@@ -242,14 +245,15 @@ signed main(int argc, char const *argv[]){
 	while (frac_file >> fx){
 		if (SolveModel(model, lambda, frac_point, fx)){ // Convex comb exists
 			if (verbose_mode){
-				cout << fx << "   ";
+				cout << fx << endl;
 
 				double *sol = model.get(GRB_DoubleAttr_X, lambda, n);
 
 				cout <<  setprecision(3);
 				for (int i = 0; i < n; i++)
-					cout << sol[i] << ' ';
-				cout << endl;
+					if (sign(sol[i]) > 0)
+						cout << '\t' << sol[i] << int_points[i] << endl;
+				cout << endl;	
 
 				delete[] sol;
 			}
