@@ -4,9 +4,10 @@
 
 #include "lemon.h"
 #include "main.h"
+#include "nauty_reader.cpp"
 
 /*
-	This function reads the Graph from Stdio. Graph is 0-indexed
+	This function reads the Graph and esge costs from Stdio. Graph is 0-indexed
 	The input format will be
 		n m       number of nodes, edges
 		a_1 b_1 c_1     edge between a_1, b_1 with cost c_1
@@ -31,9 +32,6 @@ void ReadStdioInput(ListGraph::EdgeMap<int> &cost, ListGraph &G){
 		int a, b, c;
 		cin>>a>>b>>c;
 
-		// a--; // 0-indexed
-		// b--; 
-
 		ListGraph::Edge e = G.addEdge(G.nodeFromId(a), G.nodeFromId(b));
 		cost[e] = c;
 	}
@@ -46,72 +44,94 @@ void ReadStdioInput(ListGraph::EdgeMap<int> &cost, ListGraph &G){
 	assert(*q.rbegin() == m - 1);
 }
 
-// void SolveSingleInstance( ListGraph::EdgeMap<double> &FracSol,
-// 	ListGraph::EdgeMap<int> &IntSol,
-// 	ListGraph::EdgeMap<bool> &BDSSol,
-// 	ListGraph::EdgeMap<int> &cost,
-// 	ListGraph &G){
 
-// 	int n = countNodes(G);
-// 	int m = countEdges(G);
+/*
+	This function reads the Graph from Stdio. Graph is 0-indexed
+	The input format will be
+		n m       number of nodes, edges
+		a_1 b_1    edge between a_1, b_1
+		...
+		a_m b_m
+*/
+void ReadStdioGraph(ListGraph &G){
+	int n, m;
+	cin>>n>>m;
+	
+	assert(n >= 3);
+	assert(m >= n);
 
-// 	GRBModel frac_model(env);
-// 	GRBVar frac_vars[m];
-// 	BuildFractional(frac_model, frac_vars, G);
+	for (int i = 0; i < n; i++){
+		ListGraph::Node v = G.addNode();
+		if (G.id(v) != i)
+			cout<<"Error : vertex don't match id"<<endl;
+		assert(G.id(v) == i);
+	}
 
-// 	GRBModel int_model(env);
-// 	GRBVar int_vars[m];
-// 	BuildIntegral(int_model, int_vars, G);
-// 	MinimumCut cb = MinimumCut(int_vars, n, m, G);
-// 	int_model.setCallback(&cb);
+	for (int i = 0; i < m; i++){
+		int a, b, c;
+		cin>>a>>b;
 
-// 	BDSAlgorithm BDS(G);
+		ListGraph::Edge e = G.addEdge(G.nodeFromId(a), G.nodeFromId(b));
+	}
 
-// 	SolveMapInstance(cost, FracSol, IntSol, BDSSol, frac_model, frac_vars, int_model, int_vars, G, BDS);
-// }
+	set<int> q;
+	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+		q.insert(G.id(e));
+
+	assert(q.size() == m);
+	assert(*q.rbegin() == m - 1);
+}
+
 
 void RunStdioInput(){
 	ListGraph G;
 	ListGraph::EdgeMap<int> cost(G);
 
-	ReadStdioInput(cost, G);
+	if (__all_matchings){
+		ReadStdioInput(cost, G);
 
-	int n = countNodes(G);
-	int m = countEdges(G);
+		int n = countNodes(G);
+		int m = countEdges(G);
 
-	ListGraph::EdgeMap<int> IntSol(G);
-	ListGraph::EdgeMap<double> FracSol(G);
-	ListGraph::EdgeMap<bool> BDSSol(G);
+		ListGraph::EdgeMap<int> IntSol(G);
+		ListGraph::EdgeMap<double> FracSol(G);
+		ListGraph::EdgeMap<bool> BDSSol(G);
 
-	GRBModel frac_model(env);
-	GRBVar frac_vars[m];
-	BuildFractional(frac_model, frac_vars, G);
+		GRBModel frac_model(env);
+		GRBVar frac_vars[m];
+		BuildFractional(frac_model, frac_vars, G);
 
-	GRBModel int_model(env);
-	GRBVar int_vars[m];
-	BuildIntegral(int_model, int_vars, G);
-	MinimumCut cb = MinimumCut(int_vars, n, m, G);
-	int_model.setCallback(&cb);
+		GRBModel int_model(env);
+		GRBVar int_vars[m];
+		BuildIntegral(int_model, int_vars, G);
+		MinimumCut cb = MinimumCut(int_vars, n, m, G);
+		int_model.setCallback(&cb);
 
-	BDSAlgorithm BDS(G);
+		BDSAlgorithm BDS(G);
 
-	SolveMapInstance(cost, FracSol, IntSol, BDSSol, frac_model, frac_vars, int_model, int_vars, G, BDS);
-	int cost_Int = 0;
-	int cost_BDS = 0;
-	double cost_Frac = 0;
+		SolveMapInstance(cost, FracSol, IntSol, BDSSol, frac_model, frac_vars, int_model, int_vars, G, BDS);
+		int cost_Int = 0;
+		int cost_BDS = 0;
+		double cost_Frac = 0;
 
-	for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
-		int u = G.id(G.u(e));
-		int v = G.id(G.v(e));
+		for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
+			int u = G.id(G.u(e));
+			int v = G.id(G.v(e));
 
-		cost_Int +=  IntSol[e] * cost[e];
-		cost_Frac +=  FracSol[e] * cost[e];
-		cost_BDS +=  BDSSol[e] * cost[e];
+			cost_Int +=  IntSol[e] * cost[e];
+			cost_Frac +=  FracSol[e] * cost[e];
+			cost_BDS +=  BDSSol[e] * cost[e];
 
-		cout<<u<<' '<<v<<' '<<FracSol[e]<<' '<<IntSol[e]<<' '<<BDSSol[e]<<endl;
+			cout<<u<<' '<<v<<' '<<FracSol[e]<<' '<<IntSol[e]<<' '<<BDSSol[e]<<endl;
+		}
+
+		cout<<"Cost Fractional "<<cost_Frac<<endl;
+		cout<<"Cost Integral "<<cost_Int<<endl;
+		cout<<"Cost BDS "<<cost_BDS<<endl;
+
 	}
-
-	cout<<"Cost Fractional "<<cost_Frac<<endl;
-	cout<<"Cost Integral "<<cost_Int<<endl;
-	cout<<"Cost BDS "<<cost_BDS<<endl;
+	else{
+		ReadStdioGraph();
+		SolveAllMatchings();
+	}
 }

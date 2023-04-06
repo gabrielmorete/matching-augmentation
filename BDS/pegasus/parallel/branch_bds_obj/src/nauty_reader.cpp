@@ -403,5 +403,6 @@ void RunNautyInput(int start, int n_threads = 1){
 			if (my_cnt % 10000 == 0) // speedup
 				PrintLogProgress(n, cnt, min_id);
 		}
+		PrintLogProgress(n, cnt, min_id);
 	}
 }
