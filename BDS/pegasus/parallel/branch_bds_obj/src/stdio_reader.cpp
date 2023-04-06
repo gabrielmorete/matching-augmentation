@@ -131,7 +131,7 @@ void RunStdioInput(){
 
 	}
 	else{
-		ReadStdioGraph();
-		SolveAllMatchings();
+		ReadStdioGraph(G);
+		SolveAllMatchings(G);
 	}
 }
