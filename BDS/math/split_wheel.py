@@ -5,7 +5,7 @@ import sys
 n = int(sys.argv[1])
 opt = int(sys.argv[2])
 
-print(n, 3 * n)
+print(2 * n + 1, 3 * n)
 
 if opt == 1:
 	for i in range(1, n + 1):
