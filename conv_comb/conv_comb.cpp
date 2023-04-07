@@ -158,17 +158,25 @@ void BuildModel(GRBModel &model, GRBVar *lambda, GRBVar *frac_point, vector<Extr
 	checks for a given point fx if the convex combination exists
 */
 double SolveModel(GRBModel &model, GRBVar *lambda, GRBVar *frac_point, ExtremePoint &fx){
-	int d = fx.getDim();
+	
+	try{
+		int d = fx.getDim();
 
-	for (int i = 0; i < d; i++){ // set fractional point value
-		frac_point[i].set(GRB_DoubleAttr_LB, fx[i]);
-		frac_point[i].set(GRB_DoubleAttr_UB, fx[i]);
+		for (int i = 0; i < d; i++){ // set fractional point value
+			frac_point[i].set(GRB_DoubleAttr_LB, fx[i]);
+			frac_point[i].set(GRB_DoubleAttr_UB, fx[i]);
+		}
+
+		model.optimize();
+		// assert(model.get(GRB_IntAttr_SolCount) > 0);
+
+		return model.get(GRB_DoubleAttr_ObjVal);
+	} catch(GRBException e) {
+		cout << "Error code = " << e.getErrorCode() << endl;
+		cout << e.getMessage() << endl;
+	} catch(...) {
+		cout << "Exception during optimization" << endl;
 	}
-
-	model.optimize();
-	// assert(model.get(GRB_IntAttr_SolCount) > 0);
-
-	return model.get(GRB_DoubleAttr_ObjVal);
 }
 
 
