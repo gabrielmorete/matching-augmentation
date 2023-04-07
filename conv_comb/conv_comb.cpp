@@ -121,7 +121,7 @@ double ConvexComb(double *sol, ExtremePoint &fx, vector<ExtremePoint> &int_point
 		GRBModel model(env);
 		GRBVar lambda[n];
 
-		frac_model.set(GRB_IntParam_Method, 0); // Forcing Primal Simplex Method
+		model.set(GRB_IntParam_Method, 0); // Forcing Primal Simplex Method
 
 		// one variable for each int point (combination coefficient)
 		for (int i = 0; i < n; i++)
