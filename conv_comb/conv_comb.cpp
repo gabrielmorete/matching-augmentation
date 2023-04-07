@@ -241,7 +241,7 @@ signed main(int argc, char const *argv[]){
 
 	ExtremePoint fx;
 	int cnt = 0;
-	double sol[fx.getDim()];
+	double sol[n];
 
 	while (frac_file >> fx){
 		assert(fx.getDim() == int_points[0].getDim());
