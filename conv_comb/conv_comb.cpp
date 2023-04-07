@@ -34,7 +34,6 @@ int sign(double x) { return (x > EPS) - (x < -EPS); }
 // Gurobi enviroment
 GRBEnv env = GRBEnv(true);
 
-
 /*
 	Combination coefficients
 	If run with -coef dividend divisor these values are overwritten
@@ -244,7 +243,9 @@ signed main(int argc, char const *argv[]){
 	while (frac_file >> fx){
 		assert(fx.getDim() == int_points[0].getDim());
 
-		if (sign( ConvexComb(sol, fx, int_points) - (__comb_dividend/__comb_divisor) ) <= 0){ // Convex comb exists
+		double coef = ConvexComb(sol, fx, int_points);
+
+		if (sign( coef - (__comb_dividend/__comb_divisor) ) <= 0){ // Convex comb exists
 			if (verbose_mode){
 				cout << fx << endl;
 
@@ -257,6 +258,7 @@ signed main(int argc, char const *argv[]){
 		}
 		else{
 			cout << "Point " << cnt << " can't be written as a convex combination with coefficient at most " << __comb_dividend << "/" << __comb_divisor << endl;
+			cout << "Best coef: " << coef << endl;
 			cout << fx << endl;
 		}
 
