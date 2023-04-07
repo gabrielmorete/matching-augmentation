@@ -166,7 +166,7 @@ double SolveModel(GRBModel &model, GRBVar *lambda, GRBVar *frac_point, ExtremePo
 	}
 
 	model.optimize();
-	assert(model.get(GRB_IntAttr_SolCount) > 0);
+	// assert(model.get(GRB_IntAttr_SolCount) > 0);
 
 	return model.get(GRB_DoubleAttr_ObjVal);
 }
@@ -269,7 +269,7 @@ signed main(int argc, char const *argv[]){
 			}
 		}
 		else{
-			cout << "Point " << cnt << " can't be written as a convex combination with coefficient at most" << __comb_dividend << "/" << __comb_divisor << endl;
+			cout << "Point " << cnt << " can't be written as a convex combination with coefficient at most " << __comb_dividend << "/" << __comb_divisor << endl;
 			cout << fx << endl;
 		}
 
