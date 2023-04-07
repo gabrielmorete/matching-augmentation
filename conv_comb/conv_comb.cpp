@@ -222,7 +222,7 @@ signed main(int argc, char const *argv[]){
 	int d = int_points[0].getDim();
 	assert(d > 0);
 
-	// env.set(GRB_IntParam_OutputFlag, 0);
+	env.set(GRB_IntParam_OutputFlag, 0);
 	env.start();
 
 
