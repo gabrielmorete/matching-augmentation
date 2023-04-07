@@ -250,7 +250,7 @@ signed main(int argc, char const *argv[]){
 
 		if (sign( coef - (__comb_dividend/__comb_divisor) ) <= 0){ // Convex comb exists
 			if (verbose_mode){
-				cout << fx << endl;
+				cout << coef << "  " << fx << endl;
 
 				cout <<  setprecision(3);
 				for (int i = 0; i < n; i++)
