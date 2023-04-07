@@ -30,6 +30,11 @@ using namespace std;
 const double EPS = 1e-4;
 int sign(double x) { return (x > EPS) - (x < -EPS); }
 
+
+// Gurobi enviroment
+GRBEnv env = GRBEnv(true);
+
+
 /*
 	Combination coefficients
 	If run with -coef dividend divisor these values are overwritten
@@ -108,17 +113,13 @@ ostream &operator << (ostream &os, ExtremePoint &p)
 }
 
 
-/*
-	Build the model to check if the convex combination exists
-*/
-void BuildModel(GRBModel &model, GRBVar *lambda, GRBVar *frac_point, vector<ExtremePoint> &int_points){
-	ExtremePoint p;
-
+double ConvexComb(GRBVar *lambda, ExtremePoint &fx, vector<ExtremePoint> &int_points){
 	int n = int_points.size(); // number of points
 	int d = int_points[0].getDim(); // dimension
 
 	try{
-
+		GRBModel model(env);
+		
 		// one variable for each int point (combination coefficient)
 		for (int i = 0; i < n; i++)
 			lambda[i] = model.addVar(0.0, 1.0, 0, GRB_CONTINUOUS, "l_" + to_string(i) );
@@ -143,34 +144,14 @@ void BuildModel(GRBModel &model, GRBVar *lambda, GRBVar *frac_point, vector<Extr
 			for (int i = 0; i < n; i++)
 				comb += int_points[i][j] * lambda[i];
 
-			model.addQConstr( comb <= comb * frac_point[j], "coord_" + to_string(j)); 
-		}
-	
-	} catch(GRBException e) {
-		cout << "Error code = " << e.getErrorCode() << endl;
-		cout << e.getMessage() << endl;
-	} catch(...) {
-		cout << "Exception during optimization" << endl;
-	}
-}	
-
-/*
-	checks for a given point fx if the convex combination exists
-*/
-double SolveModel(GRBModel &model, GRBVar *lambda, GRBVar *frac_point, ExtremePoint &fx){
-	
-	try{
-		int d = fx.getDim();
-
-		for (int i = 0; i < d; i++){ // set fractional point value
-			frac_point[i].set(GRB_DoubleAttr_LB, fx[i]);
-			frac_point[i].set(GRB_DoubleAttr_UB, fx[i]);
+			model.addConstr( comb <= coef * fx[j], "coord_" + to_string(j)); 
 		}
 
 		model.optimize();
-		// assert(model.get(GRB_IntAttr_SolCount) > 0);
+		assert(model.get(GRB_IntAttr_SolCount) > 0);
 
 		return model.get(GRB_DoubleAttr_ObjVal);
+	
 	} catch(GRBException e) {
 		cout << "Error code = " << e.getErrorCode() << endl;
 		cout << e.getMessage() << endl;
@@ -178,6 +159,9 @@ double SolveModel(GRBModel &model, GRBVar *lambda, GRBVar *frac_point, ExtremePo
 		cout << "Exception during optimization" << endl;
 	}
 }
+
+
+
 
 
 signed main(int argc, char const *argv[]){
@@ -231,16 +215,11 @@ signed main(int argc, char const *argv[]){
 	int d = int_points[0].getDim();
 	assert(d > 0);
 
-	GRBEnv env = GRBEnv(true);
 	// env.set(GRB_IntParam_OutputFlag, 0);
 	env.start();
 
-	GRBModel model(env);
 	GRBVar lambda[n];
-	GRBVar frac_point[d];
 
-
-	BuildModel(model, lambda, frac_point, int_points);
 
 	fstream frac_file(argv[1]);
 	if (!frac_file){
@@ -261,7 +240,7 @@ signed main(int argc, char const *argv[]){
 	while (frac_file >> fx){
 		assert(fx.getDim() == int_points[0].getDim());
 
-		if (sign( SolveModel(model, lambda, frac_point, fx) - (__comb_dividend/__comb_divisor) ) >= 0){ // Convex comb exists
+		if (sign( ConvexComb(lambda, frac_point, fx) - (__comb_dividend/__comb_divisor) ) >= 0){ // Convex comb exists
 			if (verbose_mode){
 				cout << fx << endl;
 
@@ -284,3 +263,89 @@ signed main(int argc, char const *argv[]){
 		cnt++;
 	}
 }
+
+
+
+
+// /*
+// 	Build the model to check if the convex combination exists
+// */
+// void BuildModel(GRBModel &model, GRBVar *lambda, GRBVar *frac_point, vector<ExtremePoint> &int_points){
+// 	ExtremePoint p;
+
+// 	int n = int_points.size(); // number of points
+// 	int d = int_points[0].getDim(); // dimension
+
+// 	try{
+
+// 		// one variable for each int point (combination coefficient)
+// 		for (int i = 0; i < n; i++)
+// 			lambda[i] = model.addVar(0.0, 1.0, 0, GRB_CONTINUOUS, "l_" + to_string(i) );
+
+// 		GRBLinExpr conv;
+// 		for (int i = 0; i < n; i++)
+// 			conv += lambda[i];
+
+// 		model.addConstr(conv == 1, "conv_comb");
+
+// 		// one variable to each fractional coordinate
+// 		for (int i = 0; i < d; i++)
+// 			frac_point[i] = model.addVar(0.0, 1.0, 0, GRB_CONTINUOUS, "x_" + to_string(i));
+
+// 		// Model will thy to optmize the coefficient of the combination
+// 		GRBVar coef = model.addVar(0.0, GRB_INFINITY, 1, GRB_CONTINUOUS, "coef");
+
+// 		// combination constraint
+// 		for (int j = 0; j < d; j++){
+// 			GRBLinExpr comb = 0;
+			
+// 			for (int i = 0; i < n; i++)
+// 				comb += int_points[i][j] * lambda[i];
+
+// 			model.addQConstr( comb <= comb * frac_point[j], "coord_" + to_string(j)); 
+// 		}
+
+// 		int d = fx.getDim();
+
+// 		for (int i = 0; i < d; i++){ // set fractional point value
+// 			frac_point[i].set(GRB_DoubleAttr_LB, fx[i]);
+// 			frac_point[i].set(GRB_DoubleAttr_UB, fx[i]);
+// 		}
+
+// 		model.optimize();
+// 		// assert(model.get(GRB_IntAttr_SolCount) > 0);
+
+// 		return model.get(GRB_DoubleAttr_ObjVal);
+	
+// 	} catch(GRBException e) {
+// 		cout << "Error code = " << e.getErrorCode() << endl;
+// 		cout << e.getMessage() << endl;
+// 	} catch(...) {
+// 		cout << "Exception during optimization" << endl;
+// 	}
+// }	
+
+// /*
+// 	checks for a given point fx if the convex combination exists
+// */
+// double SolveModel(GRBModel &model, GRBVar *lambda, GRBVar *frac_point, ExtremePoint &fx){
+	
+// 	try{
+// 		int d = fx.getDim();
+
+// 		for (int i = 0; i < d; i++){ // set fractional point value
+// 			frac_point[i].set(GRB_DoubleAttr_LB, fx[i]);
+// 			frac_point[i].set(GRB_DoubleAttr_UB, fx[i]);
+// 		}
+
+// 		model.optimize();
+// 		// assert(model.get(GRB_IntAttr_SolCount) > 0);
+
+// 		return model.get(GRB_DoubleAttr_ObjVal);
+// 	} catch(GRBException e) {
+// 		cout << "Error code = " << e.getErrorCode() << endl;
+// 		cout << e.getMessage() << endl;
+// 	} catch(...) {
+// 		cout << "Exception during optimization" << endl;
+// 	}
+// }
