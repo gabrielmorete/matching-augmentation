@@ -113,7 +113,7 @@ ostream &operator << (ostream &os, ExtremePoint &p)
 }
 
 
-double ConvexComb(GRBVar *lambda, ExtremePoint &fx, vector<ExtremePoint> &int_points){
+double ConvexComb(double *sol, GRBVar *lambda, ExtremePoint &fx, vector<ExtremePoint> &int_points){
 	int n = int_points.size(); // number of points
 	int d = int_points[0].getDim(); // dimension
 
@@ -145,6 +145,14 @@ double ConvexComb(GRBVar *lambda, ExtremePoint &fx, vector<ExtremePoint> &int_po
 
 		model.optimize();
 		assert(model.get(GRB_IntAttr_SolCount) > 0);
+
+
+		double *opt_sol = model.get(GRB_DoubleAttr_X, lambda, n);
+
+		for (int i = 0; i < d; i++)
+			sol[i] = opt_sol[i];
+
+		delete[] opt_sol;
 
 		return model.get(GRB_DoubleAttr_ObjVal);
 	
@@ -233,22 +241,20 @@ signed main(int argc, char const *argv[]){
 
 	ExtremePoint fx;
 	int cnt = 0;
+	double sol[fx.getDim()];
+
 	while (frac_file >> fx){
 		assert(fx.getDim() == int_points[0].getDim());
 
-		if (sign( ConvexComb(lambda, fx, int_points) - (__comb_dividend/__comb_divisor) ) >= 0){ // Convex comb exists
+		if (sign( ConvexComb(sol, lambda, fx, int_points) - (__comb_dividend/__comb_divisor) ) >= 0){ // Convex comb exists
 			if (verbose_mode){
 				cout << fx << endl;
-
-				double *sol = model.get(GRB_DoubleAttr_X, lambda, n);
 
 				cout <<  setprecision(3);
 				for (int i = 0; i < n; i++)
 					if (sign(sol[i]) > 0)
 						cout << '\t' << sol[i] << " x " << int_points[i] << endl;
 				cout << endl;	
-
-				delete[] sol;
 			}
 		}
 		else{
