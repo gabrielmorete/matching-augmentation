@@ -150,7 +150,7 @@ double ConvexComb(double *sol, ExtremePoint &fx, vector<ExtremePoint> &int_point
 
 		double *opt_sol = model.get(GRB_DoubleAttr_X, lambda, n);
 
-		for (int i = 0; i < d; i++)
+		for (int i = 0; i < n; i++)
 			sol[i] = opt_sol[i];
 
 		delete[] opt_sol;
