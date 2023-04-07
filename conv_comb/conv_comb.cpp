@@ -121,6 +121,8 @@ double ConvexComb(double *sol, ExtremePoint &fx, vector<ExtremePoint> &int_point
 		GRBModel model(env);
 		GRBVar lambda[n];
 
+		frac_model.set(GRB_IntParam_Method, 0); // Forcing Primal Simplex Method
+
 		// one variable for each int point (combination coefficient)
 		for (int i = 0; i < n; i++)
 			lambda[i] = model.addVar(0.0, 1.0, 0, GRB_CONTINUOUS, "l_" + to_string(i) );
@@ -155,8 +157,6 @@ double ConvexComb(double *sol, ExtremePoint &fx, vector<ExtremePoint> &int_point
 
 		delete[] opt_sol;
 
-		cout<<model.get(GRB_DoubleAttr_ObjVal)<<endl;
-
 		return model.get(GRB_DoubleAttr_ObjVal);
 	
 	} catch(GRBException e) {
@@ -166,9 +166,6 @@ double ConvexComb(double *sol, ExtremePoint &fx, vector<ExtremePoint> &int_point
 		cout << "Exception during optimization" << endl;
 	}
 }
-
-
-
 
 
 signed main(int argc, char const *argv[]){
@@ -266,8 +263,6 @@ signed main(int argc, char const *argv[]){
 		cnt++;
 	}
 }
-
-
 
 
 // /*
