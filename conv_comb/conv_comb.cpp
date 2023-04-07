@@ -117,31 +117,40 @@ void BuildModel(GRBModel &model, GRBVar *lambda, GRBVar *frac_point, vector<Extr
 	int n = int_points.size(); // number of points
 	int d = int_points[0].getDim(); // dimension
 
-	// one variable for each int point (combination coefficient)
-	for (int i = 0; i < n; i++)
-		lambda[i] = model.addVar(0.0, 1.0, 0, GRB_CONTINUOUS, "l_" + to_string(i) );
+	try{
 
-	GRBLinExpr conv;
-	for (int i = 0; i < n; i++)
-		conv += lambda[i];
-
-	model.addConstr(conv == 1, "conv_comb");
-
-	// one variable to each fractional coordinate
-	for (int i = 0; i < d; i++)
-		frac_point[i] = model.addVar(0.0, 1.0, 0, GRB_CONTINUOUS, "x_" + to_string(i));
-
-	// Model will thy to optmize the coefficient of the combination
-	GRBVar coef = model.addVar(0.0, GRB_INFINITY, 1, GRB_CONTINUOUS, "coef");
-
-	// combination constraint
-	for (int j = 0; j < d; j++){
-		GRBLinExpr comb = 0;
-		
+		// one variable for each int point (combination coefficient)
 		for (int i = 0; i < n; i++)
-			comb += int_points[i][j] * lambda[i];
+			lambda[i] = model.addVar(0.0, 1.0, 0, GRB_CONTINUOUS, "l_" + to_string(i) );
 
-		model.addConstr( comb <= 1 * frac_point[j], "coord_" + to_string(j)); 
+		GRBLinExpr conv;
+		for (int i = 0; i < n; i++)
+			conv += lambda[i];
+
+		model.addConstr(conv == 1, "conv_comb");
+
+		// one variable to each fractional coordinate
+		for (int i = 0; i < d; i++)
+			frac_point[i] = model.addVar(0.0, 1.0, 0, GRB_CONTINUOUS, "x_" + to_string(i));
+
+		// Model will thy to optmize the coefficient of the combination
+		GRBVar coef = model.addVar(0.0, GRB_INFINITY, 1, GRB_CONTINUOUS, "coef");
+
+		// combination constraint
+		for (int j = 0; j < d; j++){
+			GRBLinExpr comb = 0;
+			
+			for (int i = 0; i < n; i++)
+				comb += int_points[i][j] * lambda[i];
+
+			model.addConstr( comb <= comb * frac_point[j], "coord_" + to_string(j)); 
+		}
+	
+	} catch(GRBException e) {
+		cout << "Error code = " << e.getErrorCode() << endl;
+		cout << e.getMessage() << endl;
+	} catch(...) {
+		cout << "Exception during optimization" << endl;
 	}
 }	
 
