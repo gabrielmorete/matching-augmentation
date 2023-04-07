@@ -113,13 +113,14 @@ ostream &operator << (ostream &os, ExtremePoint &p)
 }
 
 
-double ConvexComb(double *sol, GRBVar *lambda, ExtremePoint &fx, vector<ExtremePoint> &int_points){
+double ConvexComb(double *sol, ExtremePoint &fx, vector<ExtremePoint> &int_points){
 	int n = int_points.size(); // number of points
 	int d = int_points[0].getDim(); // dimension
 
 	try{
 		GRBModel model(env);
-		
+		GRBVar lambda[n];
+
 		// one variable for each int point (combination coefficient)
 		for (int i = 0; i < n; i++)
 			lambda[i] = model.addVar(0.0, 1.0, 0, GRB_CONTINUOUS, "l_" + to_string(i) );
@@ -222,8 +223,6 @@ signed main(int argc, char const *argv[]){
 	// env.set(GRB_IntParam_OutputFlag, 0);
 	env.start();
 
-	GRBVar lambda[n];
-
 
 	fstream frac_file(argv[1]);
 	if (!frac_file){
@@ -246,7 +245,7 @@ signed main(int argc, char const *argv[]){
 	while (frac_file >> fx){
 		assert(fx.getDim() == int_points[0].getDim());
 
-		if (sign( ConvexComb(sol, lambda, fx, int_points) - (__comb_dividend/__comb_divisor) ) >= 0){ // Convex comb exists
+		if (sign( ConvexComb(sol, fx, int_points) - (__comb_dividend/__comb_divisor) ) >= 0){ // Convex comb exists
 			if (verbose_mode){
 				cout << fx << endl;
 
