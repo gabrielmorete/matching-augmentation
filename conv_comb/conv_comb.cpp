@@ -143,7 +143,7 @@ void BuildModel(GRBModel &model, GRBVar *lambda, GRBVar *frac_point, vector<Extr
 			for (int i = 0; i < n; i++)
 				comb += int_points[i][j] * lambda[i];
 
-			model.addConstr( comb <= comb * frac_point[j], "coord_" + to_string(j)); 
+			model.addQConstr( comb <= comb * frac_point[j], "coord_" + to_string(j)); 
 		}
 	
 	} catch(GRBException e) {
