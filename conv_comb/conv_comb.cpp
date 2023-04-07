@@ -155,6 +155,8 @@ double ConvexComb(double *sol, ExtremePoint &fx, vector<ExtremePoint> &int_point
 
 		delete[] opt_sol;
 
+		cout<<model.get(GRB_DoubleAttr_ObjVal)<<endl;
+
 		return model.get(GRB_DoubleAttr_ObjVal);
 	
 	} catch(GRBException e) {
