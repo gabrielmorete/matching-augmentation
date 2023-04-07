@@ -35,7 +35,7 @@ int sign(double x) { return (x > EPS) - (x < -EPS); }
 GRBEnv env = GRBEnv(true);
 
 /*
-	Combination coefficients
+	Combination coefficients threshold
 	If run with -coef dividend divisor these values are overwritten
 */
 double __comb_dividend = 5;
@@ -112,6 +112,12 @@ ostream &operator << (ostream &os, ExtremePoint &p)
 }
 
 
+/*
+	Model to find the smallest coefficient to each point.
+
+	Note: Rebuilding the model everytime is not efficient, but 
+	for the current application is ok.
+*/
 double ConvexComb(double *sol, ExtremePoint &fx, vector<ExtremePoint> &int_points){
 	int n = int_points.size(); // number of points
 	int d = int_points[0].getDim(); // dimension
@@ -221,26 +227,20 @@ signed main(int argc, char const *argv[]){
 	env.set(GRB_IntParam_OutputFlag, 0);
 	env.start();
 
-
 	fstream frac_file(argv[1]);
 	if (!frac_file){
 		cerr << "Can't open fractial points file" << endl;
 		exit(1);
 	}
-
 	
 	cout << "\nRunning with coefficient " << __comb_dividend << "/" << __comb_divisor << endl;
 
 	if (verbose_mode)
 		cout << "\nFractional points" << endl;
 
-
-
 	ExtremePoint fx;
 	int cnt = 0;
 	double sol[n], worst = 0;
-
-
 
 	while (frac_file >> fx){
 		assert(fx.getDim() == int_points[0].getDim());
