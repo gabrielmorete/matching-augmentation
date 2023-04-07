@@ -130,10 +130,6 @@ double ConvexComb(GRBVar *lambda, ExtremePoint &fx, vector<ExtremePoint> &int_po
 
 		model.addConstr(conv == 1, "conv_comb");
 
-		// one variable to each fractional coordinate
-		for (int i = 0; i < d; i++)
-			frac_point[i] = model.addVar(0.0, 1.0, 0, GRB_CONTINUOUS, "x_" + to_string(i));
-
 		// Model will thy to optmize the coefficient of the combination
 		GRBVar coef = model.addVar(0.0, GRB_INFINITY, 1, GRB_CONTINUOUS, "coef");
 
@@ -240,7 +236,7 @@ signed main(int argc, char const *argv[]){
 	while (frac_file >> fx){
 		assert(fx.getDim() == int_points[0].getDim());
 
-		if (sign( ConvexComb(lambda, frac_point, fx) - (__comb_dividend/__comb_divisor) ) >= 0){ // Convex comb exists
+		if (sign( ConvexComb(lambda, fx, int_points) - (__comb_dividend/__comb_divisor) ) >= 0){ // Convex comb exists
 			if (verbose_mode){
 				cout << fx << endl;
 
