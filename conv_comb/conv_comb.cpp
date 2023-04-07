@@ -247,7 +247,7 @@ signed main(int argc, char const *argv[]){
 	while (frac_file >> fx){
 		assert(fx.getDim() == int_points[0].getDim());
 
-		if (sign( ConvexComb(sol, fx, int_points) - (__comb_dividend/__comb_divisor) ) >= 0){ // Convex comb exists
+		if (sign( ConvexComb(sol, fx, int_points) - (__comb_dividend/__comb_divisor) ) <= 0){ // Convex comb exists
 			if (verbose_mode){
 				cout << fx << endl;
 
