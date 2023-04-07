@@ -238,12 +238,15 @@ signed main(int argc, char const *argv[]){
 
 	ExtremePoint fx;
 	int cnt = 0;
-	double sol[n];
+	double sol[n], worst = 0;
+
+
 
 	while (frac_file >> fx){
 		assert(fx.getDim() == int_points[0].getDim());
 
 		double coef = ConvexComb(sol, fx, int_points);
+		worst = max(worst, coef);
 
 		if (sign( coef - (__comb_dividend/__comb_divisor) ) <= 0){ // Convex comb exists
 			if (verbose_mode){
@@ -264,6 +267,8 @@ signed main(int argc, char const *argv[]){
 
 		cnt++;
 	}
+
+	cout << "Worst coef found " << worst << endl;
 }
 
 
