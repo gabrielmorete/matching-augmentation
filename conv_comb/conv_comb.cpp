@@ -147,12 +147,12 @@ double ConvexComb(double *sol, GRBVar *lambda, ExtremePoint &fx, vector<ExtremeP
 		assert(model.get(GRB_IntAttr_SolCount) > 0);
 
 
-		// double *opt_sol = model.get(GRB_DoubleAttr_X, lambda, n);
+		double *opt_sol = model.get(GRB_DoubleAttr_X, lambda, n);
 
-		// for (int i = 0; i < d; i++)
-		// 	sol[i] = opt_sol[i];
+		for (int i = 0; i < d; i++)
+			sol[i] = opt_sol[i];
 
-		// delete[] opt_sol;
+		delete[] opt_sol;
 
 		return model.get(GRB_DoubleAttr_ObjVal);
 	
