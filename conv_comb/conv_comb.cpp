@@ -215,7 +215,7 @@ signed main(int argc, char const *argv[]){
 	assert(d > 0);
 
 	GRBEnv env = GRBEnv(true);
-	env.set(GRB_IntParam_OutputFlag, 0);
+	// env.set(GRB_IntParam_OutputFlag, 0);
 	env.start();
 
 	GRBModel model(env);
