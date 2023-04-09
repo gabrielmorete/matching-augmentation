@@ -87,6 +87,7 @@ def new_connection(id):
 
 
 k = int(sys.argv[1])
+opt = int(sys.argv[2])
 
 edges = []
 
@@ -116,6 +117,10 @@ for x in edges:
 n += 1	
 
 print(n, m)
-for x in edges:
-	print(x[0], x[1], 1)	
 
+if opt == 1:
+	for x in edges:
+		print(x[0], x[1], 1)	
+else:
+	for x in edges:
+		print(x[0], x[1])
