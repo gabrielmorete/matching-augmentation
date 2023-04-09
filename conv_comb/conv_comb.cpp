@@ -38,8 +38,8 @@ GRBEnv env = GRBEnv(true);
 	Combination coefficients threshold
 	If run with -coef dividend divisor these values are overwritten
 */
-double __comb_dividend = 5;
-double __comb_divisor = 4;
+double __comb_dividend = 4;
+double __comb_divisor = 3;
 
 class ExtremePoint{
 	private:
