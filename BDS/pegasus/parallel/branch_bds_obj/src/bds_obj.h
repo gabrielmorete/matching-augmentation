@@ -52,7 +52,7 @@ class BDSAlgorithm{
 		/*
 			Wrapper function.
 		*/
-		void UpLinkAugmentation();
+		void UpLinkAugmentation(int root);
 
 	public:
 
