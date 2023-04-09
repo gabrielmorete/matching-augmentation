@@ -19,14 +19,12 @@
 
 BDSAlgorithm::BDSAlgorithm(){}
 
-
 /*
 	Builds structure for new graph
 */
 BDSAlgorithm::BDSAlgorithm(ListGraph &G){
 	n = countNodes(G);
 	m = countEdges(G);
-
 
 	adj.resize(n);
 	tree_adj.resize(n);
@@ -176,7 +174,7 @@ int BDSAlgorithm::UpLinkCover(int v){
 }
 
 
-void BDSAlgorithm::UpLinkAugmentation(){
+void BDSAlgorithm::UpLinkAugmentation(int root){
 	for (int v = 0; v < n; v++){
 		link[v] = {-1, v};
 		covered[v] = 0;
@@ -195,7 +193,7 @@ void BDSAlgorithm::UpLinkAugmentation(){
 			}
 		}
 
-	for (auto u : tree_adj[0])
+	for (auto u : tree_adj[root])
 		UpLinkCover(u);
 }
 
@@ -209,24 +207,27 @@ void BDSAlgorithm::Run(ListGraph::EdgeMap<int> &_cost,
 	
 	Update(_cost, FracSol, G);	
 
-	// Step 1, find a DFS Tree
-	for (int v = 0; v < n; v++){
-		tree_adj[v].clear();
-		parent[v] = v;
-		in[v] = 0;
+	for (int r = 0; r < n; r++){
+		// Step 1, find a DFS Tree
+		for (int v = 0; v < n; v++){
+			tree_adj[v].clear();
+			parent[v] = v;
+			in[v] = 0;
+		}
+
+		clk = 1;
+		Dfs(r);
+
+		// Sanity check, found a tree
+		assert(parent[r] == r);
+		for (int v = 0; v < n; v++)
+			if (v != r)
+				assert(parent[v] != v);
+
+		// Step 2, uplink only augmentation
+		UpLinkAugmentation(r);
 	}
 
-	clk = 1;
-	Dfs(0);
-
-	// Sanity check, found a tree
-	assert(parent[0] == 0);
-	for (int v = 1; v < n; v++)
-		assert(parent[v] != v);
-
-
-	// Step 2, uplink only augmentation
-	UpLinkAugmentation();
 
 	if (__verbose_mode){
 		cout << "BDS Tree Found" << endl;
@@ -251,5 +252,3 @@ void BDSAlgorithm::Run(ListGraph::EdgeMap<int> &_cost,
 	SubGraph<ListGraph> H(G, ones, BDSSol);
 	assert(biEdgeConnected(H) == 1);
 }
-
-
