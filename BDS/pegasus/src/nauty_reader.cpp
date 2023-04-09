@@ -268,11 +268,11 @@ int ReadLogProgress(int n){
 		string s;
 		getline(log_progress, s);
 		for (int i = 0; i < 4; i++)
-			log_progress >> s;
+			log_progress>>s;
 		start = stoi(s);
 
 		for (int i = 0; i < 6; i++){
-			log_progress >> s;
+			log_progress>>s;
 			if (i == 2)
 				__best_IP = stod(s);
 			if (i == 3)
@@ -282,7 +282,7 @@ int ReadLogProgress(int n){
 		}
 
 		for (int i = 0; i < 6; i++){
-			log_progress >> s;
+			log_progress>>s;
 			if (i == 2)
 				__best_BDS = stod(s);
 			if (i == 3)
