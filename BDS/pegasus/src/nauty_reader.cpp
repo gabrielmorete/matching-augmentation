@@ -6,6 +6,7 @@
 
 #include "lemon.h"
 #include "main.h"
+
 #include <cstdlib>
 
 /*
@@ -38,15 +39,17 @@ void SolveCurrentMatching(int matching_id,
 	GRBVar *frac_vars,
 	GRBModel &int_model,
 	GRBVar *int_vars,
-	ListGraph &G){
+	ListGraph &G,
+	BDSAlgorithm &BDS){
+
 
 	ListGraph::EdgeMap<bool> BDSSol(G);
 	ListGraph::EdgeMap<int> IntSol(G);
 	ListGraph::EdgeMap<double> FracSol(G);
 
-	SolveMapInstance(cost, FracSol, IntSol, BDSSol, frac_model, frac_vars, int_model, int_vars, G);
+	int ret = SolveMapInstance(cost, FracSol, IntSol, BDSSol, frac_model, frac_vars, int_model, int_vars, G, BDS);
 
-	if (sign(FracSol[G.edgeFromId(0)]) == -1 or IntSol[G.edgeFromId(0)] == -1){
+	if (ret == 1){ // Exception
 		#pragma omp critical
 		{
 			ofstream excep(to_string(countNodes(G))+"/exception", std::ios_base::app);
@@ -56,6 +59,8 @@ void SolveCurrentMatching(int matching_id,
 		return;
 	}
 
+	if (ret == 2) // Support only mode
+		return;
 
 	int cost_Int = 0;
 	int cost_BDS = 0;
@@ -70,12 +75,12 @@ void SolveCurrentMatching(int matching_id,
 		cost_BDS +=  (int)BDSSol[e] * cost[e];
 	}
 
-	ofstream g_out;
-
 	/* 
 		Found a feasible example, print to file
 	*/
 	if (sign(__IP_divisor * cost_Int - __IP_dividend * cost_Frac) >= 0 or sign(__BDS_divisor * cost_BDS - __BDS_dividend * cost_Frac) > 0){
+		ofstream g_out;
+
 		if (__found_feasible == 0){ // First matching found for this graph
 			// create file "g"+cnt
 			g_out.open(to_string(countNodes(G)) + "/g" + to_string(__cur_graph_id));
@@ -163,20 +168,21 @@ void FindAllMatchings(int e_id, int &n, int &m, int &n_matched, int &total_match
 	GRBVar *frac_vars,
 	GRBModel &int_model,
 	GRBVar *int_vars,
-	ListGraph &G){
+	ListGraph &G,
+	BDSAlgorithm &BDS){
 
 	if (e_id >= m){
-		SolveCurrentMatching(total_matchings, cost, frac_model, frac_vars, int_model, int_vars, G);
+		SolveCurrentMatching(total_matchings, cost, frac_model, frac_vars, int_model, int_vars, G, BDS);
 		return;
 	}
 
 	if (n_matched >= n - 1){ // matching cant increase, prune
-		SolveCurrentMatching(total_matchings, cost, frac_model, frac_vars, int_model, int_vars, G);
+		SolveCurrentMatching(total_matchings, cost, frac_model, frac_vars, int_model, int_vars, G, BDS);
 		return;
 	}
 
 	// Case 1 : won't add edge e_id to the matching
-	FindAllMatchings(e_id + 1, n, m, n_matched, total_matchings, matched, cost, frac_model, frac_vars, int_model, int_vars, G); 
+	FindAllMatchings(e_id + 1, n, m, n_matched, total_matchings, matched, cost, frac_model, frac_vars, int_model, int_vars, G, BDS); 
 
 	// Case 2 : if possible, will add e_id to the matching
 	ListGraph::Edge e = G.edgeFromId(e_id);
@@ -188,7 +194,7 @@ void FindAllMatchings(int e_id, int &n, int &m, int &n_matched, int &total_match
 		cost[e] = 0;
 		total_matchings++;
 
-		FindAllMatchings(e_id + 1, n, m, n_matched, total_matchings, matched, cost, frac_model, frac_vars, int_model, int_vars, G);
+		FindAllMatchings(e_id + 1, n, m, n_matched, total_matchings, matched, cost, frac_model, frac_vars, int_model, int_vars, G, BDS);
 
 		matched[G.u(e)] = 0;
 		matched[G.v(e)] = 0;
@@ -221,8 +227,10 @@ void SolveAllMatchings(ListGraph &G){
 
 	ListGraph::NodeMap<bool> matched(G);
 
+	BDSAlgorithm BDS(G);
+
 	int total_matchings = 1, n_matched = 0;
-	FindAllMatchings(0, n, m, n_matched, total_matchings, matched, cost, frac_model, frac_vars, int_model, int_vars, G);
+	FindAllMatchings(0, n, m, n_matched, total_matchings, matched, cost, frac_model, frac_vars, int_model, int_vars, G, BDS);
 }
 
 
@@ -237,12 +245,16 @@ bool ReadGraph(int &cnt, int &my_cnt, ListGraph &G){
 	return ok;
 }
 
-void PrintLogProgress(int n, int cnt, int last){
+void PrintLogProgress(int n, int cnt, int n_threads){
+	int min_id = __cur_graph_thread[0]; // not critical
+	for (int i = 1; i < n_threads; i++)
+		min_id = min(min_id, __cur_graph_id);
+
 	#pragma omp critical
 	{ // If you interrupt the algorithm, may be empty
 		ofstream log_progress(to_string(n) + "/log_progress");
 		log_progress << "Last read graph " << cnt << endl; // Careful with this, I'm not using mutex
-		log_progress << "Smallest unprocessed graph " << last << endl; // Careful with this, I'm not using mutex
+		log_progress << "Smallest unprocessed graph " << min_id << endl; // Careful with this, I'm not using mutex
 		log_progress << "Best IP/Frac: " << __best_IP << " g" << __best_IP_graph_id << " matching " << __best_IP_matching_id << endl;
 		log_progress << "Best BDS/Frac: " << __best_BDS << " g" << __best_BDS_graph_id << " matching " << __best_BDS_matching_id << endl;
 		log_progress.close();	
@@ -256,11 +268,11 @@ int ReadLogProgress(int n){
 		string s;
 		getline(log_progress, s);
 		for (int i = 0; i < 4; i++)
-			log_progress>>s;
+			log_progress >> s;
 		start = stoi(s);
 
 		for (int i = 0; i < 6; i++){
-			log_progress>>s;
+			log_progress >> s;
 			if (i == 2)
 				__best_IP = stod(s);
 			if (i == 3)
@@ -270,7 +282,7 @@ int ReadLogProgress(int n){
 		}
 
 		for (int i = 0; i < 6; i++){
-			log_progress>>s;
+			log_progress >> s;
 			if (i == 2)
 				__best_BDS = stod(s);
 			if (i == 3)
@@ -292,6 +304,26 @@ int ReadLogProgress(int n){
 	return start;
 }
 
+void SolveSingleMatching(ListGraph &G){
+	int n = countNodes(G);
+	int m = countEdges(G);
+
+	GRBModel frac_model(env);
+	GRBVar frac_vars[m];
+	BuildFractional(frac_model, frac_vars, G);
+
+	GRBModel int_model(env);
+	GRBVar int_vars[m];
+	BuildIntegral(int_model, int_vars, G);
+	MinimumCut cb = MinimumCut(int_vars, n, m, G);
+	int_model.setCallback(&cb);
+
+	BDSAlgorithm BDS(G);
+
+	ListGraph::EdgeMap<int> cost(G, 1); // Empty matching
+
+	SolveCurrentMatching(1, cost, frac_model, frac_vars, int_model, int_vars, G, BDS);
+}
 
 /*
 	This functions receiv nauty's geng output from stdin(may modify this),
@@ -302,17 +334,15 @@ void RunNautyInput(int start, int n_threads = 1){
 	__best_IP = __best_BDS = 1;
 	__best_IP_graph_id = __best_IP_matching_id = __best_BDS_graph_id = __best_BDS_matching_id = 1;
 
-	if (start < 0)
-			cout << " Running solver with " << "-log_start -threads " << n_threads << endl;
-	else
-		cout << " Running solver with " << "-start " << start << " -threads " << n_threads << endl;
-	
 	cout << " IP gap >= " << __IP_dividend << "/" << __IP_divisor << endl;
 	cout << " BDS gap > " << __BDS_dividend << "/" << __BDS_divisor << endl;
 
+	if (!__all_matchings)
+		cout << "\n Warning: Only solving empty matchings. Use -all_matchings to generate all matchings" << endl;
+
 	int cnt = 0;
 
-	// std::system("export GOMP_CPU_AFFINITY=32-64");
+	// std::system("export GOMP_CPU_AFFINITY=32-65");
 
 
     #pragma omp parallel num_threads(n_threads) \
@@ -320,13 +350,13 @@ void RunNautyInput(int start, int n_threads = 1){
 	{
 		int id = omp_get_thread_num();	
 		ListGraph G; // Declare global Graph
-		int my_cnt;
+		int my_cnt, n, m;
 		while (ReadGraph(cnt, my_cnt, G)){	
 
 			__cur_graph_thread[id] = my_cnt;
 
-			int n = countNodes(G);
-			int m = countEdges(G);
+			n = countNodes(G);
+			m = countEdges(G);
 
 			#pragma omp critical
 			{	
@@ -365,13 +395,17 @@ void RunNautyInput(int start, int n_threads = 1){
 			__found_feasible = 0;
 			__cur_graph_id = my_cnt;
 
-			SolveAllMatchings(G);
 
-			int min_id = __cur_graph_thread[0]; // not critical
-			for (int i = 1; i < n_threads; i++)
-				min_id = min(min_id, __cur_graph_id);
+			if (__all_matchings)
+				SolveAllMatchings(G);
+			else
+				SolveSingleMatching(G);
 
-			PrintLogProgress(n, cnt, min_id);
+
+			if (my_cnt % 10000 == 0) // speedup
+				PrintLogProgress(n, cnt, n_threads);
 		}
+		
+		PrintLogProgress(n, cnt, n_threads);
 	}
 }

@@ -14,6 +14,7 @@
 #include <cmath>
 #include "gurobi_c++.h"
 #include "lemon.h"
+#include "bds_obj.h"
 #include <omp.h>
 
 using namespace std;
@@ -32,6 +33,16 @@ int sign(double x) { return (x > EPS) - (x < -EPS); }
 
 // Print extra information
 bool __verbose_mode = 0;
+
+// Brute all matchings
+bool __all_matchings = 0;
+
+/*
+	Only solve BDS and IP if the support of the fractional
+	solution coincides with the graph (ie, x_e > 0 for every e in E)
+
+*/
+bool __support_only = 0;
 
 
 /*
@@ -78,7 +89,7 @@ void IntegerSolution(ListGraph::EdgeMap<int> &IntSol,
 /*
 	Wrapper function that call the solvers.
 */
-void SolveMapInstance(
+int SolveMapInstance(
 	ListGraph::EdgeMap<int> &cost,
 	ListGraph::EdgeMap<double> &FracSol,
 	ListGraph::EdgeMap<int> &IntSol,
@@ -87,8 +98,8 @@ void SolveMapInstance(
 	GRBVar *frac_vars,
 	GRBModel &int_model,
 	GRBVar *int_vars,
-	ListGraph &G);
-
+	ListGraph &G,
+	BDSAlgorithm &BDS);
 
 /*
 	Callback function class.

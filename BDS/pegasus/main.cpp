@@ -6,9 +6,10 @@
 	
 	Author : Gabriel Morete
 */
+
 #include "src/main.h"
 #include "src/lemon.h"
-#include "src/bds.cpp"
+#include "src/bds_obj.cpp"
 #include "src/nauty_reader.cpp"
 #include "src/stdio_reader.cpp"
 
@@ -24,7 +25,6 @@ using namespace std;
 
 	For fractional sulution, we impose primal simplex method.	
 */
-
 
 
 /*
@@ -113,21 +113,21 @@ void MinimumCut::callback(){
 
 			if (max_cmp > 0){ // Not 2ECSS, must add a cut 
 
-				// The cut will be all edges crossing the cut of the ebcc with id 0
-				GRBLinExpr expr = 0;
+				// Will add all cuts crossing 2ECC
+				GRBLinExpr expr[max_cmp + 1];
 
 				for (ListGraph::EdgeIt e((*G)); e != INVALID; ++e){
 					ListGraph::Node u = (*G).u(e);
 					ListGraph::Node v = (*G).v(e);
 					
-					if (ebcc[u] == 0 and ebcc[v] != 0)
-						expr += vars[(*G).id(e)];
-			
-					if (ebcc[v] == 0 and ebcc[u] != 0)
-						expr += vars[(*G).id(e)];
+					if (ebcc[u] != ebcc[v]){
+						expr[ ebcc[u] ] += vars[(*G).id(e)];
+						expr[ ebcc[v] ] += vars[(*G).id(e)];
+					}
 				}
 
-				addLazy(expr >= 2);
+				for (int i = 0; i < max_cmp; i++)
+					addLazy(expr[i] >= 2);
 			}
 
 			delete[] x;
@@ -341,8 +341,13 @@ void IntegerSolution(ListGraph::EdgeMap<int> &cost,
 
 /*
 	Wrapper function that call the solvers.
+
+	The return values of the function are the following
+		0 - sucess
+		1 - exception on execution
+		2 - zero edge on support only mode
 */
-void SolveMapInstance(
+int SolveMapInstance(
 	ListGraph::EdgeMap<int> &cost,
 	ListGraph::EdgeMap<double> &FracSol,
 	ListGraph::EdgeMap<int> &IntSol,
@@ -351,14 +356,25 @@ void SolveMapInstance(
 	GRBVar *frac_vars,
 	GRBModel &int_model,
 	GRBVar *int_vars,
-	ListGraph &G){
+	ListGraph &G,
+	BDSAlgorithm &BDS){
+
 
 	FractionalSolution(cost, FracSol, frac_model, frac_vars, G);
 
-	if (sign(FracSol[G.edgeFromId(0)]) == -1)
-		return;
+	if (sign(FracSol[G.edgeFromId(0)]) == -1) // Exception
+		return 1;
 
-	BDSAlgorithm(cost, FracSol, BDSSol, G);
+	for (ListGraph::EdgeIt e(G); e != INVALID; ++e) // Checks if every edge is in the support
+		if ((sign(FracSol[e]) <= 0) and __support_only)
+			return 2;
+
+	BDS.Run(cost, BDSSol, FracSol, G);
+
+	// Sanity check, checks if edges are from the support
+	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+		if (BDSSol[e] and (sign(FracSol[e]) <= 0))
+			assert(0);
 
 	// If fractional solution is integral, no need to solve a MIP
 	bool is_integral = 1;
@@ -369,7 +385,7 @@ void SolveMapInstance(
 	if (is_integral){
 		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
 			IntSol[e] = FracSol[e];
-		return;
+		return 0;
 	}
 
 	double frac_cost = 0, BDS_cost = 0;
@@ -384,12 +400,15 @@ void SolveMapInstance(
 		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
 			IntSol[e] = BDSSol[e];
 
-		return;
+		return 0;
 	}
 
 	IntegerSolution(cost, IntSol, BDSSol, int_model, int_vars, G);
-}
+	if (sign(IntSol[G.edgeFromId(0)]) == -1) // Exception
+		return 1;
 
+	return 0;
+}
 
 signed main(int argc, char *argv[]){
 	// Start a global gurobi enviroment
@@ -399,7 +418,7 @@ signed main(int argc, char *argv[]){
 	bool stdio = 0;
 	bool log_start = 0;
 	int start = 0;
-	int n_threads = 1;
+	int n_threads = 0;
 
 
 	for (int i = 1; i < argc; i++){
@@ -418,8 +437,13 @@ signed main(int argc, char *argv[]){
 			s = argv[i + 1];
 			n_threads = stoi(s);
 			i++;
-		} else {
-			cout<<"Usage: -stdio -verbose -log_start -start n -threads t"<<endl;
+		} 
+		else if (s == "-all_matchings")
+			__all_matchings = 1;
+		else if (s == "-support")
+			__support_only = 1;
+		else {
+			cout<<"Usage: -stdio -verbose -log_start -all_matchings -support -start n -threads t"<<endl;
 			return 0;
 		}
 	}
@@ -434,7 +458,18 @@ signed main(int argc, char *argv[]){
 
 	if (stdio)
 		RunStdioInput();
-	else
+	else{
+		cout << " Running solver with ";
+		if (n_threads == 0){
+			n_threads = 1;
+			cout << "-threads 1 ";
+		}
+
+		for (int i = 1; i < argc; i++)
+			cout << argv[i] << ' ';
+		cout << endl;	
+
 		RunNautyInput(start, n_threads);
+	}
 }
 

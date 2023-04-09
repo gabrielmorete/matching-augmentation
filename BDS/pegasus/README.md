@@ -17,13 +17,17 @@ $ make main
 		Read log_progress file and warmstart based on it.
 		Can't be used with -start
 		Warning: If running in parallel, log_progress may be empty if the code is interrupted.
+	-all_matchings
+		generates all matchings for a given graph
+	-support
+		only solves IP and BDS if the support of the LP solution is equal to the graph		
 	-start n
 		Start at the nth graph of geng output
 		Can't be used with -log_start
 	-thread t
 		Paralelize the code using t threads (only for graph6 input).		
 
-If run without the -stdio flag, the algorithm assumes graph6 input. Also, it brutes all matchings of the instance.
+If run without the -stdio flag, the algorithm assumes graph6 input.
 
 ##### Logs
 	The code generates 3 log files
