@@ -89,7 +89,7 @@ void IntegerSolution(ListGraph::EdgeMap<int> &IntSol,
 /*
 	Wrapper function that call the solvers.
 */
-void SolveMapInstance(
+int SolveMapInstance(
 	ListGraph::EdgeMap<int> &cost,
 	ListGraph::EdgeMap<double> &FracSol,
 	ListGraph::EdgeMap<int> &IntSol,

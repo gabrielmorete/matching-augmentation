@@ -341,8 +341,13 @@ void IntegerSolution(ListGraph::EdgeMap<int> &cost,
 
 /*
 	Wrapper function that call the solvers.
+
+	The return values of the function are the following
+		0 - sucess
+		1 - exception on execution
+		2 - zero edge on support only mode
 */
-void SolveMapInstance(
+int SolveMapInstance(
 	ListGraph::EdgeMap<int> &cost,
 	ListGraph::EdgeMap<double> &FracSol,
 	ListGraph::EdgeMap<int> &IntSol,
@@ -358,11 +363,11 @@ void SolveMapInstance(
 	FractionalSolution(cost, FracSol, frac_model, frac_vars, G);
 
 	if (sign(FracSol[G.edgeFromId(0)]) == -1) // Exception
-		return;
+		return 1;
 
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e) // Checks if every edge is in the support
 		if ((sign(FracSol[e]) <= 0) and __support_only)
-			return;
+			return 2;
 
 	BDS.Run(cost, BDSSol, FracSol, G);
 
@@ -380,7 +385,7 @@ void SolveMapInstance(
 	if (is_integral){
 		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
 			IntSol[e] = FracSol[e];
-		return;
+		return 0;
 	}
 
 	double frac_cost = 0, BDS_cost = 0;
@@ -395,10 +400,14 @@ void SolveMapInstance(
 		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
 			IntSol[e] = BDSSol[e];
 
-		return;
+		return 0;
 	}
 
 	IntegerSolution(cost, IntSol, BDSSol, int_model, int_vars, G);
+	if (sign(IntSol[G.edgeFromId(0)]) == -1) // Exception
+		return 1;
+
+	return 0;
 }
 
 signed main(int argc, char *argv[]){

@@ -47,9 +47,9 @@ void SolveCurrentMatching(int matching_id,
 	ListGraph::EdgeMap<int> IntSol(G);
 	ListGraph::EdgeMap<double> FracSol(G);
 
-	SolveMapInstance(cost, FracSol, IntSol, BDSSol, frac_model, frac_vars, int_model, int_vars, G, BDS);
+	int ret = SolveMapInstance(cost, FracSol, IntSol, BDSSol, frac_model, frac_vars, int_model, int_vars, G, BDS);
 
-	if (sign(FracSol[G.edgeFromId(0)]) == -1 or IntSol[G.edgeFromId(0)] == -1){
+	if (ret == 1){ // Exception
 		#pragma omp critical
 		{
 			ofstream excep(to_string(countNodes(G))+"/exception", std::ios_base::app);
@@ -58,6 +58,9 @@ void SolveCurrentMatching(int matching_id,
 		}
 		return;
 	}
+
+	if (ret == 2) // Support only mode
+		return;
 
 
 	int cost_Int = 0;
@@ -73,12 +76,12 @@ void SolveCurrentMatching(int matching_id,
 		cost_BDS +=  (int)BDSSol[e] * cost[e];
 	}
 
-	ofstream g_out;
-
 	/* 
 		Found a feasible example, print to file
 	*/
 	if (sign(__IP_divisor * cost_Int - __IP_dividend * cost_Frac) >= 0 or sign(__BDS_divisor * cost_BDS - __BDS_dividend * cost_Frac) > 0){
+		ofstream g_out;
+
 		if (__found_feasible == 0){ // First matching found for this graph
 			// create file "g"+cnt
 			g_out.open(to_string(countNodes(G)) + "/g" + to_string(__cur_graph_id));
