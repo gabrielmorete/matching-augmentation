@@ -236,9 +236,13 @@ void BDSAlgorithm::Run(ListGraph::EdgeMap<int> &_cost,
 
 		if (cur > wrst){
 			wrst = cur;
-			for (int i = 0; i < m; i++)
+			for (int i = 0; i < m; i++){
 				wrst_sol[i] = in_sol[i];
+				in_sol[i] = 0;
+			}
 		}
+
+		memset(in_sol, 0, sizeof(in_sol));
 	}
 
 
