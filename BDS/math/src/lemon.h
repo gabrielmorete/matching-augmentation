@@ -2,10 +2,10 @@
 #define LEMON_LIBRARY
 
 #include <lemon/list_graph.h>
-#include <lemon/gomory_hu.h>
-#include <lemon/adaptors.h>
-#include <lemon/connectivity.h>
-#include <lemon/nauty_reader.h>
+#include </u/gazevedo/.local/bin/include/lemon/gomory_hu.h>
+#include </u/gazevedo/.local/bin/include/lemon/adaptors.h>
+#include </u/gazevedo/.local/bin/include/lemon/connectivity.h>
+#include </u/gazevedo/.local/bin/include/lemon/nauty_reader.h>
 
 using namespace lemon;
 
