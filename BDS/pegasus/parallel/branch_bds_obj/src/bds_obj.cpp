@@ -237,7 +237,7 @@ void BDSAlgorithm::Run(ListGraph::EdgeMap<int> &_cost,
 		if (cur > wrst){
 			wrst = cur;
 			for (int i = 0; i < m; i++)
-				wrst_sol += in_sol[i];
+				wrst_sol[i] = in_sol[i];
 		}
 
 	}
