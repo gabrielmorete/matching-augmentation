@@ -95,6 +95,8 @@ void RunStdioInput(){
 
 		ReadStdioGraph(G);
 
+		assert(biEdgeConnected(G) == 1);
+
 		int n = countNodes(G);
 		cout << "Warning: overwriting files in folder " << n << endl;
 		std::experimental::filesystem::create_directory("./" + to_string(n));
@@ -107,6 +109,8 @@ void RunStdioInput(){
 	}
 	else {
 		ReadStdioInput(cost, G);
+
+		assert(biEdgeConnected(G) == 1);
 
 		int n = countNodes(G);
 		int m = countEdges(G);

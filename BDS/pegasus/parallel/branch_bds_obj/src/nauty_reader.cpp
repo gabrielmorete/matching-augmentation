@@ -62,7 +62,6 @@ void SolveCurrentMatching(int matching_id,
 	if (ret == 2) // Support only mode
 		return;
 
-
 	int cost_Int = 0;
 	int cost_BDS = 0;
 	double cost_Frac = 0;
