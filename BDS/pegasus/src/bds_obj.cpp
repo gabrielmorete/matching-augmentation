@@ -242,7 +242,7 @@ void BDSAlgorithm::Run(ListGraph::EdgeMap<int> &_cost,
 			}
 		}
 
-		memset(in_sol, 0, sizeof(in_sol));
+		fill(in_sol.begin(), in_sol.end(), 0);
 	}
 
 
