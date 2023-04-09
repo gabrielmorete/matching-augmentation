@@ -61,7 +61,6 @@ void BDSAlgorithm::Update(ListGraph::EdgeMap<int> &_cost, ListGraph::EdgeMap<dou
 		int eid = G.id(e);
 		lp[eid] = _FracSol[e];
 		cost[eid] = _cost[e];
-		in_sol[eid] = 0; 
 	}
 
 	// Matched edge is the first
@@ -209,6 +208,8 @@ void BDSAlgorithm::Run(ListGraph::EdgeMap<int> &_cost,
 
 	int wrst = 0;
 	vector<int> wrst_sol(m, 0);
+
+	fill(in_sol.begin(), in_sol.end(), 0);
 
 	for (int r = 0; r < n; r++){
 		// Step 1, find a DFS Tree
