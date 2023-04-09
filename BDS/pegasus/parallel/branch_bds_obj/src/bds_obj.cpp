@@ -207,6 +207,9 @@ void BDSAlgorithm::Run(ListGraph::EdgeMap<int> &_cost,
 	
 	Update(_cost, FracSol, G);	
 
+	int wrst = 0;
+	vector<int> wrst_sol(m, 0);
+
 	for (int r = 0; r < n; r++){
 		// Step 1, find a DFS Tree
 		for (int v = 0; v < n; v++){
@@ -226,6 +229,17 @@ void BDSAlgorithm::Run(ListGraph::EdgeMap<int> &_cost,
 
 		// Step 2, uplink only augmentation
 		UpLinkAugmentation(r);
+
+		int cur = 0;
+		for (int i = 0; i < m; i++)
+			cur += in_sol[i];
+
+		if (cur > wrst){
+			wrst = cur;
+			for (int i = 0; i < m; i++)
+				wrst_sol += in_sol[i];
+		}
+
 	}
 
 
@@ -237,7 +251,7 @@ void BDSAlgorithm::Run(ListGraph::EdgeMap<int> &_cost,
 	}
 
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
-		BDSSol[e] = in_sol[G.id(e)];
+		BDSSol[e] = wrst_sol[G.id(e)];
 
 
 	// Sanity check, checks if edges are from the support
