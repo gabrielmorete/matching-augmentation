@@ -267,7 +267,7 @@ signed main(int argc, char const *argv[]){
 		bool ok = 1;
 		for (int i = 1; i < fx.getDim(); i += 4){
 			double sum = 0;
-			for (j = i; j < i + 4; j++)
+			for (int j = i; j < i + 4; j++)
 				sum += fx[j];
 			if (sign(sum - 2.0) != 0)
 				ok = 0;
