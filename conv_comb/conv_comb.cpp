@@ -266,7 +266,7 @@ signed main(int argc, char const *argv[]){
 
 		double wrst = 0;
 		int id = 0;
-		for (int i = 1; i < d; i++){
+		for (int i = 1; i < fx.getDim(); i++){
 			int x = fx[i];
 			fx.point[i] = 0;
 
