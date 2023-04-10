@@ -151,7 +151,7 @@ double ConvexComb(double *sol, ExtremePoint &fx, vector<ExtremePoint> &int_point
 			for (int i = 0; i < n; i++)
 				comb += int_points[i][j] * lambda[i];
 
-			innt a = model.addConstr( comb <= coef * fx[j], "coord_" + to_string(j)); 
+			int a = model.addConstr( comb <= coef * fx[j], "coord_" + to_string(j)); 
 		}
 
 		model.optimize();
