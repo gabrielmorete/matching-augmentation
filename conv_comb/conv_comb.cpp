@@ -143,6 +143,7 @@ double ConvexComb(double *sol, ExtremePoint &fx, vector<ExtremePoint> &int_point
 		GRBVar coef = model.addVar(0.0, GRB_INFINITY, 1, GRB_CONTINUOUS, "coef");
 
 
+		GRBConstr ineq[d];
 		// combination constraint
 		for (int j = 0; j < d; j++){
 			GRBLinExpr comb = 0;
@@ -150,7 +151,7 @@ double ConvexComb(double *sol, ExtremePoint &fx, vector<ExtremePoint> &int_point
 			for (int i = 0; i < n; i++)
 				comb += int_points[i][j] * lambda[i];
 
-			int a = model.addConstr( comb <= coef * fx[j], "coord_" + to_string(j)); 
+			ineq[d] = model.addConstr( comb <= coef * fx[j], "coord_" + to_string(j)); 
 		}
 
 		model.optimize();
