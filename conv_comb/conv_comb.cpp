@@ -264,40 +264,40 @@ signed main(int argc, char const *argv[]){
 			cout << fx << endl;
 		}
 
-		bool ok = 1;
-		for (int i = 1; i < fx.getDim(); i += 4){
-			double sum = 0;
-			for (int j = i; j < i + 4; j++)
-				sum += fx[j];
-			if (sign(sum - 2.0) != 0)
-				ok = 0;
+		// bool ok = 1;
+		// for (int i = 1; i < fx.getDim(); i += 4){
+		// 	double sum = 0;
+		// 	for (int j = i; j < i + 4; j++)
+		// 		sum += fx[j];
+		// 	if (sign(sum - 2.0) != 0)
+		// 		ok = 0;
 
-		}
+		// }
 
 
-		if (ok){
-			cout<<fx<<endl;
-			double wrst = 0;
-			int id = 0;
-			for (int i = 1; i < fx.getDim(); i++){
-				double x = fx[i];
-				fx.point[i] = max(0.0, fx[i] - 0.5);
+		// if (ok){
+		// 	cout<<fx<<endl;
+		// 	double wrst = 0;
+		// 	int id = 0;
+		// 	for (int i = 1; i < fx.getDim(); i++){
+		// 		double x = fx[i];
+		// 		fx.point[i] = max(0.0, fx[i] - 0.5);
 
-				double aux = ConvexComb(sol, fx, int_points);
+		// 		double aux = ConvexComb(sol, fx, int_points);
 
-				cout<<'\t'<<aux<<' '<<fx<<endl;
-				if (aux > wrst){
-					wrst = aux;
-					id = i;
-				}
+		// 		cout<<'\t'<<aux<<' '<<fx<<endl;
+		// 		if (aux > wrst){
+		// 			wrst = aux;
+		// 			id = i;
+		// 		}
 
-				fx.point[i] = x;
-			}
+		// 		fx.point[i] = x;
+		// 	}
 
-			cout<<wrst<<' '<<id<<endl;
+		// 	cout<<wrst<<' '<<id<<endl;
 
-			cnt++;
-		}
+		// 	cnt++;
+		// }
 	}
 
 	cout << "Worst coef found " << worst << endl;
