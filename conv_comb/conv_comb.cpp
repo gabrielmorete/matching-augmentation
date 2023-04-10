@@ -1,3 +1,4 @@
+
 /*
 	Program receives two lists A, B of points and tests if every 
 	element of the list A can be expressed as a convex combination of the 
@@ -141,6 +142,8 @@ double ConvexComb(double *sol, ExtremePoint &fx, vector<ExtremePoint> &int_point
 		// Model will thy to optmize the coefficient of the combination
 		GRBVar coef = model.addVar(0.0, GRB_INFINITY, 1, GRB_CONTINUOUS, "coef");
 
+
+		GBRConstraint
 		// combination constraint
 		for (int j = 0; j < d; j++){
 			GRBLinExpr comb = 0;
@@ -148,7 +151,7 @@ double ConvexComb(double *sol, ExtremePoint &fx, vector<ExtremePoint> &int_point
 			for (int i = 0; i < n; i++)
 				comb += int_points[i][j] * lambda[i];
 
-			model.addConstr( comb <= coef * fx[j], "coord_" + to_string(j)); 
+			innt a = model.addConstr( comb <= coef * fx[j], "coord_" + to_string(j)); 
 		}
 
 		model.optimize();
@@ -162,8 +165,16 @@ double ConvexComb(double *sol, ExtremePoint &fx, vector<ExtremePoint> &int_point
 
 		delete[] opt_sol;
 
-		return model.get(GRB_DoubleAttr_ObjVal);
+		double all = model.get(GRB_DoubleAttr_ObjVal);
 	
+
+		for (int i = 1; i < d; i++){ // I'll try to delete each edge
+
+
+		}
+
+
+
 	} catch(GRBException e) {
 		cout << "Error code = " << e.getErrorCode() << endl;
 		cout << e.getMessage() << endl;
