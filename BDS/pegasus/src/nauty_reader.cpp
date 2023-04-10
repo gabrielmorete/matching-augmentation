@@ -21,9 +21,9 @@ const double __BDS_dividend = 7;
 const double __BDS_divisor = 5;
 
 bool __found_feasible;
-int __cur_graph_id, __best_IP_graph_id, __best_IP_matching_id, __best_BDS_graph_id, __best_BDS_matching_id;
+long long int __cur_graph_id, __best_IP_graph_id, __best_IP_matching_id, __best_BDS_graph_id, __best_BDS_matching_id;
 double __best_IP, __best_BDS;
-int __cur_graph_thread[100];
+long long int __cur_graph_thread[100];
 
 #pragma omp threadprivate(__found_feasible, __cur_graph_id)
 
@@ -246,7 +246,7 @@ bool ReadGraph(int &cnt, int &my_cnt, ListGraph &G){
 }
 
 void PrintLogProgress(int n, int cnt, int n_threads){
-	int min_id = __cur_graph_thread[0]; // not critical
+	long long int min_id = __cur_graph_thread[0]; // not critical
 	for (int i = 1; i < n_threads; i++)
 		min_id = min(min_id, __cur_graph_id);
 
