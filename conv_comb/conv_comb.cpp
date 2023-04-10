@@ -1,4 +1,3 @@
-
 /*
 	Program receives two lists A, B of points and tests if every 
 	element of the list A can be expressed as a convex combination of the 
@@ -39,14 +38,13 @@ GRBEnv env = GRBEnv(true);
 	Combination coefficients threshold
 	If run with -coef dividend divisor these values are overwritten
 */
-double __comb_dividend = 4;
-double __comb_divisor = 3;
+double __comb_dividend = 5;
+double __comb_divisor = 4;
 
 class ExtremePoint{
-	private:
+	public:
 		vector<double> point;
 
-	public:
 		ExtremePoint () {}
 
 	    friend istream &operator >> (istream &is, ExtremePoint &e); 
@@ -142,8 +140,6 @@ double ConvexComb(double *sol, ExtremePoint &fx, vector<ExtremePoint> &int_point
 		// Model will thy to optmize the coefficient of the combination
 		GRBVar coef = model.addVar(0.0, GRB_INFINITY, 1, GRB_CONTINUOUS, "coef");
 
-
-		GRBConstr ineq[d];
 		// combination constraint
 		for (int j = 0; j < d; j++){
 			GRBLinExpr comb = 0;
@@ -151,9 +147,7 @@ double ConvexComb(double *sol, ExtremePoint &fx, vector<ExtremePoint> &int_point
 			for (int i = 0; i < n; i++)
 				comb += int_points[i][j] * lambda[i];
 
-			ineq[d] = model.addConstr( comb <= coef * fx[j], "coord_" + to_string(j)); 
-			model.update();
-			cout << " --- " << ineq[d].get(GRB_DoubleAttr_RHS) << endl;
+			model.addConstr( comb <= coef * fx[j], "coord_" + to_string(j)); 
 		}
 
 		model.optimize();
@@ -167,16 +161,8 @@ double ConvexComb(double *sol, ExtremePoint &fx, vector<ExtremePoint> &int_point
 
 		delete[] opt_sol;
 
-		double all = model.get(GRB_DoubleAttr_ObjVal);
+		return model.get(GRB_DoubleAttr_ObjVal);
 	
-
-		// for (int i = 1; i < d; i++){ // I'll try to delete each edge
-
-
-		// }
-
-
-
 	} catch(GRBException e) {
 		cout << "Error code = " << e.getErrorCode() << endl;
 		cout << e.getMessage() << endl;
@@ -277,6 +263,23 @@ signed main(int argc, char const *argv[]){
 			cout << "Best coef: " << coef << endl;
 			cout << fx << endl;
 		}
+
+		double wrst = 0;
+		int id = 0;
+		for (int i = 1; i < d; i++){
+			int x = fx[i];
+			fx.point[i] = 0;
+
+			double aux = ConvexComb(sol, fx, int_points);
+			if (aux > wrst){
+				wrst = aux;
+				id = i;
+			}
+
+			fx.point[i] = x;
+		}
+
+		cout<<wrst<<' '<<id<<endl
 
 		cnt++;
 	}
