@@ -276,6 +276,7 @@ signed main(int argc, char const *argv[]){
 
 
 		if (ok){
+			cout<<fx<<endl;
 			double wrst = 0;
 			int id = 0;
 			for (int i = 1; i < fx.getDim(); i++){
