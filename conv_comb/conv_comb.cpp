@@ -38,8 +38,8 @@ GRBEnv env = GRBEnv(true);
 	Combination coefficients threshold
 	If run with -coef dividend divisor these values are overwritten
 */
-double __comb_dividend = 5;
-double __comb_divisor = 4;
+double __comb_dividend = 4;
+double __comb_divisor = 3;
 
 class ExtremePoint{
 	public:
@@ -268,7 +268,9 @@ signed main(int argc, char const *argv[]){
 		int id = 0;
 		for (int i = 1; i < fx.getDim(); i++){
 			int x = fx[i];
-			fx.point[i] = max(0.0, fx[i] - 0.5);
+			fx.point[i] = max(0.0	, fx[i] - 0.5);
+
+			cout<<fx<<endl;
 
 			double aux = ConvexComb(sol, fx, int_points);
 			if (aux > wrst){
