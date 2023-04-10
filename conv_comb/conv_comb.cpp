@@ -279,7 +279,7 @@ signed main(int argc, char const *argv[]){
 			fx.point[i] = x;
 		}
 
-		cout<<wrst<<' '<<id<<endl
+		cout<<wrst<<' '<<id<<endl;
 
 		cnt++;
 	}
