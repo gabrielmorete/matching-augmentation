@@ -268,7 +268,7 @@ signed main(int argc, char const *argv[]){
 		int id = 0;
 		for (int i = 1; i < fx.getDim(); i++){
 			int x = fx[i];
-			fx.point[i] = 0;
+			fx.point[i] = max(0, fx[i] - 0.5);
 
 			double aux = ConvexComb(sol, fx, int_points);
 			if (aux > wrst){
