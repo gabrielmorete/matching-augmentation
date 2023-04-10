@@ -143,7 +143,6 @@ double ConvexComb(double *sol, ExtremePoint &fx, vector<ExtremePoint> &int_point
 		GRBVar coef = model.addVar(0.0, GRB_INFINITY, 1, GRB_CONTINUOUS, "coef");
 
 
-		GBRConstraint
 		// combination constraint
 		for (int j = 0; j < d; j++){
 			GRBLinExpr comb = 0;
@@ -168,10 +167,10 @@ double ConvexComb(double *sol, ExtremePoint &fx, vector<ExtremePoint> &int_point
 		double all = model.get(GRB_DoubleAttr_ObjVal);
 	
 
-		for (int i = 1; i < d; i++){ // I'll try to delete each edge
+		// for (int i = 1; i < d; i++){ // I'll try to delete each edge
 
 
-		}
+		// }
 
 
 
