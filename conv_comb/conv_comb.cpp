@@ -283,8 +283,9 @@ signed main(int argc, char const *argv[]){
 				double x = fx[i];
 				fx.point[i] = max(0.0, fx[i] - 0.5);
 
-				cout<<'\t'<<i<<' '<<fx<<endl;
 				double aux = ConvexComb(sol, fx, int_points);
+
+				cout<<'\t'<<aux<<' '<<fx<<endl;
 				if (aux > wrst){
 					wrst = aux;
 					id = i;
