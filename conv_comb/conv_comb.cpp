@@ -152,7 +152,7 @@ double ConvexComb(double *sol, ExtremePoint &fx, vector<ExtremePoint> &int_point
 				comb += int_points[i][j] * lambda[i];
 
 			ineq[d] = model.addConstr( comb <= coef * fx[j], "coord_" + to_string(j)); 
-			cout << ineq[d].get(GRB_DoubleAttr_RHS) << endl;
+			cout << " --- " << ineq[d].get(GRB_DoubleAttr_RHS) << endl;
 		}
 
 		model.optimize();
