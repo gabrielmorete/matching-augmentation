@@ -280,6 +280,9 @@ signed main(int argc, char const *argv[]){
 			double wrst = 0;
 			int id = 0;
 			for (int i = 1; i < fx.getDim(); i++){
+				if (sign(fx[i] -0.5) <= 0)
+					continue;
+				
 				double x = fx[i];
 				fx.point[i] = max(0.0, fx[i] - 0.5);
 
