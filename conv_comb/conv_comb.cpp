@@ -175,11 +175,11 @@ double ConvexComb(double *sol, ExtremePoint &fx, vector<ExtremePoint> &int_point
 signed main(int argc, char const *argv[]){
 
 	if (argc < 3){
-		cerr << "Usage : frac_points_file int_points_file -verbose -coef dividend divisor" << endl;
+		cerr << "Usage : frac_points_file int_points_file -verbose -strong -coef dividend divisor" << endl;
 		exit(1);
 	}
 
-	bool verbose_mode = 0;
+	bool verbose_mode = 0, strong_mode = 0;
 	if (argc > 3){
 
 		for (int i = 3; i < argc; i++){
@@ -187,6 +187,8 @@ signed main(int argc, char const *argv[]){
 
 			if (s == "-verbose")
 				verbose_mode = 1;
+			else if (s == "-strong")
+				strong_mode = 1;
 			else if (s == "-coef"){ // overwrite default coefficients
 				s = argv[i + 1];
 				__comb_dividend = stod(s);
@@ -264,43 +266,46 @@ signed main(int argc, char const *argv[]){
 			cout << fx << endl;
 		}
 
-		bool ok = 1;
-		for (int i = 1; i < fx.getDim(); i += 4){
-			double sum = 0;
-			for (int j = i; j < i + 4; j++)
-				sum += fx[j];
-			if (sign(sum - 2.0) != 0)
-				ok = 0;
+		if (strong_mode){
+			bool ok = 1;
+			for (int i = 1; i < fx.getDim(); i += 4){
+				double sum = 0;
+				for (int j = i; j < i + 4; j++)
+					sum += fx[j];
+				if (sign(sum - 2.0) != 0)
+					ok = 0;
 
-		}
-
-
-		if (ok){
-			cout<<fx<<endl;
-			double wrst = 0;
-			int id = 0;
-			for (int i = 1; i < fx.getDim(); i++){
-				if (sign(fx[i] -0.5) <= 0)
-					continue;
-				
-				double x = fx[i];
-				fx.point[i] = max(0.0, fx[i] - 0.5);
-
-				double aux = ConvexComb(sol, fx, int_points);
-
-				cout<<'\t'<<aux<<' '<<fx<<endl;
-				if (aux > wrst){
-					wrst = aux;
-					id = i;
-				}
-
-				fx.point[i] = x;
 			}
 
-			cout<<wrst<<' '<<id<<endl;
 
-			cnt++;
-		}
+			if (ok){
+				cout<<fx<<endl;
+				double wrst = 0;
+				int id = 0;
+				for (int i = 1; i < fx.getDim(); i++){
+					if (sign(fx[i] -0.5) <= 0)
+						continue;
+
+					double x = fx[i];
+					fx.point[i] = max(0.0, fx[i] - 0.5);
+
+					double aux = ConvexComb(sol, fx, int_points);
+
+					cout<<'\t'<<aux<<' '<<fx<<endl;
+					if (aux > wrst){
+						wrst = aux;
+						id = i;
+					}
+
+					fx.point[i] = x;
+				}
+
+				cout<<wrst<<' '<<id<<endl;
+
+				cnt++;
+			}
+		
+		}	
 	}
 
 	cout << "Worst coef found " << worst << endl;
