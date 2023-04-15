@@ -256,7 +256,7 @@ void SolveAllMatchings(ListGraph &G){
 	MaxMatching<ListGraph> Blossom(G);
 	Blossom.run();
 
-	int max_match = Blossom.size();
+	int max_match = Blossom.matchingSize();
 
 	int total_matchings = 1, n_matched = 0;
 	FindAllMatchings(0, n, m, n_matched, total_matchings, max_match, matched, cost, frac_model, frac_vars, int_model, int_vars, G, BDS);
