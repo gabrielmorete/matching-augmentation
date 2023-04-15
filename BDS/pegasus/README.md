@@ -19,6 +19,8 @@ $ make main
 		Warning: If running in parallel, log_progress may be empty if the code is interrupted.
 	-all_matchings
 		generates all matchings for a given graph
+	-maximum
+		only solve problem for maximum matchings	
 	-support
 		only solves IP and BDS if the support of the LP solution is equal to the graph		
 	-start n
