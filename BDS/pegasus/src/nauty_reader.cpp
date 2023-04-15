@@ -161,7 +161,7 @@ void SolveCurrentMatching(int matching_id,
 	Matched edges are marked with cost 0 on the global
 	EdgeMap cost. The running time is exponential
 */
-void FindAllMatchings(int e_id, int &n, int &m, int &n_matched, int &total_matchings, 
+void FindAllMatchings(int e_id, int &n, int &m, int &n_matched, int &tot_match, int &max_match,
 	ListGraph::NodeMap<bool> &matched,
 	ListGraph::EdgeMap<int> &cost,
 	GRBModel &frac_model,
@@ -171,18 +171,19 @@ void FindAllMatchings(int e_id, int &n, int &m, int &n_matched, int &total_match
 	ListGraph &G,
 	BDSAlgorithm &BDS){
 
-	if (e_id >= m){
-		SolveCurrentMatching(total_matchings, cost, frac_model, frac_vars, int_model, int_vars, G, BDS);
+	if (n_matched >= max_match){ // matching cant increase, prune
+		SolveCurrentMatching(tot_match, cost, frac_model, frac_vars, int_model, int_vars, G, BDS);
 		return;
 	}
 
-	if (n_matched >= n - 1){ // matching cant increase, prune
-		SolveCurrentMatching(total_matchings, cost, frac_model, frac_vars, int_model, int_vars, G, BDS);
+	if (e_id >= m){
+		if (!__max_match_only)
+			SolveCurrentMatching(tot_match, cost, frac_model, frac_vars, int_model, int_vars, G, BDS);
 		return;
 	}
 
 	// Case 1 : won't add edge e_id to the matching
-	FindAllMatchings(e_id + 1, n, m, n_matched, total_matchings, matched, cost, frac_model, frac_vars, int_model, int_vars, G, BDS); 
+	FindAllMatchings(e_id + 1, n, m, n_matched, tot_match, max_match, matched, cost, frac_model, frac_vars, int_model, int_vars, G, BDS); 
 
 	// Case 2 : if possible, will add e_id to the matching
 	ListGraph::Edge e = G.edgeFromId(e_id);
@@ -192,9 +193,9 @@ void FindAllMatchings(int e_id, int &n, int &m, int &n_matched, int &total_match
 		matched[G.v(e)] = 1;
 		n_matched += 2;
 		cost[e] = 0;
-		total_matchings++;
+		tot_match++;
 
-		FindAllMatchings(e_id + 1, n, m, n_matched, total_matchings, matched, cost, frac_model, frac_vars, int_model, int_vars, G, BDS);
+		FindAllMatchings(e_id + 1, n, m, n_matched, tot_match, max_match, matched, cost, frac_model, frac_vars, int_model, int_vars, G, BDS);
 
 		matched[G.u(e)] = 0;
 		matched[G.v(e)] = 0;
@@ -202,6 +203,29 @@ void FindAllMatchings(int e_id, int &n, int &m, int &n_matched, int &total_match
 		cost[e] = 1;
 	}
 }
+
+// void FastFindAllMatchings(int e_id, int &n, int &m, int &n_matched, int &total_matchings, 
+// 	ListGraph::NodeMap<bool> &matched,
+// 	ListGraph::EdgeMap<int> &cost,
+// 	GRBModel &frac_model,
+// 	GRBVar *frac_vars,
+// 	GRBModel &int_model,
+// 	GRBVar *int_vars,
+// 	ListGraph &G,
+// 	BDSAlgorithm &BDS){
+
+// 	if (e_id >= m or edge_mask == 0){
+// 		SolveCurrentMatching(total_matchings, cost, frac_model, frac_vars, int_model, int_vars, G, BDS);
+// 		return;
+// 	}
+
+// 	if (n_matched >= n - 1){ // matching cant increase, prune
+// 		SolveCurrentMatching(total_matchings, cost, frac_model, frac_vars, int_model, int_vars, G, BDS);
+// 		return;
+// 	}
+
+// }
+
 
 
 /*
@@ -229,8 +253,13 @@ void SolveAllMatchings(ListGraph &G){
 
 	BDSAlgorithm BDS(G);
 
+	MaxMatching<ListGraph> Blossom(G);
+	Blossom.run();
+
+	int max_match = Blossom.size();
+
 	int total_matchings = 1, n_matched = 0;
-	FindAllMatchings(0, n, m, n_matched, total_matchings, matched, cost, frac_model, frac_vars, int_model, int_vars, G, BDS);
+	FindAllMatchings(0, n, m, n_matched, total_matchings, max_match, matched, cost, frac_model, frac_vars, int_model, int_vars, G, BDS);
 }
 
 

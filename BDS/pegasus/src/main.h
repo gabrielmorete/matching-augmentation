@@ -37,6 +37,9 @@ bool __verbose_mode = 0;
 // Brute all matchings
 bool __all_matchings = 0;
 
+// Only solve maximum matchings
+bool __max_match_only = 0;
+
 /*
 	Only solve BDS and IP if the support of the fractional
 	solution coincides with the graph (ie, x_e > 0 for every e in E)
