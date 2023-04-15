@@ -440,6 +440,8 @@ signed main(int argc, char *argv[]){
 		} 
 		else if (s == "-all_matchings")
 			__all_matchings = 1;
+		else if (s == "-maximum")
+			 __max_match_only = 1;
 		else if (s == "-support")
 			__support_only = 1;
 		else {
@@ -451,6 +453,11 @@ signed main(int argc, char *argv[]){
 	if (start != 0 and log_start){
 		cout << "Can't use both -start and -log_start" << endl;
 		exit(1);
+	}
+
+	if (__max_match_only and !__all_matchings){
+		cout << "Can't use -maximum without -all_matchings" << endl;
+		exit(1)
 	}
 
 	if (log_start)
