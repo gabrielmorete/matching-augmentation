@@ -3,7 +3,7 @@
 
 #include <lemon/list_graph.h>
 #include <lemon/gomory_hu.h>
-#include <lemon/max_matching.h>
+#include <lemon/matching.h>
 #include <lemon/adaptors.h>
 #include <lemon/connectivity.h>
 #include <lemon/nauty_reader.h>
