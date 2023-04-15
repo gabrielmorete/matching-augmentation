@@ -457,7 +457,7 @@ signed main(int argc, char *argv[]){
 
 	if (__max_match_only and !__all_matchings){
 		cout << "Can't use -maximum without -all_matchings" << endl;
-		exit(1)
+		exit(1);
 	}
 
 	if (log_start)
