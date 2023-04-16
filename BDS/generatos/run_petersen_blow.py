@@ -15,6 +15,8 @@ def run(extra):
 	command = "echo \"" + s + " \"  | ./main -stdio" # command to be executed
 	out = str(subprocess.check_output(command, shell=True))
 
+	print(out)
+
 	frac = out[-3].split()
 	print(frac)
 	frac = int(frac[2][0:-1])
