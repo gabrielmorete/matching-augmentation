@@ -31,5 +31,6 @@ for i in range(len(edges)):
 
 print(30, len(edges))
 for x in sorted(edges):
+	for j in x:
 		print(j, end = ' ')
 	print()	
