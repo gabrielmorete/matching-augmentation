@@ -23,9 +23,10 @@ def run(extra):
 	print(frac, inte, bds, inte/frac)
 
 def addrec(v, extra, matched):
-	if v == 30:
+	if v >= 30:
 		run(extra)
-
+		return
+		
 	addrec(v + 1, adj, extra)
 
 	if matched[v] == 0:
