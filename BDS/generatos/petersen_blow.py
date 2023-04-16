@@ -25,8 +25,11 @@ edges.append([30, 19, 0])
 edges.append([21, 25, 0])	
 edges.append([27, 18, 0])
 
+for i in range(len(edges)):
+	edges[i][0] -= 1
+	edges[i][1] -= 1
+
 print(30, len(edges))
 for x in sorted(edges):
-	for j in x:
 		print(j, end = ' ')
 	print()	
