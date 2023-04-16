@@ -87,11 +87,11 @@ for x in edges:
 	adj[x[1]][x[0]] = 1
 
 
-print(adj)
+# print(adj)
 
 extra = []
 matched = [0] * 30
-# addrec(0, extra, matched)
+addrec(0, extra, matched)
 
 
 # run(extra)
