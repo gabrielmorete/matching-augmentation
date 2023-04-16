@@ -36,6 +36,7 @@ def addrec(v, extra, matched):
 				matched[j] = 1
 				extra.append([v, j, 1])
 
+				print("oi")
 				addrec(v + 1, extra, matched)
 				
 				extra.pop()
