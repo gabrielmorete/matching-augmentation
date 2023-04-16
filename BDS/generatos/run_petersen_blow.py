@@ -85,8 +85,7 @@ for i in range(30):
 for x in edges:
 	print(x[0], x[1])
 	adj[x[0]][x[1]] = 1
-	break
-	# adj[x[1]][x[0]] = 1
+	adj[x[1]][x[0]] = 1
 
 
 print(adj)
