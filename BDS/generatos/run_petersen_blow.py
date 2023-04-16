@@ -24,7 +24,7 @@ def run(extra):
 	print(frac, inte, bds, inte/frac)
 	if inte/frac > 1.30:
 		print("aaaaaaaaaa")
-		abort()
+		exit(0)
 
 
 def addrec(v, extra, matched):
