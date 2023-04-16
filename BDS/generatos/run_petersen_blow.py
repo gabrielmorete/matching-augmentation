@@ -19,9 +19,7 @@ def run(extra):
 
 	print(out[0])
 
-	frac = out[-3].split()
-	print(frac)
-	frac = int(frac[2])
+	frac = int((out[-3].split()[2]))
 	print(frac)
 
 
