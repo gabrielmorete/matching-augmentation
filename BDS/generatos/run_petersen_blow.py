@@ -24,7 +24,7 @@ def run(extra):
 
 	frac = int(out[-4].split()[2])
 	ip = int(out[-3].split()[2])
-	bds =  int(out[-2].split()[2])
+	bds = int(out[-2].split()[2])
 
 	cnt += 1
 
@@ -34,15 +34,12 @@ def run(extra):
 	if gip < ip/frac:
 		gip = ip/frac
 		
-	if ip/frac > 1.33:
-		print(frac, ip, bds, ip/frac)
-		print(s)
-		print()
-
-	if bds/frac > 1.4:
-		print(frac, ip, bds, ip/frac)
-		print(s)
-		print()
+	if ip/frac > 1.33 or bds/frac >= 1.4:
+		print("oi")
+		ss = str(frac) + " " + str(ip) + " " + str(bds) + " " + str(ip/frac) + " " + str(bds/frac)+ "\n " + s
+		command = "echo \"" + ss + " \" >> petersen_out" # command to be executed
+		# print(command)
+		subprocess.check_output(command, shell=True)
 
 	if (cnt % 1000 == 0):
 		command = "echo \"" + str(cnt) + " " + str(gip) + " " + str(gbds) + "\" > log"
