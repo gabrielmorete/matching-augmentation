@@ -44,7 +44,7 @@ edges.append([pre + 6, pre + 7, 1])
 
 edges.append([0, pre + 7, 0])
 
-print(pre + 7, len(edges))
+print(pre + 8, len(edges))
 for x in sorted(edges):
 	for j in x:
 		print(j, end = ' ')
