@@ -2,7 +2,8 @@ import os
 import subprocess
 
 edges = []
-adj = [[0] * 30] * 30
+adj = [[0] * 30 for x in range(30)]
+
 
 def run(extra):
 	s = str(30) + ' ' + str(len(edges) + len(extra)) + "\n"
