@@ -13,7 +13,7 @@ def run(extra):
 
 	# print(s)	
 	command = "echo \"" + s + " \"  | ./main -stdio" # command to be executed
-	out = str(subprocess.check_output(command, shell=True))
+	out = subprocess.check_output(command, shell=True)
 
 	print(out)
 
