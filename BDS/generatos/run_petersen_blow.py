@@ -20,7 +20,10 @@ def run(extra):
 	print(out[0])
 
 	frac = int((out[-3].split()[2]))
-	print(frac)
+	inte = int((out[-2].split()[2]))
+	bds = (out[-2].split()[2])
+
+	print(frac, inte, bds)
 
 
 
