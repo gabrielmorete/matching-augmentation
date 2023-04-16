@@ -7,10 +7,10 @@ adj = [[0] * 30 for x in range(30)]
 cnt = 0
 
 gbds = 0;
-bip = 0;
+gip = 0;
 
 def run(extra):
-	global cnt 
+	global cnt, gbds, gip 
 	s = str(30) + ' ' + str(len(edges) + len(extra)) + "\n"
 	for x in edges:
 		s = s + str(x[0]) + ' ' + str(x[1]) + ' ' + str(x[2]) + '\n'
