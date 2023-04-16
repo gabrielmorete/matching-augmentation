@@ -35,10 +35,8 @@ def run(extra):
 		gip = ip/frac
 		
 	if ip/frac > 1.33 or bds/frac >= 1.4:
-		print("oi")
 		ss = str(frac) + " " + str(ip) + " " + str(bds) + " " + str(ip/frac) + " " + str(bds/frac)+ "\n " + s
 		command = "echo \"" + ss + " \" >> petersen_out" # command to be executed
-		# print(command)
 		subprocess.check_output(command, shell=True)
 
 	if (cnt % 1000 == 0):
