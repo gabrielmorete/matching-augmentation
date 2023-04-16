@@ -23,6 +23,8 @@ def run(extra):
 	inte = int((out[-2].split()[2]))
 	bds = (out[-2].split()[2])
 
+	print(out[-4].split())
+	print(out[-3].split())
 	print(out[-2].split())
 	print(out[-1].split())
 
