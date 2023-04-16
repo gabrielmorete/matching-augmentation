@@ -26,7 +26,7 @@ def addrec(v, extra, matched):
 	if v >= 30:
 		run(extra)
 		return
-		
+
 	addrec(v + 1, adj, extra)
 
 	if matched[v] == 0:
@@ -80,7 +80,8 @@ for x in edges:
 
 
 extra = []
-addrec(1, adj, extra)
+matched = [0] * 30
+addrec(1, extra, matched)
 
 
 # run(extra)
