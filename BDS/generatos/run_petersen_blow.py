@@ -22,6 +22,10 @@ def run(extra):
 	bds =  int(out[-2].split()[2])
 
 	print(frac, inte, bds, inte/frac)
+	if inte/frac > 1.30
+		print("aaaaaaaaaa")
+		abort()
+
 
 def addrec(v, extra, matched):
 	if v >= 30:
