@@ -81,15 +81,15 @@ for i in range(30):
 	for j in range(30):
 		adj[i][j] = 0
 
-# for x in edges:
-# 	print(x[0], x[1])
+for x in edges:
+	print(x[0], x[1])
 # 	adj[x[0]][x[1]] = 1
 # 	adj[x[1]][x[0]] = 1
 
 
 extra = []
 matched = [0] * 30
-addrec(0, extra, matched)
+# addrec(0, extra, matched)
 
 
 # run(extra)
