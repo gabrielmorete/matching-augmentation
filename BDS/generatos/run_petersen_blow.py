@@ -16,6 +16,7 @@ def run(extra):
 	out = str(subprocess.check_output(command, shell=True))
 
 	frac = out[-3].split()
+	prnt(frac)
 	frac = int(frac[2][0:-1])
 
 
