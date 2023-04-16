@@ -34,8 +34,6 @@ def run(extra):
 	if gip < ip/frac:
 		gip = ip/frac
 		
-
-	print(frac, ip, bds, ip/frac)
 	if ip/frac > 1.33:
 		print(frac, ip, bds, ip/frac)
 		print(s)
