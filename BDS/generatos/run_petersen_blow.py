@@ -77,6 +77,10 @@ for i in range(len(edges)):
 	edges[i][1] -= 1
 
 
+for i in range(30):
+	for j in range(30):
+		adj[i][j] = 0
+
 for x in edges:
 	print(x[0], x[1])
 	adj[x[0]][x[1]] = 1
