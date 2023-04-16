@@ -4,31 +4,51 @@ import subprocess
 edges = []
 adj = [[0] * 30 for x in range(30)]
 
+cnt = 0
+
+gbds = 0;
+bip = 0;
 
 def run(extra):
+	global cnt 
 	s = str(30) + ' ' + str(len(edges) + len(extra)) + "\n"
 	for x in edges:
 		s = s + str(x[0]) + ' ' + str(x[1]) + ' ' + str(x[2]) + '\n'
 	for x in extra:
 		s = s + str(x[0]) + ' ' + str(x[1]) + ' ' + str(x[2]) + '\n'
 
-	# print(s)	
+
 	command = "echo \"" + s + " \"  | ./main -stdio" # command to be executed
 
 	out = str(subprocess.check_output(command, shell=True)).split('\\n')
 
 	frac = int(out[-4].split()[2])
-	inte = int(out[-3].split()[2])
+	ip = int(out[-3].split()[2])
 	bds =  int(out[-2].split()[2])
 
-	print(frac, inte, bds, inte/frac)
-	if inte/frac > 1.34:
-		print("aaaaaaaaaa")
-		exit(0)
+	cont += 1
 
+	if gbds < bds/frac:
+		gbds = bds/frac
 
+	if gip < ip/frac:
+		gip = ip/frac
+		
+
+	print(frac, ip, bds, ip/frac)
+	if ip/frac > 1.33:
+		print(frac, ip, bds, ip/frac)
+		print(s)
+		print()
+
+	if bds/frac > 1.4:
+		print(frac, ip, bds, ip/frac)
+		print(s)
+		print()
+
+# only add edges from the outer arc to the inner arc
 def addrec(v, extra, matched):
-	if v >= 30:
+	if v >= 15:
 		run(extra)
 		return
 
@@ -36,7 +56,7 @@ def addrec(v, extra, matched):
 
 	# print(matched)
 	if matched[v] == 0:
-		for j in range(v + 1, 30):
+		for j in range(15, 30):
 			if adj[v][j] == 0 and matched[j] == 0:
 				matched[v] = 1
 				matched[j] = 1
@@ -68,7 +88,6 @@ edges.append([12, 13, 0])
 edges.append([15, 1, 0])
 
 #inner
-
 edges.append([16, 22, 0])	
 edges.append([24, 28, 0])	
 edges.append([30, 19, 0])	
@@ -95,5 +114,5 @@ extra = []
 matched = [0] * 30
 addrec(0, extra, matched)
 
-
+print(cnt)
 # run(extra)
