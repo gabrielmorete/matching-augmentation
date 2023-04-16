@@ -46,7 +46,7 @@ def run(extra):
 		print(s)
 		print()
 
-	if (cnt % 10000)
+	if (cnt % 10000):
 		command = "echo \"" + str(cnt) + " " + str(gip) + " " + str(gbds) + "\" > log"
 		subprocess.check_output(command, shell=True)
 
