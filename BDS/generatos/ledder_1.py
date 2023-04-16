@@ -45,9 +45,9 @@ edges.append([4, 6, 1])
 
 for i in range(k):
 	if i < k - 1 and i > 0:
-		pre = 5 + i * 8 
-		edges.append([pre - 1, pre + 1, 1])
-		edges.append([pre, pre + 2, 1])
+		pre = i * 8 
+		edges.append([pre + 11, pre + 13, 1])
+		edges.append([pre + 12, pre + 14, 1])
 
 	edges = edges + generate(i)	
 
