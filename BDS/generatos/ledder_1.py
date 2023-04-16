@@ -44,7 +44,7 @@ edges.append([3, 5, 1])
 edges.append([4, 6, 1])
 
 for i in range(k):
-	if i < k - 1 and i > 0:
+	if i < k - 1:
 		pre = i * 8 
 		edges.append([pre + 11, pre + 13, 1])
 		edges.append([pre + 12, pre + 14, 1])
@@ -70,7 +70,7 @@ edges.append([pre + 4, pre + 5, 1])
 edges.append([0, pre + 5, 0])
 
 print(pre + 6, len(edges))
-for x in edges:
+for x in sorted(edges):
 	for j in x:
 		print(j, end = ' ')
 	print()	
