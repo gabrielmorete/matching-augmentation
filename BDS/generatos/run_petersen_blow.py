@@ -11,23 +11,24 @@ def run(extra):
 	for x in extra:
 		s = s + str(x[0]) + ' ' + str(x[1]) + ' ' + str(x[2]) + '\n'
 
-	command = "echo \"" + s + " \"  | ./main -stdio" # command to be executed
-	out = str(subprocess.check_output(command, shell=True))
+	print(s)	
+	# command = "echo \"" + s + " \"  | ./main -stdio" # command to be executed
+	# out = str(subprocess.check_output(command, shell=True))
 
-	frac = out[-3].split()
-	frac = int(frac[3][0:-1])
+	# frac = out[-3].split()
+	# frac = int(frac[3][0:-1])
 
 
 
 
 def addrec(v, extra, matched):
-	if v == 30
+	if v == 30:
 		run(extra)
 
 	addrec(v + 1, adj, extra)
 
 	if matched[v] == 0:
-		for j in range(v + 1, 30)
+		for j in range(v + 1, 30):
 			if adj[v][j] == 0 and matched[j] == 0:
 				matched[v] = 1
 				matched[j] = 1
