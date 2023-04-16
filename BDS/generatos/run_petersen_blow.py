@@ -26,7 +26,7 @@ def run(extra):
 	ip = int(out[-3].split()[2])
 	bds =  int(out[-2].split()[2])
 
-	cont += 1
+	cnt += 1
 
 	if gbds < bds/frac:
 		gbds = bds/frac
@@ -45,6 +45,12 @@ def run(extra):
 		print(frac, ip, bds, ip/frac)
 		print(s)
 		print()
+
+	if (cnt % 10000)
+		command = "echo \"" + str(cnt) + " " + str(gip) + " " + str(gbds) + "\" > log"
+		subprocess.check_output(command, shell=True)
+
+			
 
 # only add edges from the outer arc to the inner arc
 def addrec(v, extra, matched):
