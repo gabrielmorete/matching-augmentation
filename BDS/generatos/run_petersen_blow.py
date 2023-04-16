@@ -19,9 +19,9 @@ def run(extra):
 
 	print(out[0])
 
-	frac = int((out[-3].split()[2]))
-	inte = int((out[-2].split()[2]))
-	bds = (out[-2].split()[2])
+	frac = int(out[-4].split()[2])
+	inte = int(out[-3].split()[2])
+	bds =  int(out[-2].split()[2])
 
 	print(out[-4].split())
 	print(out[-3].split())
