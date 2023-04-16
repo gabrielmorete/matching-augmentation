@@ -29,9 +29,10 @@ def addrec(v, extra, matched):
 
 	addrec(v + 1, extra, matched)
 
-	print(matched)
+	# print(matched)
 	if matched[v] == 0:
 		for j in range(v + 1, 30):
+			print(v, j)
 			if adj[v][j] == 0 and matched[j] == 0:
 				matched[v] = 1
 				matched[j] = 1
