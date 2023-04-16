@@ -11,12 +11,12 @@ def run(extra):
 	for x in extra:
 		s = s + str(x[0]) + ' ' + str(x[1]) + ' ' + str(x[2]) + '\n'
 
-	print(s)	
-	# command = "echo \"" + s + " \"  | ./main -stdio" # command to be executed
-	# out = str(subprocess.check_output(command, shell=True))
+	# print(s)	
+	command = "echo \"" + s + " \"  | ./main -stdio" # command to be executed
+	out = str(subprocess.check_output(command, shell=True))
 
-	# frac = out[-3].split()
-	# frac = int(frac[3][0:-1])
+	frac = out[-3].split()
+	frac = int(frac[3][0:-1])
 
 
 
