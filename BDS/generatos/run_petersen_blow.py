@@ -77,18 +77,7 @@ for x in edges:
 
 
 extra = []
-addrec(1, adj, extra)
+# addrec(1, adj, extra)
 
 
-
-for x in adj:
-	print(x)
-
-
-
-
-# print(30, len(edges))
-# for x in sorted(edges):
-# 	for j in x:
-# 		print(j, end = ' ')
-# 	print()	
+run(extra)
