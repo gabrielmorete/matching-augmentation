@@ -15,23 +15,12 @@ def run(extra):
 	command = "echo \"" + s + " \"  | ./main -stdio" # command to be executed
 
 	out = str(subprocess.check_output(command, shell=True)).split('\\n')
-	print(len(out))
-
-	print(out[0])
 
 	frac = int(out[-4].split()[2])
 	inte = int(out[-3].split()[2])
 	bds =  int(out[-2].split()[2])
 
-	print(out[-4].split())
-	print(out[-3].split())
-	print(out[-2].split())
-	print(out[-1].split())
-
-	print(frac, inte, bds)
-
-
-
+	print(frac, inte, bds, inte/frac)
 
 def addrec(v, extra, matched):
 	if v == 30:
@@ -90,7 +79,7 @@ for x in edges:
 
 
 extra = []
-# addrec(1, adj, extra)
+addrec(1, adj, extra)
 
 
-run(extra)
+# run(extra)
