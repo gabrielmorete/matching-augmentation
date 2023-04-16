@@ -13,8 +13,9 @@ def run(extra):
 
 	# print(s)	
 	command = "echo \"" + s + " \"  | ./main -stdio" # command to be executed
-	out = str(subprocess.check_output(command, shell=True)).split('\n')
 
+	out = str(subprocess.check_output(command, shell=True)).split('\n')
+	print(len(out))
 
 	print(out[0])
 
