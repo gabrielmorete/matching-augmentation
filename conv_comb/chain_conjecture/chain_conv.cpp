@@ -123,15 +123,17 @@ void ReadStdioGraph(ListGraph &G){
 	Note: Rebuilding the model everytime is not efficient, but 
 	for the current application is ok.
 */
-double ConvexComb(double *sol, int d, int g, vector<int> h){
-	int n = int_points.size(); // number of points
+double ConvexComb(double *sol, int dim, int G, vector<int> H){
+	
+	int n = H.size(); // number of points
+	
 	try{
 		GRBModel model(env);
 		GRBVar lambda[n];
 
 		model.set(GRB_IntParam_Method, 0); // Forcing Primal Simplex Method
 
-		// one variable for each int point (combination coefficient)
+		// one variable for each subgraph (combination coefficient)
 		for (int i = 0; i < n; i++)
 			lambda[i] = model.addVar(0.0, 1.0, 0, GRB_CONTINUOUS, "l_" + to_string(i) );
 
@@ -145,13 +147,22 @@ double ConvexComb(double *sol, int d, int g, vector<int> h){
 		GRBVar coef = model.addVar(0.0, GRB_INFINITY, 1, GRB_CONTINUOUS, "coef");
 
 		// combination constraint
-		for (int j = 0; j < d; j++){
+		for (int j = 0; j < d; j++){ // Each edge
 			GRBLinExpr comb = 0;
 			
-			for (int i = 0; i < n; i++)
-				comb += int_points[i][j] * lambda[i];
+			for (int i = 0; i < n; i++){ // for each subgraph
+				int x = 0;
+				if (H[i] & (1<<j)) // edge is in the graph
+					x = 1;
 
-			model.addConstr( comb <= coef * fx[j], "coord_" + to_string(j)); 
+				comb += x * lambda[i];
+			}
+
+			int y = 0;
+			if (G & (1 << j)) // edge is in G
+				y = 1;
+
+			model.addConstr( comb <= coef * y, "coord_" + to_string(j)); 
 		}
 
 		model.optimize();
