@@ -233,7 +233,7 @@ signed main(){
 
 	double sol[m];
 
-	cout << ConvexComb(sol, (1<<m) - 1, base) << endl;
+	cout << "oi" << ConvexComb(sol, (1<<m) - 1, base) << endl;
 
 
 }
