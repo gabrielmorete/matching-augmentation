@@ -132,7 +132,6 @@ bool test2(SubGraph<ListGraph> &G){ // for now, only simple cycle
 
 	for (SubGraph<ListGraph>::NodeIt v(G); v != INVALID; ++v){
 		if (mark[v] == 1){ // head of the chain
-			// cout << "---- " << G.id(v) << endl;
 
 			if (deg[v] == 2) // leaf node
 				continue;
@@ -141,16 +140,11 @@ bool test2(SubGraph<ListGraph> &G){ // for now, only simple cycle
 				SubGraph<ListGraph>::Node lst = v, u = v;
 
 				do {
-					cout << "---------- " << G.id(u) << ' ' << mark[u] << ' ' << deg[u] << ' ' << G.id(v) <<' ' << G.id(lst) << endl;
-					// bool ok = 0;
-			 		
-
 
 			 		for (SubGraph<ListGraph>::OutArcIt a(G, u); a != INVALID; ++a){
 						int x = min(G.id(u), G.id(G.target(a)));
 						int y = max(G.id(u), G.id(G.target(a)));
 
-						cout << "aaa " << x << ' ' << y << ' ' << frq[{ x, y }] << endl; 
 
 						if (frq[{ x, y }] < 2) // need to follow multiedges
 							continue;
@@ -159,11 +153,10 @@ bool test2(SubGraph<ListGraph> &G){ // for now, only simple cycle
 						if (G.target(a) != lst){
 							lst = u;
 							u = G.target(a);
-							// ok = 1;
 						}
 					}	
 
-				} while(mark[u] == 2 );
+				} while(mark[u] == 2);
 
 
 				if (deg[u] > 2) // also not a leaf
@@ -401,11 +394,9 @@ signed main(){
 
 		SubGraph<ListGraph> H(G, ones, mask);
 	
-		cout<<endl<<endl;
-		print(H);
 		cout << test(H) << ' ' << test2(H) << " | ";
 		print(H); 
-		// assert(test(H) == test2(H));
+		assert(test(H) == test2(H));
 
 
 		if (test(H)){
