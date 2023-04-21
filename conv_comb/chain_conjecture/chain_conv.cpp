@@ -113,6 +113,8 @@ void ReadStdioGraph(ListGraph &G){
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
 		q.insert(G.id(e));
 
+	cout << q.size() << endl;
+
 	assert(q.size() == m);
 	assert(*q.rbegin() == m - 1);
 }
