@@ -141,7 +141,7 @@ bool test2(SubGraph<ListGraph> &G){ // for now, only simple cycle
 				SubGraph<ListGraph>::Node lst = v, u = v;
 
 				do {
-					cout << "---------- " << G.id(u) << ' ' << mark[u] << ' ' << deg[u] << endl;
+					cout << "---------- " << G.id(u) << ' ' << mark[u] << ' ' << deg[u] << ' ' << G.id(v) <<' ' << G.id(lst) << endl;
 					// bool ok = 0;
 					for (SubGraph<ListGraph>::OutArcIt a(G, v); a != INVALID; ++a){
 						if (frq[{ min(G.id(v), G.id(G.target(a))), max(G.id(v), G.id(G.target(a))) }] < 2) // need to follow multiedges
