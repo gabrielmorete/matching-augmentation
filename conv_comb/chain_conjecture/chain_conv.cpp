@@ -107,6 +107,8 @@ void ReadStdioGraph(ListGraph &G){
 
 		assert(a < n);
 		assert(b < n);
+
+		G.addEdge(G.nodeFromId(a), G.nodeFromId(b));
 	}
 
 	set<int> q;
