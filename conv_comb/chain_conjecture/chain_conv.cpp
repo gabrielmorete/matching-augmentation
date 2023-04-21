@@ -134,7 +134,7 @@ bool test2(SubGraph<ListGraph> &G){ // for now, only simple cycle
 
 				do {
 					for (SubGraph<ListGraph>::OutArcIt a(G, v); a != INVALID; ++a){
-						if (freq[{ min(G.id(v), G.target(a)), max(G.id(v), G.target(a)) }] < 2) // need to follow multiedges
+						if (frq[{ min(G.id(v), G.target(a)), max(G.id(v), G.target(a)) }] < 2) // need to follow multiedges
 							continue;
 
 						// {v, G.target(a)} is a multiedge
