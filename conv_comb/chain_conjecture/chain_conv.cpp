@@ -155,7 +155,6 @@ bool test2(SubGraph<ListGraph> &G){ // for now, only simple cycle
 						}
 					}	
 
-				assert(u != lst);
 				} while(mark[u] == 2 );
 
 
