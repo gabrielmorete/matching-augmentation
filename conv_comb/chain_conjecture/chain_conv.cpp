@@ -184,7 +184,7 @@ double ConvexComb(double *sol, int dim, int G, vector<int> H, int op = 0){ //op 
 
 		cout << "oi" << endl;
 
-		// double *opt_sol = model.get(GRB_DoubleAttr_X, lambda, n);
+		sol = model.get(GRB_DoubleAttr_X, lambda, n);
 
 		// for (int i = 0; i < n; i++)
 		// 	sol[i] = opt_sol[i];
