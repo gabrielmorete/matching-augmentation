@@ -133,12 +133,17 @@ bool test2(SubGraph<ListGraph> &G){ // for now, only simple cycle
 				SubGraph<ListGraph>::Node lst = v, u = v;
 
 				do {
-					for (SubGraph<ListGraph>::OutArcIt a(G, v); a != INVALID; ++a)
+					for (SubGraph<ListGraph>::OutArcIt a(G, v); a != INVALID; ++a){
+						if (freq[{ min(G.id(v), G.target(a)), max(G.id(v), G.target(a)) }] < 2) // need to follow multiedges
+							continue;
+
+						// {v, G.target(a)} is a multiedge
 						if (G.target(a) != lst and mark[G.target(a)] > 0){
 							lst = u;
 							u = G.target(a);
 							break;
 						}
+					}	
 				} while(mark[u] == 2);
 
 				if (deg[u] > 2) // also not a leaf
