@@ -415,7 +415,7 @@ signed main(){
 		int u = min(G.id(G.u(G.edgeFromId(i))), G.id(G.v(G.edgeFromId(i))));
 		int v = max(G.id(G.u(G.edgeFromId(i))), G.id(G.v(G.edgeFromId(i))));
 
-		cout << '\t' << u << ' ' << v << ' ' << ConvexComb2(sol, m, fmsk - (1<<i), base, 1) << endl;
+		cout << '\t' << u << ' ' << v << ' ' << ConvexComb(sol, m, fmsk - (1<<i), base, 1) << endl;
 	
 		for (int i = 0; i < base.size(); i++)
 			if (sol[i] > 0.01){
