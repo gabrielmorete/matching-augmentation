@@ -117,6 +117,11 @@ void ReadStdioGraph(ListGraph &G){
 	assert(*q.rbegin() == m - 1);
 }
 
+
+// Gurobi enviroment
+GRBEnv env = GRBEnv(true);
+
+
 /*
 	Model to find the smallest coefficient to each point.
 
@@ -188,6 +193,10 @@ double ConvexComb(double *sol, int dim, int G, vector<int> H){
 
 
 signed main(){
+	env.set(GRB_IntParam_OutputFlag, 0);
+	env.start();
+
+
 	ListGraph G;
 
 	ReadStdioGraph(G);

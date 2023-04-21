@@ -31,8 +31,8 @@ const double EPS = 1e-4;
 int sign(double x) { return (x > EPS) - (x < -EPS); }
 
 
-// Gurobi enviroment
-GRBEnv env = GRBEnv(true);
+    // Gurobi enviroment
+    GRBEnv env = GRBEnv(true);
 
 /*
 	Combination coefficients threshold
