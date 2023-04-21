@@ -243,6 +243,7 @@ double ConvexComb(double *sol, int dim, int G, vector<int> H, int op = 0){ //op 
 
 		model.addConstr(conv == 1, "conv_comb");
 
+
 		// Model will thy to optmize the coefficient of the combination
 		GRBVar coef = model.addVar(0.0, GRB_INFINITY, 1, GRB_CONTINUOUS, "coef");
 
