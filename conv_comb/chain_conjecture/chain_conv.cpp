@@ -30,6 +30,8 @@
 #include <lemon/adaptors.h>
 #include <lemon/connectivity.h>
 #include <lemon/nauty_reader.h>
+#include "gurobi_c++.h"
+
 
 using namespace std;
 using namespace lemon;
