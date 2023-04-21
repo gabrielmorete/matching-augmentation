@@ -132,9 +132,9 @@ bool test2(SubGraph<ListGraph> &G){ // for now, only simple cycle
 
 				do {
 					for (SubGraph<ListGraph>::OutArcIt a(G, v); a != INVALID; a++)
-						if (target(a) != lst){
+						if (G.target(a) != lst){
 							lst = u;
-							u = target(a);
+							u = G.target(a);
 							break;
 						}
 				} while(mark[u] == 2)
