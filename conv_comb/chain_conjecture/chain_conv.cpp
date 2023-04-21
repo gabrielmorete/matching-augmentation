@@ -122,16 +122,16 @@ bool test2(SubGraph<ListGraph> &G){ // for now, only simple cycle
 
 	*/
 
-	for (ListGraph::NodeIt v(G); v != INVALID; v++){
+	for (SubGraph<ListGraph>::NodeIt v(G); v != INVALID; v++){
 		if (mark[v] == 1){ // head of the chain
 			if (deg[v] == 2) // leaf node
 				continue;
 			else{
 				// need to find the other head to check if it is a leaf
-				ListGraph::Node lst = v, u = v;
+				SubGraph<ListGraph>::Node lst = v, u = v;
 
 				do {
-					for (ListGraph::OutArcIt a(G); a != INVALID; a++)
+					for (SubGraph<ListGraph>::OutArcIt a(G); a != INVALID; a++)
 						if (target(a) != lst){
 							lst = u;
 							u = target(a);
