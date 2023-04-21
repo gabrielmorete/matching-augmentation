@@ -20,25 +20,196 @@
 #include <sstream>
 #include <fstream>
 #include <vector>
+#include <bitset>
 #include <string>
 #include <cassert>
 #include <iomanip>
-#include <lemon.h>
+#include <lemon/list_graph.h>
+#include <lemon/gomory_hu.h>
+#include <lemon/matching.h>
+#include <lemon/adaptors.h>
+#include <lemon/connectivity.h>
+#include <lemon/nauty_reader.h>
+
 using namespace std;
+using namespace lemon;
+
+void print(ListGraph &G){
+	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+		cout << G.id(G.v(e)) << ' ' << G.id(G.u(e)) << ", ";
+	cout << endl;
+}
+
+void print(SubGraph<ListGraph> &G){
+	for (SubGraph<ListGraph>::EdgeIt e(G); e != INVALID; ++e)
+		cout << G.id(G.v(e)) << ' ' << G.id(G.u(e)) << ", ";
+	cout << endl;
+}
+
+bool test(SubGraph<ListGraph> &G){ // for now, only simple cycle
+	if (biEdgeConnected(G) != 1)
+		return false;
+
+	map<pair<int, int>, int> frq;
+
+	SubGraph<ListGraph>::NodeMap<int> deg(G, 0);
+
+
+	for (SubGraph<ListGraph>::EdgeIt e(G); e != INVALID; ++e){
+		int u = min(G.id(G.u(e)), G.id(G.v(e)));
+		int v = max(G.id(G.u(e)), G.id(G.v(e)));
+		
+		deg[G.v(e)]++;
+		deg[G.u(e)]++;
+
+		frq[{u, v}]++;
+	}
+
+	for (SubGraph<ListGraph>::EdgeIt e(G); e != INVALID; ++e){
+		int u = min(G.id(G.u(e)), G.id(G.v(e)));
+		int v = max(G.id(G.u(e)), G.id(G.v(e)));
+		
+		if (frq[{u, v}] > 1) // doubled edge
+			if (deg[G.u(e)] > 2 and deg[G.v(e)] > 2) // no head
+				return false;
+	}
+
+	return true;
+}
+
+/*
+	This function reads the Graph from Stdio. Graph is 0-indexed
+	The input format will be
+		n m       number of nodes, edges
+		a_1 b_1    edge between a_1, b_1
+		...
+		a_m b_m
+*/
+void ReadStdioGraph(ListGraph &G){
+	int n, m;
+	cin>>n>>m;
+	
+	assert(n >= 3);
+	assert(m >= n);
+
+	for (int i = 0; i < n; i++){
+		ListGraph::Node v = G.addNode();
+		if (G.id(v) != i)
+			cout<<"Error : vertex don't match id"<<endl;
+		assert(G.id(v) == i);
+	}
+
+	for (int i = 0; i < m; i++){
+		int a, b, c;
+		cin>>a>>b;
+
+		assert(a < n);
+		assert(b < n);
+
+		ListGraph::Edge e = G.addEdge(G.nodeFromId(a), G.nodeFromId(b));
+	}
+
+	set<int> q;
+	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+		q.insert(G.id(e));
+
+	assert(q.size() == m);
+	assert(*q.rbegin() == m - 1);
+}
+
+/*
+	Model to find the smallest coefficient to each point.
+
+	Note: Rebuilding the model everytime is not efficient, but 
+	for the current application is ok.
+*/
+double ConvexComb(double *sol, int d, int g, vector<int> h){
+	int n = int_points.size(); // number of points
+
+	try{
+		GRBModel model(env);
+		GRBVar lambda[n];
+
+		model.set(GRB_IntParam_Method, 0); // Forcing Primal Simplex Method
+
+		// one variable for each int point (combination coefficient)
+		for (int i = 0; i < n; i++)
+			lambda[i] = model.addVar(0.0, 1.0, 0, GRB_CONTINUOUS, "l_" + to_string(i) );
+
+		GRBLinExpr conv;
+		for (int i = 0; i < n; i++)
+			conv += lambda[i];
+
+		model.addConstr(conv == 1, "conv_comb");
+
+		// Model will thy to optmize the coefficient of the combination
+		GRBVar coef = model.addVar(0.0, GRB_INFINITY, 1, GRB_CONTINUOUS, "coef");
+
+		// combination constraint
+		for (int j = 0; j < d; j++){
+			GRBLinExpr comb = 0;
+			
+			for (int i = 0; i < n; i++)
+				comb += int_points[i][j] * lambda[i];
+
+			model.addConstr( comb <= coef * fx[j], "coord_" + to_string(j)); 
+		}
+
+		model.optimize();
+		assert(model.get(GRB_IntAttr_SolCount) > 0);
+
+
+		double *opt_sol = model.get(GRB_DoubleAttr_X, lambda, n);
+
+		for (int i = 0; i < n; i++)
+			sol[i] = opt_sol[i];
+
+		delete[] opt_sol;
+
+		return model.get(GRB_DoubleAttr_ObjVal);
+	
+	} catch(GRBException e) {
+		cout << "Error code = " << e.getErrorCode() << endl;
+		cout << e.getMessage() << endl;
+	} catch(...) {
+		cout << "Exception during optimization" << endl;
+	}
+}
 
 
 signed main(){
 	ListGraph G;
 
-	ListGraph::Node v = G.addNode();
-	ListGraph::Node u = G.addNode();
-	G.addEdge(v, u)
+	ReadStdioGraph(G);
 
-	cout<<countEdges(G)<<endl;
+	print(G);
 
-	G.addEdge(v, u)
+	int n = countNodes(G);
+	int m = countEdges(G);
+	ListGraph::NodeMap<bool> ones(G, 1);	
 
-	cout<<countEdges(G)<<endl;
+	vector<int> base;
+
+	assert(m < 30);
+	for (int msk = 1; msk < (1 << m); msk++){
+		if (__builtin_popcount(msk) < n)
+			continue;
+
+		ListGraph::EdgeMap<bool> mask(G, 0);
+		for (int i = 0; i < m; i++)
+			if (msk & (1<<i))
+				mask[G.edgeFromId(i)] = 1;
+
+		SubGraph<ListGraph> H(G, ones, mask);
 	
+		if (test(H)){
+			base.push_back(msk);
+		}
+	}
+
+	// Now I have every valid 2ECSS
+	// Test convex comb.
+
+
 
 }
