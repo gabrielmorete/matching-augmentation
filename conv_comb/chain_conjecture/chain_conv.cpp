@@ -124,6 +124,8 @@ bool test2(SubGraph<ListGraph> &G){ // for now, only simple cycle
 
 	for (SubGraph<ListGraph>::NodeIt v(G); v != INVALID; ++v){
 		if (mark[v] == 1){ // head of the chain
+			cout << "---- " << G.id(v) << endl;
+
 			if (deg[v] == 2) // leaf node
 				continue;
 			else{
