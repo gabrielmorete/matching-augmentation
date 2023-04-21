@@ -89,6 +89,67 @@ bool test(SubGraph<ListGraph> &G){ // for now, only simple cycle
 	return true;
 }
 
+bool test2(SubGraph<ListGraph> &G){ // for now, only simple cycle
+	if (biEdgeConnected(G) != 1)
+		return false;
+
+	map<pair<int, int>, int> frq;
+
+	SubGraph<ListGraph>::NodeMap<int> deg(G, 0);
+	SubGraph<ListGraph>::NodeMap<int> mark(G, 0);
+
+
+
+	for (SubGraph<ListGraph>::EdgeIt e(G); e != INVALID; ++e){
+		int u = min(G.id(G.u(e)), G.id(G.v(e)));
+		int v = max(G.id(G.u(e)), G.id(G.v(e)));
+		
+		deg[G.v(e)]++;
+		deg[G.u(e)]++;
+
+		if (frq[{u, v}] == 1){
+			mark[G.v(e)] += 1;
+			mark[G.u(e)] += 1;
+		}
+
+		frq[{u, v}]++;
+	}
+
+	/*
+		mark[v] == 0 -> not incidente to multiedge
+		mark[v] == 1 -> head of a chain
+		mark[v] == 1 -> inner vertex of a chain
+
+	*/
+
+	for (ListGraph::NodeIt v(G); v != INVALID; v++){
+		if (mark[v] == 1){ // head of the chain
+			if (deg[v] == 2) // leaf node
+				continue;
+			else{
+				// need to find the other head to check if it is a leaf
+				ListGraph::Node lst = v, u = v;
+
+				do {
+					for (ListGraph::OutArcIt a(G); a != INVALID; a++)
+						if (target(a) != lst){
+							lst = u;
+							u = target(a);
+							break;
+						}
+				} while(mark[u] == 2)
+
+				if (deg[u] > 2) // also not a leaf
+					return false;
+			}
+		}
+
+	}
+
+	return true;
+}
+
+
 /*
 	This function reads the Graph from Stdio. Graph is 0-indexed
 	The input format will be
