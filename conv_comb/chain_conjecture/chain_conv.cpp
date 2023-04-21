@@ -137,7 +137,7 @@ bool test2(SubGraph<ListGraph> &G){ // for now, only simple cycle
 							u = G.target(a);
 							break;
 						}
-				} while(mark[u] == 2)
+				} while(mark[u] == 2);
 
 				if (deg[u] > 2) // also not a leaf
 					return false;
