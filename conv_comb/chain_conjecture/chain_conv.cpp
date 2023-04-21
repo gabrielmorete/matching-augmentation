@@ -374,6 +374,8 @@ signed main(){
 
 		SubGraph<ListGraph> H(G, ones, mask);
 	
+		assert(test(H) == test2(H));
+
 		if (test(H)){
 			base.push_back(msk);
 		}
