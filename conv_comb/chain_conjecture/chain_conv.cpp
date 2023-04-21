@@ -404,8 +404,6 @@ signed main(){
 		}
 	}
 
-	cout << "ahhhhh" << endl;
-
 	// Now I have every valid 2ECSS
 	// Test convex comb.
 	double sol[base.size()];
