@@ -154,7 +154,10 @@ bool test2(SubGraph<ListGraph> &G){ // for now, only simple cycle
 							// ok = 1;
 						}
 					}	
+
+				assert(u != lst);
 				} while(mark[u] == 2 );
+
 
 				if (deg[u] > 2) // also not a leaf
 					return false;
