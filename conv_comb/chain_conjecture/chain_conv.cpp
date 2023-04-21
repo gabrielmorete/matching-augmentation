@@ -125,7 +125,6 @@ void ReadStdioGraph(ListGraph &G){
 */
 double ConvexComb(double *sol, int d, int g, vector<int> h){
 	int n = int_points.size(); // number of points
-
 	try{
 		GRBModel model(env);
 		GRBVar lambda[n];
