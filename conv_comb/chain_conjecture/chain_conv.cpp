@@ -102,13 +102,11 @@ void ReadStdioGraph(ListGraph &G){
 	}
 
 	for (int i = 0; i < m; i++){
-		int a, b, c;
+		int a, b;
 		cin>>a>>b;
 
 		assert(a < n);
 		assert(b < n);
-
-		ListGraph::Edge e = G.addEdge(G.nodeFromId(a), G.nodeFromId(b));
 	}
 
 	set<int> q;
