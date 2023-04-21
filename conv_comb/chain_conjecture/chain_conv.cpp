@@ -145,8 +145,15 @@ bool test2(SubGraph<ListGraph> &G){ // for now, only simple cycle
 					return false;
 			}
 		}
-
 	}
+
+	bool all2 = 1;
+	for (SubGraph<ListGraph>::NodeIt v(G); v != INVALID; ++v)
+		if (mark[v] != 2)
+			all2 = 0;
+
+	if (all2)
+		return false;	
 
 	return true;
 }
