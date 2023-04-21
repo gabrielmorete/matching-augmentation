@@ -143,9 +143,14 @@ bool test2(SubGraph<ListGraph> &G){ // for now, only simple cycle
 				do {
 					cout << "---------- " << G.id(u) << ' ' << mark[u] << ' ' << deg[u] << ' ' << G.id(v) <<' ' << G.id(lst) << endl;
 					// bool ok = 0;
-					for (SubGraph<ListGraph>::OutArcIt a(G, v); a != INVALID; ++a){
+			 		
+
+
+			 		for (SubGraph<ListGraph>::OutArcIt a(G, v); a != INVALID; ++a){
 						int x = min(G.id(v), G.id(G.target(a)));
 						int y = max(G.id(v), G.id(G.target(a)));
+
+						cout << "aaa " << x << ' ' << y << ' ' << frq[{ x, y }] << endl; 
 
 						if (frq[{ x, y }] < 2) // need to follow multiedges
 							continue;
