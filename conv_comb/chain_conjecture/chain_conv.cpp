@@ -130,7 +130,7 @@ GRBEnv env = GRBEnv(true);
 	Note: Rebuilding the model everytime is not efficient, but 
 	for the current application is ok.
 */
-double ConvexComb(double *sol, int dim, int G, vector<int> H){
+double ConvexComb(double *sol, int dim, int G, vector<int> H, int op = 0){ //op = 0 (<=), op = 1 (==)
 	
 	int n = H.size(); // number of points
 	
@@ -169,7 +169,10 @@ double ConvexComb(double *sol, int dim, int G, vector<int> H){
 			if (G & (1 << j)) // edge is in G
 				y = 1;
 
-			model.addConstr( comb <= coef * y, "coord_" + to_string(j)); 
+			if (op)
+				model.addConstr( comb == coef * y, "coord_" + to_string(j)); 
+			else	
+				model.addConstr( comb <= coef * y, "coord_" + to_string(j)); 
 		}
 
 		model.optimize();
