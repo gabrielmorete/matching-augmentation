@@ -48,6 +48,16 @@ void print(SubGraph<ListGraph> &G){
 	cout << endl;
 }
 
+void print(ListGraph &G, int msk){
+
+	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+		if (msk & (1 << (G.id(e))))
+			cout << G.id(G.v(e)) << ' ' << G.id(G.u(e)) << ", ";
+	
+	cout << endl;
+}
+
+
 bool test(SubGraph<ListGraph> &G){ // for now, only simple cycle
 	if (biEdgeConnected(G) != 1)
 		return false;
@@ -242,9 +252,14 @@ signed main(){
 	cout << ConvexComb(sol, m, fmsk, base) << endl;
 
 	for (int i = 0; i < m; i++){
-		cout << '\t' << ConvexComb(sol, m, fmsk - (1<<i), base, 1) << endl;
+		int u = min(G.id(G.u(G.edgeFromId(i))), G.id(G.v(G.edgeFromId(i))));
+		int v = max(G.id(G.u(G.edgeFromId(i))), G.id(G.v(G.edgeFromId(i))));
+
+		cout << '\t' << u << ' ' << v << ' ' << ConvexComb(sol, m, fmsk - (1<<i), base, 1) << endl;
+	
+		for (int i = 0; i < base.size(); i++)
+			if (sol[i] > 0.01){
+				cout << "\t\t" << sol[i] << print(G, base[i]);
+			}
 	}
-
-
-
 }
