@@ -190,12 +190,12 @@ double ConvexComb(double *sol, int dim, int G, vector<int> H, int op = 0){ //op 
 		model.optimize();
 		assert(model.get(GRB_IntAttr_SolCount) > 0);
 
-		sol = model.get(GRB_DoubleAttr_X, lambda, n);
+		double *opt_sol = model.get(GRB_DoubleAttr_X, lambda, n);
 
-		// for (int i = 0; i < n; i++)
-		// 	sol[i] = opt_sol[i];
+		for (int i = 0; i < n; i++)
+			sol[i] = opt_sol[i];
 
-		// delete[] opt_sol;
+		delete[] opt_sol;
 
 		return model.get(GRB_DoubleAttr_ObjVal);
 	
