@@ -241,9 +241,7 @@ signed main(){
 	int fmsk =  (1<<m) - 1;
 	cout << ConvexComb(sol, m, fmsk, base) << endl;
 
-	cout << fmsk << endl;
 	for (int i = 0; i < m; i++){
-		cout << '\t' << fmsk - (1<<i) << endl;
 		cout << '\t' << ConvexComb(sol, m, fmsk - (1<<i), base, 1) << endl;
 	}
 
