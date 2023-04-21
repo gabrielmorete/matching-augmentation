@@ -154,7 +154,7 @@ double ConvexComb(double *sol, int dim, int G, vector<int> H){
 		GRBVar coef = model.addVar(0.0, GRB_INFINITY, 1, GRB_CONTINUOUS, "coef");
 
 		// combination constraint
-		for (int j = 0; j < d; j++){ // Each edge
+		for (int j = 0; j < dim; j++){ // Each edge
 			GRBLinExpr comb = 0;
 			
 			for (int i = 0; i < n; i++){ // for each subgraph
