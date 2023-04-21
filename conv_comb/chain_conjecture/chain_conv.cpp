@@ -389,7 +389,9 @@ signed main(){
 
 		SubGraph<ListGraph> H(G, ones, mask);
 	
-		// cout << test(H) << ' ' << test2(H) << " | ";
+		cout<<endl<<endl;
+		print(H);
+		cout << test(H) << ' ' << test2(H) << " | ";
 		print(H); 
 		// assert(test(H) == test2(H));
 
