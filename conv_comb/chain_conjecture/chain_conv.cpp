@@ -147,8 +147,8 @@ bool test2(SubGraph<ListGraph> &G){ // for now, only simple cycle
 
 
 			 		for (SubGraph<ListGraph>::OutArcIt a(G, u); a != INVALID; ++a){
-						int x = min(G.id(v), G.id(G.target(a)));
-						int y = max(G.id(v), G.id(G.target(a)));
+						int x = min(G.id(u), G.id(G.target(a)));
+						int y = max(G.id(u), G.id(G.target(a)));
 
 						cout << "aaa " << x << ' ' << y << ' ' << frq[{ x, y }] << endl; 
 
