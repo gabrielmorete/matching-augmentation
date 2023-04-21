@@ -209,6 +209,80 @@ double ConvexComb(double *sol, int dim, int G, vector<int> H, int op = 0){ //op 
 	return -1;
 }
 
+double ConvexComb2(double *sol, int dim, int G, vector<int> H, int op = 0){ //op = 0 (<=), op = 1 (==)
+	
+	int n = H.size(); // number of points
+	
+	double coef = 2.0/3.0;
+
+	try{
+		GRBModel model(env);
+		GRBVar lambda[n];
+		GRBVar y[n]; // used to minimize number of positive variables
+
+
+		// model.set(GRB_IntParam_Method, 0); // Forcing Primal Simplex Method
+
+		// one variable for each subgraph (combination coefficient)
+		for (int i = 0; i < n; i++)
+			lambda[i] = model.addVar(0.0, 1.0, 0, GRB_CONTINUOUS, "l_" + to_string(i) );
+
+		for (int i = 0; i < n; i++){
+			y[i] = model.addVar(0.0, 1.0, 1, GRB_BINARY, "l_" + to_string(i) );
+			model.addConstr(lambda[i] <= y[i]);
+		}
+
+		GRBLinExpr conv;
+		for (int i = 0; i < n; i++)
+			conv += lambda[i];
+
+		model.addConstr(conv == 1, "conv_comb");
+
+		
+		// combination constraint
+		for (int j = 0; j < dim; j++){ // Each edge
+			GRBLinExpr comb = 0;
+			
+			for (int i = 0; i < n; i++){ // for each subgraph
+				int x = 0;
+				if (H[i] & (1<<j)) // edge is in the graph
+					x = 1;
+
+				comb += x * lambda[i];
+			}
+
+			int y = 0;
+			if (G & (1 << j)) // edge is in G
+				y = 1;
+
+			if (op)
+				model.addConstr( comb == coef * y, "coord_" + to_string(j)); 
+			else	
+				model.addConstr( comb <= coef * y, "coord_" + to_string(j)); 
+		}
+
+		model.optimize();
+		assert(model.get(GRB_IntAttr_SolCount) > 0);
+
+		double *opt_sol = model.get(GRB_DoubleAttr_X, lambda, n);
+
+		for (int i = 0; i < n; i++)
+			sol[i] = opt_sol[i];
+
+		delete[] opt_sol;
+
+		return model.get(GRB_DoubleAttr_ObjVal);
+	
+	} catch(GRBException e) {
+		cout << "Error code = " << e.getErrorCode() << endl;
+		cout << e.getMessage() << endl;
+	} catch(...) {
+		cout << "Exception during optimization" << endl;
+	}
+
+	return -1;
+}
+
 
 signed main(){
 	env.set(GRB_IntParam_OutputFlag, 0);
