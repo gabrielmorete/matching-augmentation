@@ -167,6 +167,8 @@ double ConvexComb(double *sol, int dim, int G, vector<int> H, int op = 0){ //op 
 				comb += x * lambda[i];
 			}
 
+			cout << "aqui" << endl;
+
 			int y = 0;
 			if (G & (1 << j)) // edge is in G
 				y = 1;
