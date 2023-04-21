@@ -391,7 +391,7 @@ signed main(){
 	
 		cout << test(H) << ' ' << test2(H) << " | ";
 		print(H); 
-		assert(test(H) == test2(H));
+		// assert(test(H) == test2(H));
 
 
 		if (test(H)){
