@@ -382,7 +382,7 @@ signed main(){
 
 	vector<int> base;
 
-	assert(m < 30);
+	assert(m <= 30);
 	for (int msk = 1; msk < (1 << m) - 1; msk++){
 		if (__builtin_popcount(msk) < n)
 			continue;
