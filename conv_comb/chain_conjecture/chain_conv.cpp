@@ -134,7 +134,7 @@ bool test2(SubGraph<ListGraph> &G){ // for now, only simple cycle
 
 				do {
 					for (SubGraph<ListGraph>::OutArcIt a(G, v); a != INVALID; ++a)
-						if (G.target(a) != lst){
+						if (G.target(a) != lst and mark[G.target(a)] > 0){
 							lst = u;
 							u = G.target(a);
 							break;
