@@ -333,7 +333,7 @@ signed main(){
 	
 		for (int i = 0; i < base.size(); i++)
 			if (sol[i] > 0.01){
-				cout << "\t\t" << sol[i]; 
+				cout << "\t\t" << sol[i] << ' '; 
 				print(G, base[i]);
 			}
 	}
