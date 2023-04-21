@@ -231,6 +231,9 @@ signed main(){
 	// Now I have every valid 2ECSS
 	// Test convex comb.
 
+	double sol[m];
+
+	cout << ConvexComb(sol, (1<<m) - 1, base) << endl;
 
 
 }
