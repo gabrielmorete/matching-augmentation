@@ -182,6 +182,7 @@ double ConvexComb(double *sol, int dim, int G, vector<int> H, int op = 0){ //op 
 		model.optimize();
 		assert(model.get(GRB_IntAttr_SolCount) > 0);
 
+		cout << "oi" << endl;
 
 		double *opt_sol = model.get(GRB_DoubleAttr_X, lambda, n);
 
