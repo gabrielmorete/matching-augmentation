@@ -237,7 +237,7 @@ void check(ListGraph &G){
 
 				if (connected(H) == 0){
 					cout << "Not 4-edge connected" << endl;
-					assert(0)
+					assert(0);
 				}
 
 				edges[G.edgeFromId(i)] = 1;
