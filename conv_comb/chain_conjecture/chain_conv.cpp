@@ -212,6 +212,41 @@ void ReadStdioGraph(ListGraph &G){
 	assert(*q.rbegin() == m - 1);
 }
 
+// Checks if the graph is 4-reg, 4-ec
+void check(ListGraph &G){
+	for (ListGraph::NodeIt v(G); v != INVALID; ++v)
+		if (countIncEdges(G, v) != 4){
+			cout << "Not 4-regular" << endl;
+			assert(0);
+		}
+
+	int m = countEdges(G);
+	// Check 4-edge connected by definition
+
+	ListGraph::NodeMap<bool> ones(G, 1);
+	ListGraph::EdgeMap<bool> edges(G, 1);
+
+	for (int i = 0; i < m; i++)
+		for (int j = i + 1; j < m; j++)
+			for (int k = j + 1; k < m; k++){
+				edges[G.edgeFromId(i)] = 0;
+				edges[G.edgeFromId(j)] = 0;
+				edges[G.edgeFromId(k)] = 0;
+
+				SubGraph<ListGraph> H(G, ones, edges);
+
+				if (connected(H) == 0){
+					cout << "Not 4-edge connected" << endl;
+					assert(0)
+				}
+
+				edges[G.edgeFromId(i)] = 1;
+				edges[G.edgeFromId(j)] = 1;
+				edges[G.edgeFromId(k)] = 1;
+			}
+
+}
+
 
 // Gurobi enviroment
 GRBEnv env = GRBEnv(true);
@@ -374,6 +409,8 @@ signed main(){
 	ListGraph G;
 
 	ReadStdioGraph(G);
+
+	check(G);
 
 	print(G);
 
