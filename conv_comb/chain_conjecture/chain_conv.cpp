@@ -259,9 +259,9 @@ GRBEnv env = GRBEnv(true);
 	for the current application is ok.
 */
 double ConvexComb(double *sol, int dim, int G, vector<int> H, int op = 0){ //op = 0 (<=), op = 1 (==)
-	
+
 	int n = H.size(); // number of points
-	
+
 	try{
 		GRBModel model(env);
 		GRBVar lambda[n];
@@ -279,13 +279,13 @@ double ConvexComb(double *sol, int dim, int G, vector<int> H, int op = 0){ //op 
 		model.addConstr(conv == 1, "conv_comb");
 
 
-		// Model will thy to optmize the coefficient of the combination
+		// Model will try to optmize the coefficient of the combination
 		GRBVar coef = model.addVar(0.0, GRB_INFINITY, 1, GRB_CONTINUOUS, "coef");
 
 		// combination constraint
 		for (int j = 0; j < dim; j++){ // Each edge
 			GRBLinExpr comb = 0;
-			
+
 			for (int i = 0; i < n; i++){ // for each subgraph
 				int x = 0;
 				if (H[i] & (1<<j)) // edge is in the graph
@@ -300,7 +300,7 @@ double ConvexComb(double *sol, int dim, int G, vector<int> H, int op = 0){ //op 
 
 			if (op)
 				model.addConstr( comb == coef * y, "coord_" + to_string(j)); 
-			else	
+			else
 				model.addConstr( comb <= coef * y, "coord_" + to_string(j)); 
 		}
 
@@ -315,7 +315,7 @@ double ConvexComb(double *sol, int dim, int G, vector<int> H, int op = 0){ //op 
 		delete[] opt_sol;
 
 		return model.get(GRB_DoubleAttr_ObjVal);
-	
+
 	} catch(GRBException e) {
 		cout << "Error code = " << e.getErrorCode() << endl;
 		cout << e.getMessage() << endl;
@@ -325,6 +325,10 @@ double ConvexComb(double *sol, int dim, int G, vector<int> H, int op = 0){ //op 
 
 	return -1;
 }
+
+/*
+	coefficient is fixed to be 2/3.  model finds the combination with the minimum number of elements
+*/
 
 double ConvexComb2(double *sol, int dim, int G, vector<int> H, int op = 0){ //op = 0 (<=), op = 1 (==)
 	
@@ -453,7 +457,8 @@ signed main(){
 		int u = min(G.id(G.u(G.edgeFromId(i))), G.id(G.v(G.edgeFromId(i))));
 		int v = max(G.id(G.u(G.edgeFromId(i))), G.id(G.v(G.edgeFromId(i))));
 
-		cout << '\t' << u << ' ' << v << ' ' << ConvexComb2(sol, m, fmsk - (1<<i), base, 1) << endl;
+		cout << '\t' << u << ' ' << v << ' ' << flush;
+		cout <<  ConvexComb(sol, m, fmsk - (1<<i), base) << endl;
 	
 		for (int i = 0; i < base.size(); i++)
 			if (sol[i] > 0.01){
