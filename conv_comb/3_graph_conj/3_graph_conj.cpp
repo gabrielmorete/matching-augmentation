@@ -335,7 +335,6 @@ signed main(){
 	double sol[base.size()];
 
 	long long int fmsk =  (1<<m) - 1;
-	cout << ConvexComb2(sol, m, fmsk, base) << endl;
 
 	for (int i = 0; i < m; i++){
 		int u = min(G.id(G.u(G.edgeFromId(i))), G.id(G.v(G.edgeFromId(i))));
