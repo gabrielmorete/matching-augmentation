@@ -314,7 +314,7 @@ signed main(){
 
 	vector<long long int> base;
 
-	assert(m <= 30);
+	assert(m <= 40);
 	for (long long int msk = 1; msk < (1 << m) - 1; msk++){
 		if (__builtin_popcount(msk) < n)
 			continue;
@@ -334,7 +334,7 @@ signed main(){
 	// Test convex comb.
 	double sol[base.size()];
 
-	long long iont fmsk =  (1<<m) - 1;
+	long long int fmsk =  (1<<m) - 1;
 	cout << ConvexComb2(sol, m, fmsk, base) << endl;
 
 	for (int i = 0; i < m; i++){
