@@ -327,7 +327,7 @@ signed main(){
 		SubGraph<ListGraph> H(G, ones, mask);
 
 		if (biEdgeConnected(H))
-			base.push_back(H);
+			base.push_back(msk);
 	}
 
 	// Now I have every valid 2ECSS
