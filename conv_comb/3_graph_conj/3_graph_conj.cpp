@@ -458,7 +458,13 @@ signed main(){
 		int v = max(G.id(G.u(G.edgeFromId(i))), G.id(G.v(G.edgeFromId(i))));
 
 		cout << '\t' << u << ' ' << v << ' ' << flush;
-		cout <<  ConvexComb2(sol, m, fmsk - (1<<i), base) << endl;
+		
+		int n_comb = ConvexComb2(sol, m, fmsk - (1<<i), base);
+
+		if (n_comb != 3){
+			cout << "counterexample found" << endl;
+			assert(0);
+		}
 	
 		for (int i = 0; i < base.size(); i++)
 			if (sol[i] > 0.01){
