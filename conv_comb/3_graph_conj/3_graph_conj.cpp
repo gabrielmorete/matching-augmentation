@@ -48,7 +48,7 @@ void print(SubGraph<ListGraph> &G){
 	cout << endl;
 }
 
-void print(ListGraph &G, int msk){
+void print(ListGraph &G, long long int msk){
 
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
 		if (msk & (1 << (G.id(e))))
@@ -58,116 +58,6 @@ void print(ListGraph &G, int msk){
 }
 
 
-bool test(SubGraph<ListGraph> &G){ // for now, only simple cycle
-	if (biEdgeConnected(G) != 1)
-		return false;
-
-	map<pair<int, int>, int> frq;
-
-	SubGraph<ListGraph>::NodeMap<int> deg(G, 0);
-
-
-	for (SubGraph<ListGraph>::EdgeIt e(G); e != INVALID; ++e){
-		int u = min(G.id(G.u(e)), G.id(G.v(e)));
-		int v = max(G.id(G.u(e)), G.id(G.v(e)));
-		
-		deg[G.v(e)]++;
-		deg[G.u(e)]++;
-
-		frq[{u, v}]++;
-	}
-
-	for (SubGraph<ListGraph>::EdgeIt e(G); e != INVALID; ++e){
-		int u = min(G.id(G.u(e)), G.id(G.v(e)));
-		int v = max(G.id(G.u(e)), G.id(G.v(e)));
-		
-		if (frq[{u, v}] > 1) // doubled edge
-			if (deg[G.u(e)] > 2 and deg[G.v(e)] > 2) // no head
-				return false;
-	}
-
-	return true;
-}
-
-bool test2(SubGraph<ListGraph> &G){ // for now, only simple cycle
-	if (biEdgeConnected(G) != 1)
-		return false;
-
-	map<pair<int, int>, int> frq;
-
-	SubGraph<ListGraph>::NodeMap<int> deg(G, 0);
-	SubGraph<ListGraph>::NodeMap<int> mark(G, 0);
-
-
-
-	for (SubGraph<ListGraph>::EdgeIt e(G); e != INVALID; ++e){
-		int u = min(G.id(G.u(e)), G.id(G.v(e)));
-		int v = max(G.id(G.u(e)), G.id(G.v(e)));
-		
-		deg[G.v(e)]++;
-		deg[G.u(e)]++;
-
-		if (frq[{u, v}] == 1){
-			mark[G.v(e)] += 1;
-			mark[G.u(e)] += 1;
-		}
-
-		frq[{u, v}]++;
-	}
-
-	/*
-		mark[v] == 0 -> not incidente to multiedge
-		mark[v] == 1 -> head of a chain
-		mark[v] == 1 -> inner vertex of a chain
-
-	*/
-
-	bool all2 = 1;
-	for (SubGraph<ListGraph>::NodeIt v(G); v != INVALID; ++v)
-		if (mark[v] != 2)
-			all2 = 0;
-
-	if (all2)
-		return false;	
-
-	for (SubGraph<ListGraph>::NodeIt v(G); v != INVALID; ++v){
-		if (mark[v] == 1){ // head of the chain
-
-			if (deg[v] == 2) // leaf node
-				continue;
-			else{
-				// need to find the other head to check if it is a leaf
-				SubGraph<ListGraph>::Node lst = v, u = v;
-
-				do {
-
-			 		for (SubGraph<ListGraph>::OutArcIt a(G, u); a != INVALID; ++a){
-						int x = min(G.id(u), G.id(G.target(a)));
-						int y = max(G.id(u), G.id(G.target(a)));
-
-
-						if (frq[{ x, y }] < 2) // need to follow multiedges
-							continue;
-
-						// {v, G.target(a)} is a multiedge
-						if (G.target(a) != lst){
-							lst = u;
-							u = G.target(a);
-						}
-					}	
-
-				} while(mark[u] == 2);
-
-
-				if (deg[u] > 2) // also not a leaf
-					return false;
-			}
-		}
-	}
-
-
-	return true;
-}
 
 
 /*
@@ -258,7 +148,7 @@ GRBEnv env = GRBEnv(true);
 	Note: Rebuilding the model everytime is not efficient, but 
 	for the current application is ok.
 */
-double ConvexComb(double *sol, int dim, int G, vector<int> H, int op = 0){ //op = 0 (<=), op = 1 (==)
+double ConvexComb(double *sol, int dim, long long int G, vector<long long int> H, int op = 0){ //op = 0 (<=), op = 1 (==)
 
 	int n = H.size(); // number of points
 
@@ -330,7 +220,7 @@ double ConvexComb(double *sol, int dim, int G, vector<int> H, int op = 0){ //op 
 	coefficient is fixed to be 2/3.  model finds the combination with the minimum number of elements
 */
 
-double ConvexComb2(double *sol, int dim, int G, vector<int> H, int op = 0){ //op = 0 (<=), op = 1 (==)
+double ConvexComb2(double *sol, int dim, long long int G, vector<long long int> H, int op = 0){ //op = 0 (<=), op = 1 (==)
 	
 	int n = H.size(); // number of points
 	
@@ -422,10 +312,10 @@ signed main(){
 	int m = countEdges(G);
 	ListGraph::NodeMap<bool> ones(G, 1);	
 
-	vector<int> base;
+	vector<long long int> base;
 
 	assert(m <= 30);
-	for (int msk = 1; msk < (1 << m) - 1; msk++){
+	for (long long int msk = 1; msk < (1 << m) - 1; msk++){
 		if (__builtin_popcount(msk) < n)
 			continue;
 
@@ -435,29 +325,23 @@ signed main(){
 				mask[G.edgeFromId(i)] = 1;
 
 		SubGraph<ListGraph> H(G, ones, mask);
-	
-		// cout << test(H) << ' ' << test2(H) << " | ";
-		// print(H); 
-		// assert(test(H) == test2(H));
 
-
-		if (test2(H)){
-			base.push_back(msk);
-		}
+		if (biEdgeConnected(H))
+			base.push_back(H);
 	}
 
 	// Now I have every valid 2ECSS
 	// Test convex comb.
 	double sol[base.size()];
 
-	int fmsk =  (1<<m) - 1;
+	long long iont fmsk =  (1<<m) - 1;
 	cout << ConvexComb2(sol, m, fmsk, base) << endl;
 
 	for (int i = 0; i < m; i++){
 		int u = min(G.id(G.u(G.edgeFromId(i))), G.id(G.v(G.edgeFromId(i))));
 		int v = max(G.id(G.u(G.edgeFromId(i))), G.id(G.v(G.edgeFromId(i))));
 
-		cout << '\t' << u << ' ' << v << ' ' << flush;
+		cout << '\t' << u << ' ' << v << ' ' << endl;
 		
 		int n_comb = ConvexComb2(sol, m, fmsk - (1<<i), base);
 
