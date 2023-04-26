@@ -294,7 +294,7 @@ double ConvexComb2(double *sol, int dim, long long int G, vector<long long int> 
 	return -1;
 }
 
-bitset<1<<32> memo;
+bitset<1ll<<32> memo;
 
 signed main(){
 	env.set(GRB_IntParam_OutputFlag, 0);
@@ -355,7 +355,7 @@ signed main(){
 
 		if (u == lstu and v == lstv)
 			continue;
-		
+
 		lstu = u;
 		lstv = v;
 
