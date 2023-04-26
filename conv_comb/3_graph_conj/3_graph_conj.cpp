@@ -295,7 +295,8 @@ double ConvexComb2(double *sol, int dim, long long int G, vector<long long int> 
 }
 
 //bitset<1ll<<38> memo;
-vector<bool> memo;
+// vector<bool> memo;
+map<int, bool> memo;
 signed main(){
 	env.set(GRB_IntParam_OutputFlag, 0);
 	env.start();
@@ -316,16 +317,15 @@ signed main(){
 	vector<long long int> base;
 
 	assert(m <= 38);
-	memo.resize(1ll<<m);
 	for (long long int msk = 1; msk < (1 << m) - 1; msk++){
-		if (__builtin_popcount(msk) < n)
+		if (__builtin_popcount(msk) < n or __builtin_popcount(msk) > 24)
 			continue;
 
 		for (int i = 0; i < m; i++)
-			if (msk & (1<<i) and memo[msk - (1<<i)])
+			if (msk & (1<<i) and memo.count(msk - (1<<i)))
 				memo[msk] = 1;
 
-		if (memo[msk])
+		if (memo.count(msk))
 			continue;	
 
 		ListGraph::EdgeMap<bool> mask(G, 0);
