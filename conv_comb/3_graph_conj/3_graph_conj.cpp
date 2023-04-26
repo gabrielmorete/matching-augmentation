@@ -321,8 +321,8 @@ signed main(){
 			continue;
 
 		for (int i = 0; i < m; i++)
-			if (msk & (1<<i))
-				memo[msk] |= memo[msk - (1<<i)];
+			if (msk & (1<<i) and memo[msk - (1<<i)])
+				memo[msk] = 1;
 
 		if (memo[msk])
 			continue;	
