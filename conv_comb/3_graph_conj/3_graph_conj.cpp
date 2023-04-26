@@ -359,19 +359,21 @@ signed main(){
 		if (u == lstu and v == lstv)
 			continue;
 
+		if ((u != 1 and u != 13 and u != 17) and (v != 1 and v != 13 and v != 17))
+			continue;
 
-
+			
 		lstu = u;
 		lstv = v;
 
 		cout << '\t' << u << ' ' << v << ' ' << endl;
 		
-		int n_comb = ConvexComb(sol, m, fmsk - (1<<i), base);
+		int n_comb = ConvexComb2(sol, m, fmsk - (1<<i), base);
 
-		/*if (n_comb != 3){
+		if (n_comb != 3){
 			cout << "counterexample found" << endl;
 			assert(0);
-		}*/
+		}
 	
 		for (int i = 0; i < base.size(); i++)
 			if (sol[i] > 0.01){
