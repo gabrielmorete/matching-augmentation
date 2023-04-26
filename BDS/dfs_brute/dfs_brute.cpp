@@ -17,7 +17,7 @@ using namespace std;
 const double EPS = 1e-3;
 int sign(double x) { return (x > EPS) - (x < -EPS); }
 
-const int MAXN = 20;
+const int MAXN = 40;
 
 bool __verbose_mode = 0, __cuts = 0;
 
