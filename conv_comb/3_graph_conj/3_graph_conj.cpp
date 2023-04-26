@@ -294,6 +294,7 @@ double ConvexComb2(double *sol, int dim, long long int G, vector<long long int> 
 	return -1;
 }
 
+bitset<1<<32> memo;
 
 signed main(){
 	env.set(GRB_IntParam_OutputFlag, 0);
@@ -314,10 +315,17 @@ signed main(){
 
 	vector<long long int> base;
 
-	assert(m <= 40);
+	assert(m <= 32);
 	for (long long int msk = 1; msk < (1 << m) - 1; msk++){
 		if (__builtin_popcount(msk) < n)
 			continue;
+
+		for (int i = 0; i < m; i++)
+			if (msk & (1<<i))
+				memo[msk] |= memo[msk - (1<<i)];
+
+		if (memo[msk])
+			continue;	
 
 		ListGraph::EdgeMap<bool> mask(G, 0);
 		for (int i = 0; i < m; i++)
@@ -326,8 +334,10 @@ signed main(){
 
 		SubGraph<ListGraph> H(G, ones, mask);
 
-		if (biEdgeConnected(H))
+		if (biEdgeConnected(H)){
 			base.push_back(msk);
+			memo[msk] = 1;
+		}
 	}
 
 	// Now I have every valid 2ECSS
@@ -336,9 +346,18 @@ signed main(){
 
 	long long int fmsk =  (1<<m) - 1;
 
+
+	int lstu = -1, lstv = -1;
+
 	for (int i = 0; i < m; i++){
 		int u = min(G.id(G.u(G.edgeFromId(i))), G.id(G.v(G.edgeFromId(i))));
 		int v = max(G.id(G.u(G.edgeFromId(i))), G.id(G.v(G.edgeFromId(i))));
+
+		if (u == lstu and v == lstv)
+			continue;
+		
+		lstu = u;
+		lstv = v;
 
 		cout << '\t' << u << ' ' << v << ' ' << endl;
 		
