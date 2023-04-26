@@ -317,7 +317,7 @@ signed main(){
 	vector<long long int> base;
 
 	assert(m <= 38);
-	for (long long int msk = 1; msk < (1 << m) - 1; msk++){
+	for (long long int msk = 1; msk < (1ll << m) - 1; msk++){
 		if (__builtin_popcount(msk) < n or __builtin_popcount(msk) > 24)
 			continue;
 
