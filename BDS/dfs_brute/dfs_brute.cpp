@@ -19,7 +19,7 @@ int sign(double x) { return (x > EPS) - (x < -EPS); }
 
 const int MAXN = 40;
 
-bool __verbose_mode = 0, __cuts = 0;
+bool __verbose_mode = 0, __cuts = 0, __no_brute = 0;
 
 int n, m, eid;
 int is_matched[MAXN];
@@ -325,9 +325,10 @@ void solve(){
 		// cout<<endl;
 	}
 	
-
-	Backtracking(0, 1);
-
+	if (!__no_brute)
+		Backtracking(0, 1);
+	else
+		AllDFS(); // no permutatio
 
 	double f_v_min_max = 0;
 	double f_v_max_min = m + 1;
@@ -384,6 +385,8 @@ signed main(int argc, char *argv[]){
 		string s = argv[i];
 		if (s == "-verbose")
 			__verbose_mode = 1;
+		if (s == "-no-brute")
+			__no_brute = 1;
 		else if (s == "-cuts")
 			__cuts = 1;
 		else if (s == "-start"){
@@ -395,7 +398,7 @@ signed main(int argc, char *argv[]){
 			n_threads = stoi(s);
 			i++;
 		} else {
-			cout<<"Usage: -stdio -verbose -log_start -start n -threads t"<<endl;
+			cout<<"Usage: -stdio -verbose -no-brute -cuts"<<endl;
 			return 0;
 		}
 	}
