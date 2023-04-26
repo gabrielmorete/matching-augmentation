@@ -294,8 +294,8 @@ double ConvexComb2(double *sol, int dim, long long int G, vector<long long int> 
 	return -1;
 }
 
-bitset<1ll<<32> memo;
-
+//bitset<1ll<<38> memo;
+vector<bool> memo;
 signed main(){
 	env.set(GRB_IntParam_OutputFlag, 0);
 	env.start();
@@ -315,7 +315,8 @@ signed main(){
 
 	vector<long long int> base;
 
-	assert(m <= 32);
+	assert(m <= 38);
+	memo.resize(1ll<<m);
 	for (long long int msk = 1; msk < (1 << m) - 1; msk++){
 		if (__builtin_popcount(msk) < n)
 			continue;
@@ -346,6 +347,7 @@ signed main(){
 
 	long long int fmsk =  (1<<m) - 1;
 
+	cout << "*" << ConvexComb(sol, m, fmsk, base) << endl;
 
 	int lstu = -1, lstv = -1;
 
@@ -356,17 +358,19 @@ signed main(){
 		if (u == lstu and v == lstv)
 			continue;
 
+
+
 		lstu = u;
 		lstv = v;
 
 		cout << '\t' << u << ' ' << v << ' ' << endl;
 		
-		int n_comb = ConvexComb2(sol, m, fmsk - (1<<i), base);
+		int n_comb = ConvexComb(sol, m, fmsk - (1<<i), base);
 
-		if (n_comb != 3){
+		/*if (n_comb != 3){
 			cout << "counterexample found" << endl;
 			assert(0);
-		}
+		}*/
 	
 		for (int i = 0; i < base.size(); i++)
 			if (sol[i] > 0.01){
