@@ -143,137 +143,141 @@ GRBEnv env = GRBEnv(true);
 
 
 /*
-	Model to find the smallest coefficient to each point.
-
-	Note: Rebuilding the model everytime is not efficient, but 
-	for the current application is ok.
+	Callback function class.
 */
-double ConvexComb(double *sol, int dim, long long int G, vector<long long int> H, int op = 0){ //op = 0 (<=), op = 1 (==)
-
-	int n = H.size(); // number of points
-
-	try{
-		GRBModel model(env);
-		GRBVar lambda[n];
-
-		model.set(GRB_IntParam_Method, 0); // Forcing Primal Simplex Method
-
-		// one variable for each subgraph (combination coefficient)
-		for (int i = 0; i < n; i++)
-			lambda[i] = model.addVar(0.0, 1.0, 0, GRB_CONTINUOUS, "l_" + to_string(i) );
-
-		GRBLinExpr conv;
-		for (int i = 0; i < n; i++)
-			conv += lambda[i];
-
-		model.addConstr(conv == 1, "conv_comb");
-
-
-		// Model will try to optmize the coefficient of the combination
-		GRBVar coef = model.addVar(0.0, GRB_INFINITY, 1, GRB_CONTINUOUS, "coef");
-
-		// combination constraint
-		for (int j = 0; j < dim; j++){ // Each edge
-			GRBLinExpr comb = 0;
-
-			for (int i = 0; i < n; i++){ // for each subgraph
-				int x = 0;
-				if (H[i] & (1<<j)) // edge is in the graph
-					x = 1;
-
-				comb += x * lambda[i];
-			}
-
-			int y = 0;
-			if (G & (1 << j)) // edge is in G
-				y = 1;
-
-			if (op)
-				model.addConstr( comb == coef * y, "coord_" + to_string(j)); 
-			else
-				model.addConstr( comb <= coef * y, "coord_" + to_string(j)); 
+class MinimumCut: public GRBCallback {
+	public:
+		ListGraph *G;
+		GRBVar* vars;
+		int n, m;
+		
+		// Constructor for min cut
+		MinimumCut(GRBVar* _vars, int _n, int _m, ListGraph &_G){
+			vars = _vars;
+			n = _n;
+			m = _m;
+			G = &_G;
 		}
+	protected:
+		/*
+			Separator function for the MIP. 
+			If the solution is not a 2ECSS it adds a cut
+			separating one 2ECC.
+		*/
+		void MinimumCut::callback(){
+			try {
+				if (where == GRB_CB_MIPSOL){
+					/*
+						Solver found an integral optimal solution for the
+						current formulation, must check if if there is a
+						bridge or a cut.
+					*/
 
-		model.optimize();
-		assert(model.get(GRB_IntAttr_SolCount) > 0);
+					double *x[3] 
 
-		double *opt_sol = model.get(GRB_DoubleAttr_X, lambda, n);
+					for (int i = 0; i < 3; i++)
+						x[i] = getSolution(vars, m);
 
-		for (int i = 0; i < n; i++)
-			sol[i] = opt_sol[i];
+					for (int g = 0; g < 3; g++){
 
-		delete[] opt_sol;
+						ListGraph::EdgeMap<bool> in_sol(*G);
+						
+						for (ListGraph::EdgeIt e(*G); e != INVALID; ++e){
+							int id = (*G).id(e);
+							int u = (*G).id((*G).u(e));
+							int v = (*G).id((*G).v(e));
 
-		return model.get(GRB_DoubleAttr_ObjVal);
+							if (x[g][id] > 0.5)
+								in_sol[e] = 1;
+						}
 
-	} catch(GRBException e) {
-		cout << "Error code = " << e.getErrorCode() << endl;
-		cout << e.getMessage() << endl;
-	} catch(...) {
-		cout << "Exception during optimization" << endl;
-	}
+						ListGraph::NodeMap<bool> ones((*G), 1); // Must be spanning
+						// H is a spanning subgraph with all edges in the solution
+						SubGraph<ListGraph> H((*G), ones, in_sol);
 
-	return -1;
-}
+						ListGraph::NodeMap<int> ebcc((*G), -1);
+						biEdgeConnectedComponents(H, ebcc);
+
+						int max_cmp = 0;
+						for (ListGraph::NodeIt v((*G)); v != INVALID; ++v)
+							max_cmp = max(max_cmp, ebcc[v]);
+
+						if (max_cmp > 0){ // Not 2ECSS, must add a cut 
+
+							// Will add all cuts crossing 2ECC
+							GRBLinExpr expr[max_cmp + 1];
+
+							for (ListGraph::EdgeIt e((*G)); e != INVALID; ++e){
+								ListGraph::Node u = (*G).u(e);
+								ListGraph::Node v = (*G).v(e);
+								
+								if (ebcc[u] != ebcc[v]){
+									expr[ ebcc[u] ] += vars[g][(*G).id(e)];
+									expr[ ebcc[v] ] += vars[g][(*G).id(e)];
+								}
+							}
+
+							for (int i = 0; i < max_cmp; i++)
+								addLazy(expr[i] >= 2);
+						}
+
+					}	
+
+					for (int i = 0; i < 3; i++)	
+						delete[] x[i];
+				}	
+			} 
+			catch (GRBException e){
+				cout << "Error number: " << e.getErrorCode() << endl;
+				cout << e.getMessage() << endl;
+			} 
+			catch (...){
+				cout << "Error during callback" << endl;
+			}
+		}
+};
+
 
 /*
 	coefficient is fixed to be 2/3.  model finds the combination with the minimum number of elements
 */
-
-double ConvexComb2(double *sol, int dim, long long int G, vector<long long int> H, int op = 0){ //op = 0 (<=), op = 1 (==)
-	
-	int n = H.size(); // number of points
-	
+vector<int> ConvexComb2(double *sol, int dim, long long int G, int op = 0){ //op = 0 (<=), op = 1 (==)
 	double coef = 2.0/3.0;
 
 	try{
 		GRBModel model(env);
-		GRBVar lambda[n];
-		GRBVar y[n]; // used to minimize number of positive variables
+		model.set(GRB_IntParam_LazyConstraints, 1); // Allow callback constraints
 
 
-		// model.set(GRB_IntParam_Method, 0); // Forcing Primal Simplex Method
+		GRBVar x[3][m]; // used to minimize number of positive variables
+
+		MinimumCut cb = MinimumCut(x, n, m, G);
+		model.setCallback(&cb);
 
 		// one variable for each subgraph (combination coefficient)
-		for (int i = 0; i < n; i++)
-			lambda[i] = model.addVar(0.0, 1.0, 0, GRB_CONTINUOUS, "l_" + to_string(i) );
+		for (int i = 0; i < 3; i++)
+			for (int j = 0; j < m; j++)
+				x[i] = model.addVar(0.0, 1.0, 0, GRB_BINARY, "X_" + to_string(i) + "_" + to_string(j));
 
-		for (int i = 0; i < n; i++){
-			y[i] = model.addVar(0.0, 1.0, 1, GRB_BINARY, "l_" + to_string(i) );
-			model.addConstr(lambda[i] <= y[i]);
-		}
 
-		GRBLinExpr conv;
-		for (int i = 0; i < n; i++)
-			conv += lambda[i];
+		for (int j = 0; j < m; j++){	
+			GRBLinExpr conv = 0;
+			for (int i = 0; i < 3; i++)
+				conv += x[i][j];
 
-		model.addConstr(conv == 1, "conv_comb");
-
+			model.addConstr(conv <= 2, "e_" + to_string(j) + "<= 2"); // each edge appers at most twice
+		}		
 		
-		// combination constraint
-		for (int j = 0; j < dim; j++){ // Each edge
-			GRBLinExpr comb = 0;
-			
-			for (int i = 0; i < n; i++){ // for each subgraph
-				int x = 0;
-				if (H[i] & (1<<j)) // edge is in the graph
-					x = 1;
-
-				comb += x * lambda[i];
-			}
-
-			int y = 0;
-			if (G & (1 << j)) // edge is in G
-				y = 1;
-
-			if (op)
-				model.addConstr( comb == coef * y, "coord_" + to_string(j)); 
-			else	
-				model.addConstr( comb <= coef * y, "coord_" + to_string(j)); 
-		}
-
+		
 		model.optimize();
 		assert(model.get(GRB_IntAttr_SolCount) > 0);
+
+
+		vector<int> ans;
+
+		for (int i = 0; i < 3; i++) ////
+			//////////////////////////////////////////////////////////////////////////////////////
+
 
 		double *opt_sol = model.get(GRB_DoubleAttr_X, lambda, n);
 
@@ -294,9 +298,7 @@ double ConvexComb2(double *sol, int dim, long long int G, vector<long long int> 
 	return -1;
 }
 
-//bitset<1ll<<38> memo;
-vector<bool> memo;
-// map<int, bool> memo;
+
 signed main(){
 	env.set(GRB_IntParam_OutputFlag, 0);
 	env.start();
