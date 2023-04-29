@@ -100,11 +100,11 @@ void ReadStdioGraph(ListGraph &G){
 }
 
 // Checks if the graph is 4-reg, 4-ec
-void check(ListGraph &G){
+bool check(ListGraph &G){
 	for (ListGraph::NodeIt v(G); v != INVALID; ++v)
 		if (countIncEdges(G, v) != 4){
-			cout << "Not 4-regular" << endl;
-			assert(0);
+			// cout << "Not 4-regular" << endl;
+			return 0;
 		}
 
 	int m = countEdges(G);
@@ -123,15 +123,14 @@ void check(ListGraph &G){
 				SubGraph<ListGraph> H(G, ones, edges);
 
 				if (connected(H) == 0){
-					cout << "Not 4-edge connected" << endl;
-					assert(0);
+					return 0;
 				}
 
 				edges[G.edgeFromId(i)] = 1;
 				edges[G.edgeFromId(j)] = 1;
 				edges[G.edgeFromId(k)] = 1;
 			}
-
+	return true;
 }
 
 
@@ -312,33 +311,50 @@ vector< vector<pair<int, int>> > ConvexComb(int e, ListGraph &G, int op = 0){ //
 }
 
 
-signed main(){
+signed main(int argc, char *argv[]){
 	env.set(GRB_IntParam_OutputFlag, 0);
 	env.start();
 
 	ListGraph G;
 
-	ReadStdioGraph(G);
-	check(G);
 
-	print(G);
+	if (argc == 1){
+		ReadStdioGraph(G);
+		if (check(G) == 0){
+			cout << "Invalid input" << endl;
+			return 0;
+		}
 
-	int n = countNodes(G);
-	int m = countEdges(G);
 
-	for (int i = 0; i < m; i++){
-		int u = min(G.id(G.u(G.edgeFromId(i))), G.id(G.v(G.edgeFromId(i))));
-		int v = max(G.id(G.u(G.edgeFromId(i))), G.id(G.v(G.edgeFromId(i))));
+		print(G);
 
-		cout << '\t' << u << ' ' << v << ' ' << endl;
-		
-		auto comb = ConvexComb(i, G);
+		int n = countNodes(G);
+		int m = countEdges(G);
 
-		for (auto x : comb){
-			cout << "\t\t"; 
-			for (auto y : x)
-				cout << y.first << ' ' << y.second << ", ";
-			cout << endl;
-		}	
+		for (int i = 0; i < m; i++){
+			int u = min(G.id(G.u(G.edgeFromId(i))), G.id(G.v(G.edgeFromId(i))));
+			int v = max(G.id(G.u(G.edgeFromId(i))), G.id(G.v(G.edgeFromId(i))));
+
+			cout << '\t' << u << ' ' << v << ' ' << endl;
+			
+			auto comb = ConvexComb(i, G);
+
+			for (auto x : comb){
+				cout << "\t\t"; 
+				for (auto y : x)
+					cout << y.first << ' ' << y.second << ", ";
+				cout << endl;
+			}	
+		}
+	}
+	else{
+		while (readNautyGraph(G, cin)){
+			if (!check(G))
+				continue;
+
+			m = countEdges(G);
+			for (int i = 0; i < m; i++)
+				auto comb = ConvexComb(i, G);
+		}
 	}
 }
