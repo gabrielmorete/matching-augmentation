@@ -161,7 +161,7 @@ class MinimumCut: public GRBCallback {
 			If the solution is not a 2ECSS it adds a cut
 			separating one 2ECC.
 		*/
-		void MinimumCut::callback(){
+		void callback(){
 			try {
 				if (where == GRB_CB_MIPSOL){
 					/*
