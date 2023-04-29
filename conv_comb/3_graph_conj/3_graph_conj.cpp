@@ -173,7 +173,7 @@ class MinimumCut: public GRBCallback {
 					double *x[3];
 
 					for (int i = 0; i < 3; i++)
-						x[i] = getSolution(vars, m);
+						x[i] = getSolution(vars[i], m);
 
 					for (int g = 0; g < 3; g++){
 
