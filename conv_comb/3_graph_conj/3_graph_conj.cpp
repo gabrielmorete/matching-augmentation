@@ -57,9 +57,6 @@ void print(ListGraph &G, long long int msk){
 	cout << endl;
 }
 
-
-
-
 /*
 	This function reads the Graph from Stdio. Graph is 0-indexed
 	The input format will be
@@ -241,12 +238,14 @@ class MinimumCut: public GRBCallback {
 /*
 	coefficient is fixed to be 2/3.  model finds the combination with the minimum number of elements
 */
-vector<int> ConvexComb2(double *sol, int dim, long long int G, int op = 0){ //op = 0 (<=), op = 1 (==)
-	double coef = 2.0/3.0;
+vector<int> ConvexComb(int e, ListGraph &G, int op = 0){ //op = 0 (<=), op = 1 (==)
 
 	try{
 		GRBModel model(env);
 		model.set(GRB_IntParam_LazyConstraints, 1); // Allow callback constraints
+
+		int n = countNodes(G);
+		int m = countEdges(G);
 
 
 		GRBVar x[3][m]; // used to minimize number of positive variables
@@ -265,28 +264,34 @@ vector<int> ConvexComb2(double *sol, int dim, long long int G, int op = 0){ //op
 			for (int i = 0; i < 3; i++)
 				conv += x[i][j];
 
-			model.addConstr(conv <= 2, "e_" + to_string(j) + "<= 2"); // each edge appers at most twice
+			if (j != e)
+				model.addConstr(conv <= 2, "e_" + to_string(j) + "<= 2"); // each edge appers at most twice
+			else
+				model.addConstr(conv <= 0, "e_" + to_string(j) + "<= 2"); // removed edge
 		}		
-		
 		
 		model.optimize();
 		assert(model.get(GRB_IntAttr_SolCount) > 0);
 
+		double *opt_sol[3];
+
+		for (int i = 0; i < 3; i++)
+			opt_sol[i] = model.get(GRB_DoubleAttr_X, x[i], m);
 
 		vector<int> ans;
 
-		for (int i = 0; i < 3; i++) ////
-			//////////////////////////////////////////////////////////////////////////////////////
+		for (int i = 0; i < 3; i++){
+			long long int x;
+			for (j = 0; j < m; j++)
+				if (opt_sol[i][j] > 0.5)
+					x |= (1<<j);
+			ans.push_back(x);	
+		} 
 
+		for (int i = 0; i < 3; i++)
+			delete[] opt_sol[i];
 
-		double *opt_sol = model.get(GRB_DoubleAttr_X, lambda, n);
-
-		for (int i = 0; i < n; i++)
-			sol[i] = opt_sol[i];
-
-		delete[] opt_sol;
-
-		return model.get(GRB_DoubleAttr_ObjVal);
+		return ans;
 	
 	} catch(GRBException e) {
 		cout << "Error code = " << e.getErrorCode() << endl;
@@ -295,7 +300,7 @@ vector<int> ConvexComb2(double *sol, int dim, long long int G, int op = 0){ //op
 		cout << "Exception during optimization" << endl;
 	}
 
-	return -1;
+	return {-1};
 }
 
 
@@ -303,84 +308,27 @@ signed main(){
 	env.set(GRB_IntParam_OutputFlag, 0);
 	env.start();
 
-
 	ListGraph G;
 
 	ReadStdioGraph(G);
-
 	check(G);
 
 	print(G);
 
 	int n = countNodes(G);
 	int m = countEdges(G);
-	ListGraph::NodeMap<bool> ones(G, 1);	
 
-	vector<long long int> base;
-
-	assert(m <= 38);
-	memo.resize(1ll<<m);
-	for (long long int msk = 1; msk < (1ll << m) - 1; msk++){
-		if (__builtin_popcount(msk) < n or __builtin_popcount(msk) > 24)
-			continue;
-
-		for (int i = 0; i < m; i++)
-			if (msk & (1<<i) and memo[msk - (1<<i)])
-				memo[msk] = 1;
-
-		if (memo[msk])
-			continue;	
-
-		ListGraph::EdgeMap<bool> mask(G, 0);
-		for (int i = 0; i < m; i++)
-			if (msk & (1<<i))
-				mask[G.edgeFromId(i)] = 1;
-
-		SubGraph<ListGraph> H(G, ones, mask);
-
-		if (biEdgeConnected(H)){
-			base.push_back(msk);
-			memo[msk] = 1;
-		}
-	}
-
-	// Now I have every valid 2ECSS
-	// Test convex comb.
-	double sol[base.size()];
-
-	long long int fmsk =  (1<<m) - 1;
-
-	cout << "*" << ConvexComb(sol, m, fmsk, base) << endl;
-
-	int lstu = -1, lstv = -1;
+	cout << "*" << ConvexComb(m + 1, G) << endl;
 
 	for (int i = 0; i < m; i++){
 		int u = min(G.id(G.u(G.edgeFromId(i))), G.id(G.v(G.edgeFromId(i))));
 		int v = max(G.id(G.u(G.edgeFromId(i))), G.id(G.v(G.edgeFromId(i))));
 
-		if (u == lstu and v == lstv)
-			continue;
-
-		if ((u != 1 and u != 13 and u != 17) and (v != 1 and v != 13 and v != 17))
-			continue;
-
-			
-		lstu = u;
-		lstv = v;
-
 		cout << '\t' << u << ' ' << v << ' ' << endl;
 		
-		int n_comb = ConvexComb2(sol, m, fmsk - (1<<i), base);
+		auto comb = ConvexComb(i, G);
 
-		if (n_comb != 3){
-			cout << "counterexample found" << endl;
-			assert(0);
-		}
-	
-		for (int i = 0; i < base.size(); i++)
-			if (sol[i] > 0.01){
-				cout << "\t\t" << sol[i] << ' '; 
-				print(G, base[i]);
-			}
+		for (auto x : comb)
+			cout << "\t\t" << print(G, x) << endl;
 	}
 }
