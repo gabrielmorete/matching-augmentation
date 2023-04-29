@@ -289,7 +289,7 @@ vector< vector<pair<int, int>> > ConvexComb(int e, ListGraph &G, int op = 0){ //
 			long long int x = 0;
 			for (int j = 0; j < m; j++)
 				if (opt_sol[i][j] > 0.5)
-					ans[i].push_back({G.id(G.v( G.edgeFromId(j) )), G.id(G.v(  G.edgeFromId(j) ))});
+					ans[i].push_back({G.id(G.v( G.edgeFromId(j) )), G.id(G.u(  G.edgeFromId(j) ))});
 		} 
 
 		for (int i = 0; i < 3; i++)
