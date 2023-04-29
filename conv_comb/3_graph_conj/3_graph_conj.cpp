@@ -256,7 +256,7 @@ vector< vector<pair<int, int>> > ConvexComb(int e, ListGraph &G, int op = 0){ //
 
 		for (int i = 0; i < 3; i++)
 			for (int j = 0; j < m; j++)
-				x[i][j] = model.addVar(0.0, 1.0, 1.0, GRB_BINARY, "X_" + to_string(i) + "_" + to_string(j));
+				x[i][j] = model.addVar(0.0, 1.0, 0.0, GRB_BINARY, "X_" + to_string(i) + "_" + to_string(j));
 
 
 		for (int j = 0; j < m; j++){	
