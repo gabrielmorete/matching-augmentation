@@ -333,7 +333,9 @@ signed main(){
 		
 		auto comb = ConvexComb(i, G);
 
-		for (auto x : comb)
-			cout << "\t\t" << print(G, x) << endl;
+		for (auto x : comb){
+			cout << "\t\t"; 
+			print(G, x);
+		}	
 	}
 }
