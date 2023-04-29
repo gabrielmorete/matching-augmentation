@@ -238,7 +238,7 @@ class MinimumCut: public GRBCallback {
 /*
 	coefficient is fixed to be 2/3.  model finds the combination with the minimum number of elements
 */
-vector<int> ConvexComb(int e, ListGraph &G, int op = 0){ //op = 0 (<=), op = 1 (==)
+vector< vector<pair<int, int>> > ConvexComb(int e, ListGraph &G, int op = 0){ //op = 0 (<=), op = 1 (==)
 
 	try{
 		GRBModel model(env);
@@ -272,21 +272,24 @@ vector<int> ConvexComb(int e, ListGraph &G, int op = 0){ //op = 0 (<=), op = 1 (
 		}		
 		
 		model.optimize();
-		assert(model.get(GRB_IntAttr_SolCount) > 0);
+
+		if (model.get(GRB_IntAttr_SolCount)){
+			cout << "Conjecture is false" << endl;
+			exit(0);
+		}
 
 		double *opt_sol[3];
 
 		for (int i = 0; i < 3; i++)
 			opt_sol[i] = model.get(GRB_DoubleAttr_X, x[i], m);
 
-		vector<int> ans;
+		vector< vector<pair<int, int>> > ans(3);
 
 		for (int i = 0; i < 3; i++){
 			long long int x = 0;
 			for (int j = 0; j < m; j++)
 				if (opt_sol[i][j] > 0.5)
-					x |= (1<<j);
-			ans.push_back(x);	
+					ans[i].push_back({G.id(G.v(e)), G.id(G.v(e))});
 		} 
 
 		for (int i = 0; i < 3; i++)
@@ -333,7 +336,9 @@ signed main(){
 
 		for (auto x : comb){
 			cout << "\t\t"; 
-			print(G, x);
+			for (auto y in x)
+				cout << y.first << ' ' << y.second << ", "
+			cout << endl;
 		}	
 	}
 }
