@@ -336,7 +336,7 @@ signed main(){
 
 		for (auto x : comb){
 			cout << "\t\t"; 
-			for (auto y in x)
+			for (auto y : x)
 				cout << y.first << ' ' << y.second << ", "
 			cout << endl;
 		}	
