@@ -325,8 +325,6 @@ signed main(){
 	int n = countNodes(G);
 	int m = countEdges(G);
 
-	cout << "*" << ConvexComb(m + 1, G) << endl;
-
 	for (int i = 0; i < m; i++){
 		int u = min(G.id(G.u(G.edgeFromId(i))), G.id(G.v(G.edgeFromId(i))));
 		int v = max(G.id(G.u(G.edgeFromId(i))), G.id(G.v(G.edgeFromId(i))));
