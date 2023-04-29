@@ -23,5 +23,5 @@ edges.append([6, 14, 0])
 edges.append([10, 18, 0])
 
 print(20, len(edges))
-for x in sorted(edges):
+for x in edges:
 	print(x[0], x[1], x[2])
