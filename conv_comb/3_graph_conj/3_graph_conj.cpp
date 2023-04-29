@@ -170,7 +170,7 @@ class MinimumCut: public GRBCallback {
 						bridge or a cut.
 					*/
 
-					double *x[3] 
+					double *x[3];
 
 					for (int i = 0; i < 3; i++)
 						x[i] = getSolution(vars, m);
