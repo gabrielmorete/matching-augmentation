@@ -352,7 +352,7 @@ signed main(int argc, char *argv[]){
 			if (!check(G))
 				continue;
 
-			m = countEdges(G);
+			int m = countEdges(G);
 			for (int i = 0; i < m; i++)
 				auto comb = ConvexComb(i, G);
 		}
