@@ -204,30 +204,6 @@ void FindAllMatchings(int e_id, int &n, int &m, int &n_matched, int &tot_match, 
 	}
 }
 
-// void FastFindAllMatchings(int e_id, int &n, int &m, int &n_matched, int &total_matchings, 
-// 	ListGraph::NodeMap<bool> &matched,
-// 	ListGraph::EdgeMap<int> &cost,
-// 	GRBModel &frac_model,
-// 	GRBVar *frac_vars,
-// 	GRBModel &int_model,
-// 	GRBVar *int_vars,
-// 	ListGraph &G,
-// 	BDSAlgorithm &BDS){
-
-// 	if (e_id >= m or edge_mask == 0){
-// 		SolveCurrentMatching(total_matchings, cost, frac_model, frac_vars, int_model, int_vars, G, BDS);
-// 		return;
-// 	}
-
-// 	if (n_matched >= n - 1){ // matching cant increase, prune
-// 		SolveCurrentMatching(total_matchings, cost, frac_model, frac_vars, int_model, int_vars, G, BDS);
-// 		return;
-// 	}
-
-// }
-
-
-
 /*
 	Wrapper function for the matching backtrackig algorithm.
 */

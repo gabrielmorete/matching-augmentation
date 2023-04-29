@@ -445,7 +445,7 @@ signed main(int argc, char *argv[]){
 		else if (s == "-support")
 			__support_only = 1;
 		else {
-			cout<<"Usage: -stdio -verbose -log_start -all_matchings -support -start n -threads t"<<endl;
+			cout<<"Usage: -stdio -verbose -log_start -all_matchings -maximum -support -start n -threads t"<<endl;
 			return 0;
 		}
 	}
