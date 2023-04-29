@@ -285,7 +285,7 @@ vector<int> ConvexComb(int e, ListGraph &G, int op = 0){ //op = 0 (<=), op = 1 (
 
 		for (int i = 0; i < 3; i++){
 			long long int x;
-			for (j = 0; j < m; j++)
+			for (int j = 0; j < m; j++)
 				if (opt_sol[i][j] > 0.5)
 					x |= (1<<j);
 			ans.push_back(x);	
