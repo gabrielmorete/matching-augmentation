@@ -19,8 +19,8 @@ edges.append([11, 13, 0])
 edges.append([15, 17, 0])
 edges.append([19, 5, 0])
 
-edges.append([6, 14, 0])
-edges.append([10, 18, 0])
+edges.append([6, 14, 1])
+edges.append([10, 18, 1])
 
 print(20, len(edges))
 for x in edges:
