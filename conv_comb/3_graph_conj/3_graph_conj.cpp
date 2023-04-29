@@ -295,7 +295,7 @@ vector<int> ConvexComb(int e, ListGraph &G, int op = 0){ //op = 0 (<=), op = 1 (
 			delete[] opt_sol[i];
 
 		for (int i = 0; i < 3; i++)
-			delete[] x;
+			delete[] x[i];
 		delete [] x;
 
 		return ans;
