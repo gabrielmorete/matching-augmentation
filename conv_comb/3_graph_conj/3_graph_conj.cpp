@@ -145,11 +145,11 @@ GRBEnv env = GRBEnv(true);
 class MinimumCut: public GRBCallback {
 	public:
 		ListGraph *G;
-		GRBVar* vars[3];
+		GRBVar** vars;
 		int n, m;
 		
 		// Constructor for min cut
-		MinimumCut(GRBVar* _vars[3], int _n, int _m, ListGraph &_G){
+		MinimumCut(GRBVar** _vars, int _n, int _m, ListGraph &_G){
 			vars = _vars;
 			n = _n;
 			m = _m;
@@ -248,7 +248,10 @@ vector<int> ConvexComb(int e, ListGraph &G, int op = 0){ //op = 0 (<=), op = 1 (
 		int m = countEdges(G);
 
 
-		GRBVar x[3][m]; // used to minimize number of positive variables
+		GRBVar **x = new GRBVar*[3]; // used to minimize number of positive variables
+
+		for (int i = 0; i < 3; i++)
+			x[i] = new GRBVar[m];
 
 		MinimumCut cb = MinimumCut(x, n, m, G);
 		model.setCallback(&cb);
