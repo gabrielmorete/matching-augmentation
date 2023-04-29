@@ -308,7 +308,7 @@ vector< vector<pair<int, int>> > ConvexComb(int e, ListGraph &G, int op = 0){ //
 		cout << "Exception during optimization" << endl;
 	}
 
-	return {-1};
+	return {{-1, -1}};
 }
 
 
