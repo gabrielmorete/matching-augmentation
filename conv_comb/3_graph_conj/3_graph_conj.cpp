@@ -259,7 +259,7 @@ vector<int> ConvexComb(int e, ListGraph &G, int op = 0){ //op = 0 (<=), op = 1 (
 		// one variable for each subgraph (combination coefficient)
 		for (int i = 0; i < 3; i++)
 			for (int j = 0; j < m; j++)
-				x[i] = model.addVar(0.0, 1.0, 0, GRB_BINARY, "X_" + to_string(i) + "_" + to_string(j));
+				x[i][j] = model.addVar(0.0, 1.0, 0, GRB_BINARY, "X_" + to_string(i) + "_" + to_string(j));
 
 
 		for (int j = 0; j < m; j++){	
@@ -293,6 +293,10 @@ vector<int> ConvexComb(int e, ListGraph &G, int op = 0){ //op = 0 (<=), op = 1 (
 
 		for (int i = 0; i < 3; i++)
 			delete[] opt_sol[i];
+
+		for (int i = 0; i < 3; i++)
+			delete[] x;
+		delete [] x;
 
 		return ans;
 	
