@@ -273,7 +273,7 @@ vector< vector<pair<int, int>> > ConvexComb(int e, ListGraph &G, int op = 0){ //
 		
 		model.optimize();
 
-		if (model.get(GRB_IntAttr_SolCount)){
+		if (model.get(GRB_IntAttr_SolCount) == 0){
 			cout << "Conjecture is false" << endl;
 			exit(0);
 		}
