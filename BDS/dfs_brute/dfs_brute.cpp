@@ -7,6 +7,7 @@
 #include <tuple>
 #include <cassert>
 #include <fstream>
+#include <bits/stdc++.h>
 
 using namespace std;
 
@@ -14,7 +15,7 @@ using namespace std;
 #define dbg(x) cout << #x << " = " << x << endl
 #define chapa cout<<"oi meu chapa"<<endl;
 
-const double EPS = 1e-3;
+const double EPS = 1e-4;
 int sign(double x) { return (x > EPS) - (x < -EPS); }
 
 const int MAXN = 40;
@@ -221,8 +222,9 @@ void Backtracking(int v, int stage){
 void brute_all_cuts(){
 	cout<<"id edge"<<endl;
 	for (int i = 0; i < m; i++)
-		cout<<i<<' '<<a[i]<<' '<<b[i]<<endl;		
+		cout<<i<<' '<<a[i]<<' '<<b[i]<< ' ' << lp[i] <<endl;		
 
+	assert(n < 32);
 	for (int msk = 1; msk < (1<<n) - 1; msk++){
 		if (__builtin_popcount(msk) > (n + 1)/2)
 			continue;
@@ -238,7 +240,7 @@ void brute_all_cuts(){
 
 		assert(sign(cap - 2) >= 0);
 
-		if (sign(cap - 2) == 0){
+		if (sign(cap - 2.0) == 0){ // tight cut
 			for (int i = 0; i < m; i++){
 				bool in_u = (msk & (1<<a[i])) > 0;
 				bool in_v = (msk & (1<<b[i])) > 0;
@@ -248,9 +250,22 @@ void brute_all_cuts(){
 					cout<<0<<' ';
 			}
 
-			cout<<endl;
+			if (__verbose_mode){
+				cout << setprecision(12) << cap;			
+			}
+			cout << endl;
 		}
 	}
+
+	for (int i = 0; i < m; i++)
+		if (sign(lp[i] - 1.0) == 0){ // tight edge
+			for (int j = 0; j < m; j++)
+				if (j != i)
+					cout << "0 ";
+				else
+					cout << "1 ";
+			cout << endl;	
+		}
 }
 
 
@@ -328,7 +343,7 @@ void solve(){
 	if (!__no_brute)
 		Backtracking(0, 1);
 	else
-		AllDFS(); // no permutatio
+		AllDFS();
 
 	double f_v_min_max = 0;
 	double f_v_max_min = m + 1;
@@ -380,12 +395,11 @@ signed main(int argc, char *argv[]){
 	int start = 0;
 	int n_threads = 1;
 
-
 	for (int i = 1; i < argc; i++){
 		string s = argv[i];
 		if (s == "-verbose")
 			__verbose_mode = 1;
-		if (s == "-no-brute")
+		else if (s == "-no-brute")
 			__no_brute = 1;
 		else if (s == "-cuts")
 			__cuts = 1;

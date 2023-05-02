@@ -194,7 +194,8 @@ void ReadStdioGraph(ListGraph &G){
 
 	for (int i = 0; i < m; i++){
 		int a, b;
-		cin>>a>>b;
+		string s1, s2;
+		cin>>a>>b>>s1>>s2;
 
 		assert(a < n);
 		assert(b < n);

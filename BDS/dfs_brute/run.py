@@ -2,6 +2,7 @@ import os
 import subprocess
 import string 
 
+an_out = open("log_anunbiguous", "w")
 
 EPS = 1e-3
 def sign(x):
@@ -92,8 +93,32 @@ for name in os.listdir(path):
 		print("{:15s}: {:15s} | {:15s} | {}".format( str(name) + " - " + str(m_id), str(f_min) + " "  + str(f_max), str(f_v_min_max) + " "  + str(f_v_max_min), lp_val))
 		# print(name, "-", m_id, ":", f_min, f_max,"|", f_v_min_max, f_v_max_min,"|", lp_val)
 
-		if (f_v_max_min >= f_max - 0.01):
-			print("found a unambigous conter example")
+		if (f_v_min_max >= 1.334):
+			an_out.write("{:15s}: {:15s} | {:15s} | {}".format( str(name) + " - " + str(m_id), str(f_min) + " "  + str(f_max), str(f_v_min_max) + " "  + str(f_v_max_min), lp_val) + '\n')
+			file_p = str(n) + " " + str(m) + "\n"
+			for i in range(m):
+				file_p = file_p + str(edges[i][0]) + " " + str(edges[i][1]) + "\n"
+			
+			command ="echo \"" + file_p + " \"  | ./planarity" # command to be executed
+
+			r = int(subprocess.call(command, shell=True))
+			if r == 0:
+				an_out.write('\tPlanar\n')	
+			if r == 1:
+				an_out.write('\tSubdivision of K_33\n')	
+			if r == 2:
+				an_out.write('\tSubdivision of K5\n')	
+
+			lp_load = [0] * n
+
+			for i in range(m):
+				lp_load[ edges[i][0] ] += lp[i]
+				lp_load[ edges[i][1] ] += lp[i]
+
+			for i in range(n):
+				if lp_load[i] > 2.01:
+					an_out.write('\t(' + str(i) + ',' + str(lp_load[i]) + ')\n')	
+			
 
 		if (f_max >= 1.49 and half_integral(lp)):
 			print(name, m_id, "is a half integral CE")
@@ -112,7 +137,7 @@ for name in os.listdir(path):
 		print("Progress: ", cnt, " | ", gap_best,"|", name_best,"-",match_best)	
 
 print("Largest gap:", gap_best,"|", name_best,"-",match_best)
-
+an_out.close()
 
 
 	
