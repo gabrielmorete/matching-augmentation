@@ -1,17 +1,9 @@
 /*
-	Program receives two lists A, B of points and tests if every 
-	element of the list A can be expressed as a convex combination of the 
-	elements of the list B.
+	Program receivs a multigraph G=(V, E) and tests if 
 
-	Let a \in A, and q be a rational number
-
-		q . x >= \sum_{b in B} l_b b
-		\sum_{b in B} l_b = 1
-		l_b >= 0, b \in B
-
-	To run the program, flags -verbose -coef are not mandatory.
-	Use -verbose for extra information
-	Use -coef to overwrite the default values of the coefficients
+		(2/3)\chi^(G - e) = conv(\matcal(H))
+	
+	Where \mathcal(H) contais only graphs with the leaf chain property.
 
 	Author : Gabriel Morete	
 */
@@ -89,7 +81,7 @@ bool test(SubGraph<ListGraph> &G){ // for now, only simple cycle
 	return true;
 }
 
-bool test2(SubGraph<ListGraph> &G){ // for now, only simple cycle
+bool test2(SubGraph<ListGraph> &G){ // general chains
 	if (biEdgeConnected(G) != 1)
 		return false;
 
@@ -170,6 +162,9 @@ bool test2(SubGraph<ListGraph> &G){ // for now, only simple cycle
 }
 
 
+
+map<pair<int, int>> doubled;
+
 /*
 	This function reads the Graph from Stdio. Graph is 0-indexed
 	The input format will be
@@ -199,6 +194,8 @@ void ReadStdioGraph(ListGraph &G){
 
 		assert(a < n);
 		assert(b < n);
+
+		doubled[ {min(a, b), max(a, b)} ]++;
 
 		G.addEdge(G.nodeFromId(a), G.nodeFromId(b));
 	}
@@ -406,6 +403,8 @@ double ConvexComb2(double *sol, int dim, int G, vector<int> H, int op = 0){ //op
 }
 
 
+map<pair<int, int>> frq;
+
 signed main(){
 	env.set(GRB_IntParam_OutputFlag, 0);
 	env.start();
@@ -458,6 +457,9 @@ signed main(){
 		int u = min(G.id(G.u(G.edgeFromId(i))), G.id(G.v(G.edgeFromId(i))));
 		int v = max(G.id(G.u(G.edgeFromId(i))), G.id(G.v(G.edgeFromId(i))));
 
+		if (frq[{u, v}] > 0 or doubled[{u, v}] == 1)
+			continue;
+		
 		cout << '\t' << u << ' ' << v << ' ' << flush;
 		cout <<  ConvexComb(sol, m, fmsk - (1<<i), base) << endl;
 	
@@ -466,5 +468,7 @@ signed main(){
 				cout << "\t\t" << sol[i] << ' '; 
 				print(G, base[i]);
 			}
+
+		frq[{u, v}]++;	
 	}
 }
