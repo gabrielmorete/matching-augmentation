@@ -1,3 +1,7 @@
+/*
+	Codes that generate every BDS tree.
+*/
+
 #include <iostream>
 #include <algorithm>
 #include <vector>
@@ -403,16 +407,8 @@ signed main(int argc, char *argv[]){
 			__no_brute = 1;
 		else if (s == "-cuts")
 			__cuts = 1;
-		else if (s == "-start"){
-			s = argv[i + 1];
-			start = stoi(s);
-			i++;
-		} else if (s == "-threads"){
-			s = argv[i + 1];
-			n_threads = stoi(s);
-			i++;
-		} else {
-			cout<<"Usage: -stdio -verbose -no-brute -cuts"<<endl;
+		else {
+			cout<<"Usage: -verbose -no-brute -cuts"<<endl;
 			return 0;
 		}
 	}

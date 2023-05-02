@@ -1,3 +1,8 @@
+// Check if a graph is planar
+// Returns the subdivision of K33 or K5
+// Run with any commando line argument to
+// display human-readable information
+
 #include <iostream>
 #include <algorithm>
 #include <vector>

@@ -1,8 +1,11 @@
+# Runs dfs-brute on the solver output
+# Generates a log for un-ambiguous instances
+# with bds gap > 1.3
+
 import os
 import subprocess
-import string 
 
-an_out = open("log_anunbiguous", "w")
+an_out = open("log_unambiguous", "w")
 
 EPS = 1e-3
 def sign(x):
@@ -15,13 +18,7 @@ def half_integral(lp):
 			ok = 0
 	return ok	
 
-# os.listdir(path) lists files and directories
-# subprocess.call("make dfs_brute", shell=True)
-
 path = "."
-# files is a list with the name of all FILES
-
-# variables for smallest example with gap >= 1.4
 
 #variables for largest gap
 name_best = "none"
@@ -75,11 +72,6 @@ for name in os.listdir(path):
 			file_in = file_in + str(edges[i][0]) + " " + str(edges[i][1]) +  " " + str(cost[i]) +  " " + str(lp[i]) + "\n"
 		file_in = file_in + name + " " + m_id + "\n"	
 		
-		# print("---")
-		# print(file_in)
-
-		# continue
-
 		command ="echo \"" + file_in + " \"  | ./dfs_brute" # command to be executed
 		out = str(subprocess.check_output(command, shell=True))
 
@@ -91,7 +83,6 @@ for name in os.listdir(path):
 		lp_val = float(lp_val[:-3])
 
 		print("{:15s}: {:15s} | {:15s} | {}".format( str(name) + " - " + str(m_id), str(f_min) + " "  + str(f_max), str(f_v_min_max) + " "  + str(f_v_max_min), lp_val))
-		# print(name, "-", m_id, ":", f_min, f_max,"|", f_v_min_max, f_v_max_min,"|", lp_val)
 
 		if (f_v_min_max >= 1.334):
 			an_out.write("{:15s}: {:15s} | {:15s} | {}".format( str(name) + " - " + str(m_id), str(f_min) + " "  + str(f_max), str(f_v_min_max) + " "  + str(f_v_max_min), lp_val) + '\n')
@@ -119,10 +110,6 @@ for name in os.listdir(path):
 				if lp_load[i] > 2.01:
 					an_out.write('\t(' + str(i) + ',' + str(lp_load[i]) + ')\n')	
 			
-
-		if (f_max >= 1.49 and half_integral(lp)):
-			print(name, m_id, "is a half integral CE")
-
 		if f_max > gap_best:
 			gap_best = f_max
 			name_best = name

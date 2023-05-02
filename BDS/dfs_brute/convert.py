@@ -1,3 +1,7 @@
+# Convert bruteforce output to
+#	0 - Human readable
+#	1 - dfs-brute input
+
 import sys
 
 opt = int(sys.argv[1])
