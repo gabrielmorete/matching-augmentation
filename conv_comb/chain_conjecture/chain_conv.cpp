@@ -189,8 +189,7 @@ void ReadStdioGraph(ListGraph &G){
 
 	for (int i = 0; i < m; i++){
 		int a, b;
-		string s1, s2;
-		cin>>a>>b>>s1>>s2;
+		cin>>a>>b;
 
 		assert(a < n);
 		assert(b < n);
@@ -409,11 +408,8 @@ signed main(){
 	env.set(GRB_IntParam_OutputFlag, 0);
 	env.start();
 
-
 	ListGraph G;
-
 	ReadStdioGraph(G);
-
 	check(G);
 
 	print(G);
