@@ -163,7 +163,7 @@ bool test2(SubGraph<ListGraph> &G){ // general chains
 
 
 
-map<pair<int, int>> doubled;
+map<pair<int, int>, int> doubled;
 
 /*
 	This function reads the Graph from Stdio. Graph is 0-indexed
@@ -403,7 +403,7 @@ double ConvexComb2(double *sol, int dim, int G, vector<int> H, int op = 0){ //op
 }
 
 
-map<pair<int, int>> frq;
+map<pair<int, int>, int> frq;
 
 signed main(){
 	env.set(GRB_IntParam_OutputFlag, 0);
