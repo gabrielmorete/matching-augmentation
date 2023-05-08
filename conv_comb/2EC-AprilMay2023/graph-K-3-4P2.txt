@@ -1,0 +1,14 @@
+* (7apr23) i/p file for gen-lrs-2ec-nored.awk
+* example (K_{3,8} + M) where M is a matching of 4 edges on the 8-node set
+* NO zero edges ... to see extreme pts of 2ec LP
+
+Nnodes	11
+* #edges = 28, 4 ec, no hamilton-cycle
+
+* K_{3,8} complete bi-graph: top 3 nodes 1,2,3 bot 8 nodes 4,5,6,7,8,9,10,11
+edges	1,4 1,5 1,6 1,7 1,8 1,9 1,10  1,11
+edges	2,4 2,5 2,6 2,7 2,8 2,9 2,10  2,11
+edges	3,4 3,5 3,6 3,7 3,8 3,9 3,10  3,11
+* matching M of 4 edges {4,5}  {6,7}  {8,9}  {10,11}
+edges	4,5 6,7 8,9 10,11
+

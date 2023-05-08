@@ -1,0 +1,28 @@
+
+*lrs:lrslib v.6.2 2016.3.28(64bit,lrsgmp.h gmp v.6.1)
+*Copyright (C) 1995,2016, David Avis   avis@cs.mcgill.ca 
+*Input taken from file graph-K4.hrep
+V-representation
+begin
+***** 7 rational
+ 1  1  1  1  1  1  1 
+ 1  1  0  1  1  1  1 
+ 1  1/2  1/2  1  1/2  1  1 
+ 1  1  1  1  0  1  1 
+ 1  1  1  0  0  1  1 
+ 1  0  1  1  1  1  1 
+ 1  1  1  1  1  0  1 
+ 1  1  0  1  1  0  1 
+ 1  1  1  0  1  1  1 
+ 1  1  1/2  1/2  1  1  1/2 
+ 1  1/2  1  1/2  1  1/2  1 
+ 1  1  1  1  1  1  0 
+ 1  0  1  1  1  1  0 
+ 1  1  1  1  1/2  1/2  1/2 
+end
+*Totals: vertices=14 rays=0 bases=184 integer_vertices=10 
+*Dictionary Cache: max size= 9 misses= 0/183   Tree Depth= 8
+*lrs:lrslib v.6.2 2016.3.28(64bit,lrsgmp.h)
+*0.006u 0.003s 1872Kb 0 flts 0 swaps 0 blks-in 8 blks-out 
+
+

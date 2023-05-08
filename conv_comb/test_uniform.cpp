@@ -23,6 +23,7 @@
 #include <string>
 #include <cassert>
 #include <iomanip>
+#include <cmath>
 using namespace std;
 
 // Working with doubles
@@ -114,7 +115,7 @@ signed main(int argc, char const *argv[]){
 
 	vector<pair<int, int>> edges;
 	int a, b;
-	while (edges_file >> a >> b)
+	while (edge_file >> a >> b)
 		edges.push_back({a, b});
 
 	int m = edges.size();
@@ -126,18 +127,24 @@ signed main(int argc, char const *argv[]){
 		exit(1);
 	}
 	
+	ExtremePoint fx;
 	while (frac_file >> fx){
 		assert(fx.getDim() == m + 1);
 
 		vector<double> deg(m + 1, 0); // m >= n
 
 		for (int e = 0; e < m; e++){
-			deg[ edges[e].first ] += fx[e]
-			deg[ edges[e].second ] += fx[e]
+			deg[ edges[e].first ] += fx[e + 1];
+			deg[ edges[e].second ] += fx[e + 1];
 		}
 
-		for (int v = 0; v <= m; v++)
-			assert( sign( deg[v] - floor(deg[v]) ) == 0 );
+		for (int v = 0; v <= m; v++){
+			if (sign( deg[v] - floor(deg[v]) ) != 0){
+				cout << v << " " << deg[v] << endl;
+				cout << fx << endl;
+				assert(0);
+			}
+		}
 	}
 }
 

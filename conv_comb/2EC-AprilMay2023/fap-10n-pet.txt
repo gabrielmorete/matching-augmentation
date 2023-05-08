@@ -1,0 +1,13 @@
+* 19apr23 Petersen graph with UNIT capacities, double edges for spokes
+* FAP example on Pet (Petersen graph)
+* NO zero edges ... to see extreme pts of 2ec LP
+* 2 cycles: outer 1,2,3,4,5,1 inner 6,7,8,9,10,6 spokes 1,6 2,4 3,7 4,10 5,8
+
+Nnodes	10
+
+* 2 cycles: outer 1,2,3,4,5,1 inner 6,7,8,9,10,6 spokes 1,6 2,9 3,7 4,10 5,8
+edges	1,2	2,3	3,4	4,5	5,1
+edges	6,7	7,8	8,9	9,10	10,6
+edges	1,6	2,9	3,7	4,10	5,8
+edges	1,6	2,9	3,7	4,10	5,8
+

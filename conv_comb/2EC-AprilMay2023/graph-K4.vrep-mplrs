@@ -1,0 +1,26 @@
+*mplrs:lrslib v.7.1 2020.6.4(hybrid arithmetic)8 processes
+*Input taken from graph-K4.hrep
+*Starting depth of 2 maxcobases=50 maxdepth=0 lmin=3 lmax=3 scale=100
+*Phase 1 time: 0 seconds.
+V-representation
+begin
+***** 7 rational
+ 1  1  1  1  1  1  1 
+ 1  1  0  1  1  1  1 
+ 1  1  1  1  0  1  1 
+ 1  1  1  0  0  1  1 
+ 1  0  1  1  1  1  1 
+ 1  1  1  1  1  0  1 
+ 1  1  0  1  1  0  1 
+ 1  1  1  0  1  1  1 
+ 1  1  1  1  1  1  0 
+ 1  0  1  1  1  1  0 
+ 1  1/2  1/2  1  1/2  1  1 
+ 1  1  1/2  1/2  1  1  1/2 
+ 1  1/2  1  1/2  1  1/2  1 
+ 1  1  1  1  1/2  1/2  1/2 
+end
+*Total number of jobs: 27, L became empty 1 times, tree depth 8
+*Finished with 6 64-bit, 0 128-bit, 0 GMP workers
+*Totals: vertices=14 rays=0 bases=184 integer-vertices=10
+*Elapsed time: 0 seconds.
