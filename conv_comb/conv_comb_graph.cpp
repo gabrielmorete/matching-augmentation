@@ -239,7 +239,7 @@ vector< vector<pair<int, int>> > ConvexComb(int e, ListGraph &G){
 				if (mul[{v, u}] > 1)
 					f = 3;
 
-				cout << v << ' ' << u << ":" << f << endl;
+				// cout << v << ' ' << u << ":" << f << endl;
 
 				model.addConstr(conv <= f, "e_" + to_string(j) + "<= 2"); // each edge appers at most twice
 			}
