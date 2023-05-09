@@ -319,7 +319,7 @@ signed main(int argc, char *argv[]){
 			int m = countEdges(G);
 			auto comb = ConvexComb(m + 1, G);
 	
-			print(G)
+			print(G);
 			for (auto x : comb){
 				cout << "\t\t"; 
 				for (auto y : x)
