@@ -23,6 +23,8 @@
 #include <lemon/nauty_reader.h>
 #include "gurobi_c++.h"
 
+#define NUM_THEADS 4
+
 
 using namespace std;
 using namespace lemon;
@@ -270,6 +272,7 @@ vector< vector<pair<int, int>> > ConvexComb(int e, ListGraph &G){
 		model.optimize();
 
 		if (model.get(GRB_IntAttr_SolCount) == 0){
+			print(G);
 			cout << "Conjecture is false" << endl;
 			exit(0);
 		}
@@ -307,6 +310,15 @@ vector< vector<pair<int, int>> > ConvexComb(int e, ListGraph &G){
 	return {};
 }
 
+bool ReadGraph(ListGraph &G){
+	bool ok = 1;
+	#pragma omp critical 
+	{ 
+		ok = (bool)(readNautyGraph(G, cin));
+	}
+	return ok;
+}
+
 
 signed main(int argc, char *argv[]){
 	env.set(GRB_IntParam_OutputFlag, 0);
@@ -334,23 +346,26 @@ signed main(int argc, char *argv[]){
 		}	
 	}
 	else{
-		while (readNautyGraph(G, cin)){
+		#pragma omp parallel num_threads(NUM_THEADS)
+		{
+			while (ReadGraph(G, cin)){
 
-			if (check(G) == 0)
-				continue;
-	
-			int m = countEdges(G);
-	
-			// print(G);
+				if (check(G) == 0)
+					continue;
+		
+				int m = countEdges(G);
+		
+				// print(G);
 
-			auto comb = ConvexComb(m + 1, G);
+				auto comb = ConvexComb(m + 1, G);
 
-			// for (auto x : comb){
-			// 	cout << "\t\t"; 
-			// 	for (auto y : x)
-			// 		cout << y.first << ' ' << y.second << ", ";
-			// 	cout << endl;
-			// }	
+				// for (auto x : comb){
+				// 	cout << "\t\t"; 
+				// 	for (auto y : x)
+				// 		cout << y.first << ' ' << y.second << ", ";
+				// 	cout << endl;
+				// }	
+			}
 		}
 	}
 }
