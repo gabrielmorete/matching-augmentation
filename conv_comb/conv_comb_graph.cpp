@@ -294,7 +294,7 @@ signed main(int argc, char *argv[]){
 
 	ListGraph G;
 
-	if (argc == 1){
+	if (argc > 1){
 		ReadStdioGraph(G);
 		if (biEdgeConnected(G) == 0){
 			cout << "Invalid input - not 2EC" << endl;
