@@ -348,7 +348,7 @@ signed main(int argc, char *argv[]){
 	else{
 		#pragma omp parallel num_threads(NUM_THEADS)
 		{
-			while (ReadGraph(G, cin)){
+			while (ReadGraph(G)){
 
 				if (check(G) == 0)
 					continue;
