@@ -294,23 +294,33 @@ signed main(int argc, char *argv[]){
 
 	ListGraph G;
 
+	if (argc == 1){
+		ReadStdioGraph(G);
+		if (biEdgeConnected(G) == 0){
+			cout << "Invalid input - not 2EC" << endl;
+			return 0;
+		}
 
-	ReadStdioGraph(G);
-	if (biEdgeConnected(G) == 0){
-		cout << "Invalid input - not 2EC" << endl;
-		return 0;
+		print(G);
+
+		int m = countEdges(G);
+		auto comb = ConvexComb(m + 1, G);
+
+		for (auto x : comb){
+			cout << "\t\t"; 
+			for (auto y : x)
+				cout << y.first << ' ' << y.second << ", ";
+			cout << endl;
+		}	
 	}
+	else{
+		while (readNautyGraph(G, cin)){
+			if (!check(G))
+				continue;
 
-	print(G);
-
-	int m = countEdges(G);
-	auto comb = ConvexComb(m + 1, G);
-
-	for (auto x : comb){
-		cout << "\t\t"; 
-		for (auto y : x)
-			cout << y.first << ' ' << y.second << ", ";
-		cout << endl;
-	}	
+			int m = countEdges(G);
+			auto comb = ConvexComb(m + 1, G);
+		}
+	}
 }
 
