@@ -324,9 +324,9 @@ signed main(int argc, char *argv[]){
 	env.set(GRB_IntParam_OutputFlag, 0);
 	env.start();
 
-	ListGraph G;
-
 	if (argc > 1){
+		ListGraph G;
+
 		ReadStdioGraph(G);
 		if (biEdgeConnected(G) == 0){
 			cout << "Invalid input - not 2EC" << endl;
@@ -348,6 +348,7 @@ signed main(int argc, char *argv[]){
 	else{
 		#pragma omp parallel num_threads(NUM_THEADS)
 		{
+			ListGraph G;
 			while (ReadGraph(G)){
 
 				if (check(G) == 0)
