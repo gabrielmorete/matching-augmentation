@@ -317,9 +317,11 @@ signed main(int argc, char *argv[]){
 		while (readNautyGraph(G, cin)){
 
 			int m = countEdges(G);
-			auto comb = ConvexComb(m + 1, G);
 	
 			print(G);
+
+			auto comb = ConvexComb(m + 1, G);
+
 			for (auto x : comb){
 				cout << "\t\t"; 
 				for (auto y : x)
