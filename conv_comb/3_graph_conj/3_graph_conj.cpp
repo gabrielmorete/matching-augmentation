@@ -101,11 +101,11 @@ void ReadStdioGraph(ListGraph &G){
 
 // Checks if the graph is 4-reg, 4-ec
 bool check(ListGraph &G){
-	for (ListGraph::NodeIt v(G); v != INVALID; ++v)
-		if (countIncEdges(G, v) != 4){
-			// cout << "Not 4-regular" << endl;
-			return 0;
-		}
+	// for (ListGraph::NodeIt v(G); v != INVALID; ++v)
+	// 	if (countIncEdges(G, v) != 4){
+	// 		// cout << "Not 4-regular" << endl;
+	// 		return 0;
+	// 	}
 
 	int m = countEdges(G);
 	// Check 4-edge connected by definition
@@ -334,6 +334,9 @@ signed main(int argc, char *argv[]){
 		for (int i = 0; i < m; i++){
 			int u = min(G.id(G.u(G.edgeFromId(i))), G.id(G.v(G.edgeFromId(i))));
 			int v = max(G.id(G.u(G.edgeFromId(i))), G.id(G.v(G.edgeFromId(i))));
+
+			if (check(G) == 0)
+				continue;
 
 			cout << '\t' << u << ' ' << v << ' ' << endl;
 			
