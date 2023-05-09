@@ -315,8 +315,6 @@ signed main(int argc, char *argv[]){
 	}
 	else{
 		while (readNautyGraph(G, cin)){
-			if (!check(G))
-				continue;
 
 			int m = countEdges(G);
 			auto comb = ConvexComb(m + 1, G);
