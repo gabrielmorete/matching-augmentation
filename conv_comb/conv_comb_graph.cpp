@@ -1,17 +1,8 @@
 /*
-	Program receives two lists A, B of points and tests if every 
-	element of the list A can be expressed as a convex combination of the 
-	elements of the list B.
+	Test combination with 3 graphs
 
-	Let a \in A, and q be a rational number
-
-		q . x >= \sum_{b in B} l_b b
-		\sum_{b in B} l_b = 1
-		l_b >= 0, b \in B
-
-	To run the program, flags -verbose -coef are not mandatory.
-	Use -verbose for extra information
-	Use -coef to overwrite the default values of the coefficients
+	counter example
+	7 6, 7 5, 6 5, 9 4, 8 4, 9 3, 8 3, 4 3, 9 2, 7 2, 6 2, 5 2, 8 1, 7 1, 6 1, 5 1, 9 0, 8 0, 4 0, 3 0,
 
 	Author : Gabriel Morete	
 */
@@ -56,6 +47,35 @@ void print(ListGraph &G, long long int msk){
 	
 	cout << endl;
 }
+
+// Checks if the graph is 4-ec
+bool check(ListGraph &G){
+	int m = countEdges(G);
+	// Check 4-edge connected by definition
+
+	ListGraph::NodeMap<bool> ones(G, 1);
+	ListGraph::EdgeMap<bool> edges(G, 1);
+
+	for (int i = 0; i < m; i++)
+		for (int j = i + 1; j < m; j++)
+			for (int k = j + 1; k < m; k++){
+				edges[G.edgeFromId(i)] = 0;
+				edges[G.edgeFromId(j)] = 0;
+				edges[G.edgeFromId(k)] = 0;
+
+				SubGraph<ListGraph> H(G, ones, edges);
+
+				if (connected(H) == 0){
+					return 0;
+				}
+
+				edges[G.edgeFromId(i)] = 1;
+				edges[G.edgeFromId(j)] = 1;
+				edges[G.edgeFromId(k)] = 1;
+			}
+	return true;
+}
+
 
 
 map< pair<int, int>, int > mul;
