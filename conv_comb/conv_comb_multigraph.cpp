@@ -295,7 +295,7 @@ bool ReadGraph(ListGraph &G, map<pair<int, int>, int> &multi){
 			for (int i = 0; i < m; i++){
 				int a, b, c;
 				cin>>a>>b>>c;
-
+				
 				multi[{a, b}] = c;
 
 				for (int j = 0; j < c; j++)
@@ -327,12 +327,12 @@ signed main(int argc, char *argv[]){
 
 			auto comb = ConvexComb(m + 1, G, multi);
 
-			// for (auto x : comb){
-			// 	cout << "\t\t"; 
-			// 	for (auto y : x)
-			// 		cout << y.first << ' ' << y.second << ", ";
-			// 	cout << endl;
-			// }	
+			for (auto x : comb){
+				cout << "\t\t"; 
+				for (auto y : x)
+					cout << y.first << ' ' << y.second << ", ";
+				cout << endl;
+			}	
 		}
 	}
 }
