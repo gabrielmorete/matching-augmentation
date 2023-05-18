@@ -320,7 +320,7 @@ signed main(int argc, char *argv[]){
 
 			// print(G);
 
-			auto comb = ConvexComb(m + 1, G);
+			auto comb = ConvexComb(m + 1, G, multi);
 
 			// for (auto x : comb){
 			// 	cout << "\t\t"; 
