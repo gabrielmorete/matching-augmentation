@@ -316,7 +316,7 @@ signed main(int argc, char *argv[]){
 		ListGraph G;
 		map<pair<int, int>, int> multi;
 		while (ReadGraph(G, multi)){
-			print(G);
+			// print(G);
 
 			if (check(G) == 0)
 				continue;
@@ -324,7 +324,7 @@ signed main(int argc, char *argv[]){
 			int m = countEdges(G);
 	
 
-			// print(G);
+			print(G);
 
 
 			// auto comb = ConvexComb(m + 1, G, multi);
