@@ -52,8 +52,14 @@ void print(ListGraph &G, long long int msk){
 // Checks if the graph is 4-ec
 bool check(ListGraph &G){
 	int m = countEdges(G);
-	// Check 4-edge connected by definition
+	for (ListGraph::NodeIt v(G); v != INVALID; ++v)
+		if (countIncEdges(G, v) != 4){
+			// cout << "Not 4-regular" << endl;
+			return 0;
+		}
 
+
+	// Check 4-edge connected by definition
 	ListGraph::NodeMap<bool> ones(G, 1);
 	ListGraph::EdgeMap<bool> edges(G, 1);
 
@@ -77,54 +83,8 @@ bool check(ListGraph &G){
 	return true;
 }
 
-
-
-map< pair<int, int>, int > mul;
-
-
-/*
-	This function reads the Graph from Stdio. Graph is 0-indexed
-	The input format will be
-		n m       number of nodes, edges
-		a_1 b_1    edge between a_1, b_1
-		...
-		a_m b_m
-*/
-void ReadStdioGraph(ListGraph &G){
-	int n, m;
-	cin>>n>>m;
-	
-	assert(n >= 3);
-	assert(m >= n);
-
-	for (int i = 0; i < n; i++){
-		ListGraph::Node v = G.addNode();
-		if (G.id(v) != i)
-			cout<<"Error : vertex don't match id"<<endl;
-		assert(G.id(v) == i);
-	}
-
-	for (int i = 0; i < m; i++){
-		int a, b;
-		cin>>a>>b;
-
-		assert(a < n);
-		assert(b < n);
-
-
-		if (a > b)
-			swap(a, b);
-
-		mul[{a, b}]++;
-
-		if (mul[{a, b}] == 1)
-			G.addEdge(G.nodeFromId(a), G.nodeFromId(b));
-	}
-}
-
 // Gurobi enviroment
 GRBEnv env = GRBEnv(true);
-
 
 /*
 	Callback function class.
@@ -225,14 +185,14 @@ class MinimumCut: public GRBCallback {
 /*
 	coefficient is fixed to be 2/3.  model finds the combination with the minimum number of elements
 */
-vector< vector<pair<int, int>> > ConvexComb(int e, ListGraph &G){
+vector< vector<pair<int, int>> > ConvexComb(int e, ListGraph &G, map<pair<int, int>, int> &multi){
 
 	try{
 		GRBModel model(env);
 		model.set(GRB_IntParam_LazyConstraints, 1); // Allow callback constraints
 
 		int n = countNodes(G);
-		int m = countEdges(G);
+		int m = countEdges(G); // Not all edges will be used, gurobi will preprocess
 
 		GRBVar **x = new GRBVar*[3]; // used to minimize number of positive variables
 
@@ -246,7 +206,7 @@ vector< vector<pair<int, int>> > ConvexComb(int e, ListGraph &G){
 			for (int j = 0; j < m; j++)
 				x[i][j] = model.addVar(0.0, 1.0, 0.0, GRB_BINARY, "X_" + to_string(i) + "_" + to_string(j));
 
-
+		set<pair<int, int>> used;
 		for (int j = 0; j < m; j++){	
 			GRBLinExpr conv = 0;
 			for (int i = 0; i < 3; i++)
@@ -256,13 +216,18 @@ vector< vector<pair<int, int>> > ConvexComb(int e, ListGraph &G){
 				int v = min( G.id( G.v( G.edgeFromId(j) ) ), G.id( G.u( G.edgeFromId(j) ) )  );
 				int u = max( G.id( G.v( G.edgeFromId(j) ) ), G.id( G.u( G.edgeFromId(j) ) )  );
 
+				if (used.count({v, u}) > 0)
+					continue;
+
+				used.insert({v, u});
+
 				int f = 2;
-				if (mul[{v, u}] > 1)
+				if (multi[{v, u}] > 1)
 					f = 3;
 
 				// cout << v << ' ' << u << ":" << f << endl;
 
-				model.addConstr(conv <= f, "e_" + to_string(j) + "<= 2"); // each edge appers at most twice
+				model.addConstr(conv <= f, "e_" + to_string(j) + "<= " + to_string(f)); // each edge appers at most twice
 			}
 			else
 				model.addConstr(conv <= 0, "e_" + to_string(j) + "<= 2"); // removed edge
@@ -309,11 +274,29 @@ vector< vector<pair<int, int>> > ConvexComb(int e, ListGraph &G){
 	return {};
 }
 
-bool ReadGraph(ListGraph &G){
+bool ReadGraph(ListGraph &G, map<pair<int, int>, int> &multi){
 	bool ok = 1;
 	#pragma omp critical 
 	{ 
-		ok = (bool)(readNautyGraph(G, cin));
+		// Multigraph output from multig		
+		// n m a_1 b_1 c_1 ... a_m b_m c_m (an edge from a_i to b_i with multiplicity c_i)	
+
+		int n, m;
+		ok = cin >> n >> m;
+
+		if (ok){
+			assert(n == 2 * m);
+
+			for (int i = 0){
+				int a, b, c;
+				cin>>a>>b>>c;
+
+				multi[{a, b}] = c;
+
+				for (int j = 0; j < c; j++)
+					G.addEdge(a, b);
+			}
+		}
 	}
 	return ok;
 }
@@ -323,49 +306,28 @@ signed main(int argc, char *argv[]){
 	env.set(GRB_IntParam_OutputFlag, 0);
 	env.start();
 
-	if (argc > 1){
+	#pragma omp parallel num_threads(NUM_THEADS)
+	{
 		ListGraph G;
+		map<pair<int, int>, int> multi;
+		while (ReadGraph(G, multi)){
 
-		ReadStdioGraph(G);
-		if (biEdgeConnected(G) == 0){
-			cout << "Invalid input - not 2EC" << endl;
-			return 0;
-		}
+			if (check(G) == 0)
+				continue;
+	
+			int m = countEdges(G);
+	
 
-		print(G);
+			// print(G);
 
-		int m = countEdges(G);
-		auto comb = ConvexComb(m + 1, G);
+			auto comb = ConvexComb(m + 1, G);
 
-		for (auto x : comb){
-			cout << "\t\t"; 
-			for (auto y : x)
-				cout << y.first << ' ' << y.second << ", ";
-			cout << endl;
-		}	
-	}
-	else{
-		#pragma omp parallel num_threads(NUM_THEADS)
-		{
-			ListGraph G;
-			while (ReadGraph(G)){
-
-				if (check(G) == 0)
-					continue;
-		
-				int m = countEdges(G);
-		
-				// print(G);
-
-				auto comb = ConvexComb(m + 1, G);
-
-				// for (auto x : comb){
-				// 	cout << "\t\t"; 
-				// 	for (auto y : x)
-				// 		cout << y.first << ' ' << y.second << ", ";
-				// 	cout << endl;
-				// }	
-			}
+			// for (auto x : comb){
+			// 	cout << "\t\t"; 
+			// 	for (auto y : x)
+			// 		cout << y.first << ' ' << y.second << ", ";
+			// 	cout << endl;
+			// }	
 		}
 	}
 }
