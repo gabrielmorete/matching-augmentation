@@ -22,7 +22,7 @@
 #include <lemon/nauty_reader.h>
 #include "gurobi_c++.h"
 
-#define NUM_THEADS 10
+#define NUM_THEADS 1
 
 
 using namespace std;
@@ -289,6 +289,8 @@ bool ReadGraph(ListGraph &G, map<pair<int, int>, int> &multi){
 			ok = 0;
 
 		if (ok){
+			print(G);
+
 			assert(2 * n == m);
 
 			for (int i = 0; i < n; i++)
