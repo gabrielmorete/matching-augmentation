@@ -289,9 +289,12 @@ bool ReadGraph(ListGraph &G, map<pair<int, int>, int> &multi){
 			ok = 0;
 
 		if (ok){
-			print(G);
+			// print(G);
 			cout << "--" << n << ' ' << m << endl;
-
+			for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+					cout << G.id(G.v(e)) << ' ' << G.id(G.u(e)) << ", ";
+				cout << endl;
+				
 			assert(2 * n == m);
 
 			for (int i = 0; i < n; i++)
