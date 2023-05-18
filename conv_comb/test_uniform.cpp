@@ -1,18 +1,4 @@
 /*
-	Program receives two lists A, B of points and tests if every 
-	element of the list A can be expressed as a convex combination of the 
-	elements of the list B.
-
-	Let a \in A, and q be a rational number
-
-		q . x >= \sum_{b in B} l_b b
-		\sum_{b in B} l_b = 1
-		l_b >= 0, b \in B
-
-	To run the program, flags -verbose -coef are not mandatory.
-	Use -verbose for extra information
-	Use -coef to overwrite the default values of the coefficients
-
 	Author : Gabriel Morete	
 */
 
@@ -128,24 +114,37 @@ signed main(int argc, char const *argv[]){
 	}
 	
 	ExtremePoint fx;
+	int mxo = 0;
 	while (frac_file >> fx){
 		assert(fx.getDim() == m + 1);
 
 		vector<double> deg(m + 1, 0); // m >= n
 
+		int co = 0;
+
 		for (int e = 0; e < m; e++){
 			deg[ edges[e].first ] += fx[e + 1];
 			deg[ edges[e].second ] += fx[e + 1];
+		
+			if (sign(fx[e + 1] - 0.5) == 0)
+				co++;
 		}
 
+
 		for (int v = 0; v <= m; v++){
-			if (sign( deg[v] - floor(deg[v]) ) != 0){
+			if (sign( deg[v] - floor(deg[v]) ) != 0 and co == 9){
+				mxo = max(co, mxo);
 				cout << v << " " << deg[v] << endl;
 				cout << fx << endl;
-				assert(0);
+					for (int e = 0; e < m; e++)
+						cout << '\t' << fx[e + 1] << ' ' << edges[e].first << ' ' << edges[e].second << endl;
+				//assert(0);
+				break;	
 			}
 		}
 	}
+
+	cout << "--" << mxo << endl;
 }
 
 
