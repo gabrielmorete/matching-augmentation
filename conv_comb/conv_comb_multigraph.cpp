@@ -289,6 +289,9 @@ bool ReadGraph(ListGraph &G, map<pair<int, int>, int> &multi){
 			ok = 0;
 
 		if (ok){
+			multi.clear();
+			G.clear();
+			
 			for (int i = 0; i < n; i++)
 				ListGraph::Node v = G.addNode();
 
