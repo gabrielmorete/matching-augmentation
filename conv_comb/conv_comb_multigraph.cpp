@@ -52,11 +52,11 @@ void print(ListGraph &G, long long int msk){
 // Checks if the graph is 4-ec
 bool check(ListGraph &G){
 	int m = countEdges(G);
-	for (ListGraph::NodeIt v(G); v != INVALID; ++v)
-		if (countIncEdges(G, v) != 4){
-			// cout << "Not 4-regular" << endl;
-			return 0;
-		}
+	// for (ListGraph::NodeIt v(G); v != INVALID; ++v)
+	// 	if (countIncEdges(G, v) != 4){
+	// 		// cout << "Not 4-regular" << endl;
+	// 		return 0;
+	// 	}
 
 
 	// Check 4-edge connected by definition
