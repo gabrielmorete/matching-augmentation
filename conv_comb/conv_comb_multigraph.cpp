@@ -282,7 +282,11 @@ bool ReadGraph(ListGraph &G, map<pair<int, int>, int> &multi){
 		// n m a_1 b_1 c_1 ... a_m b_m c_m (an edge from a_i to b_i with multiplicity c_i)	
 
 		int n, m;
-		ok = (cin >> n >> m);
+		
+		if (cin >> n >> m)
+			ok = 1;
+		else
+			ok = 0;
 
 		if (ok){
 			assert(n == 2 * m);
