@@ -291,6 +291,9 @@ bool ReadGraph(ListGraph &G, map<pair<int, int>, int> &multi){
 		if (ok){
 			assert(n == 2 * m);
 
+			for (int i = 0; i < n; i++)
+				ListGraph::Node v = G.addNode();
+
 			for (int i = 0; i < m; i++){
 				int a, b, c;
 				cin>>a>>b>>c;
@@ -298,7 +301,7 @@ bool ReadGraph(ListGraph &G, map<pair<int, int>, int> &multi){
 				multi[{a, b}] = c;
 
 				for (int j = 0; j < c; j++)
-					G.addEdge(a, b);
+					G.addEdge(G.nodeFromId(a), G.nodeFromId(b));
 			}
 		}
 	}
