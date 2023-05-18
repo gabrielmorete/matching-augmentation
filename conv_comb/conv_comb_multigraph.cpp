@@ -291,7 +291,7 @@ bool ReadGraph(ListGraph &G, map<pair<int, int>, int> &multi){
 		if (ok){
 			multi.clear();
 			G.clear();
-			
+
 			for (int i = 0; i < n; i++)
 				ListGraph::Node v = G.addNode();
 
@@ -319,15 +319,13 @@ signed main(int argc, char *argv[]){
 		ListGraph G;
 		map<pair<int, int>, int> multi;
 		while (ReadGraph(G, multi)){
-			print(G);
-
-			// if (check(G) == 0)
-			// 	continue;
+			if (check(G) == 0)
+				continue;
 	
 			int m = countEdges(G);
 	
 
-			// print(G);
+			print(G);
 
 
 			// auto comb = ConvexComb(m + 1, G, multi);
@@ -338,7 +336,6 @@ signed main(int argc, char *argv[]){
 			// 		cout << y.first << ' ' << y.second << ", ";
 			// 	cout << endl;
 			// }	
-			multi.clear();
 		}
 	}
 }
