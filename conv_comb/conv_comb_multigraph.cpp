@@ -290,6 +290,7 @@ bool ReadGraph(ListGraph &G, map<pair<int, int>, int> &multi){
 
 		if (ok){
 			print(G);
+			cout << "--" << n << ' ' << m << endl;
 
 			assert(2 * n == m);
 
