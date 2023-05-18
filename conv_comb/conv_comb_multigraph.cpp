@@ -216,8 +216,12 @@ vector< vector<pair<int, int>> > ConvexComb(int e, ListGraph &G, map<pair<int, i
 				int v = min( G.id( G.v( G.edgeFromId(j) ) ), G.id( G.u( G.edgeFromId(j) ) )  );
 				int u = max( G.id( G.v( G.edgeFromId(j) ) ), G.id( G.u( G.edgeFromId(j) ) )  );
 
-				if (used.count({v, u}) > 0)
+				if (used.count({v, u}) > 0){
+					for (int i = 0; i < 3; i++)
+						x[i][j].set(GRB_DoubleAttr_UB, 0.0); // dont allow copies
+
 					continue;
+				}
 
 				used.insert({v, u});
 
