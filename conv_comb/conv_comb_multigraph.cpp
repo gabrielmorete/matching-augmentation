@@ -335,6 +335,7 @@ signed main(int argc, char *argv[]){
 			// 		cout << y.first << ' ' << y.second << ", ";
 			// 	cout << endl;
 			// }	
+			multi.clear();
 		}
 	}
 }
