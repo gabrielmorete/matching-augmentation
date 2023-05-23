@@ -354,9 +354,11 @@ void RunNautyInput(int start, int n_threads = 1){
 
 	cout << " IP gap >= " << __IP_dividend << "/" << __IP_divisor << endl;
 	cout << " BDS gap > " << __BDS_dividend << "/" << __BDS_divisor << endl;
+	cout << "\n Warning: Heuristic code, solving one perfect matching for each graph" << endl;
 
-	if (!__all_matchings)
-		cout << "\n Warning: Only solving empty matchings. Use -all_matchings to generate all matchings" << endl;
+
+	// if (!__all_matchings)
+	// 	cout << "\n Warning: Only solving empty matchings. Use -all_matchings to generate all matchings" << endl;
 
 	int cnt = 0;
 
