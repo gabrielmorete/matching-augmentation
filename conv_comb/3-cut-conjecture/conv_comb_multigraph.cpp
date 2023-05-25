@@ -253,7 +253,7 @@ vector< vector<pair<int, int>> > ConvexComb(int e, ListGraph &G, map<pair<int, i
 				int u = max( G.id( G.v( G.edgeFromId(j) ) ), G.id( G.u( G.edgeFromId(j) ) )  );
 
 				if (in_cut[{v, u}] == 1)
-					model.addConstr(conv <= 2, "e_" + to_string(j) + "<= " + to_string(f)); //allowing doubled edges
+					model.addConstr(conv <= 2, "e_" + to_string(j) + "<= 2"); //allowing doubled edges
 
 				else{
 					if (used.count({v, u}) > 0){
