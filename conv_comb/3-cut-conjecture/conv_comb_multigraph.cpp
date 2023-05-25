@@ -189,6 +189,8 @@ void find_cut(int rem, ListGraph &G, map<pair<int, int>, int> &multi, map<pair<i
 		int v = min( G.id( G.v( e ) ), G.id( G.u( e ) )  );
 		int u = max( G.id( G.v( e ) ), G.id( G.u( e ) )  );
 
+		cout << "----- " << multi[{v, u}] << endl;
+
 		if (multi[{v, u}] > 1){
 			ListGraph::EdgeMap<bool> sub(G, 1);
 			ListGraph::NodeMap<bool> ones(G, 1);
