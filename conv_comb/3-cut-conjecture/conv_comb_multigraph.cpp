@@ -388,7 +388,9 @@ signed main(int argc, char *argv[]){
 	
 
 			for (int i = 0; i < m; i++){
-				cout << "----------- " << i << endl; 
+				int v = min( G.id( G.v( G.edgeFromId(i) ) ), G.id( G.u( G.edgeFromId(i) ) )  );
+				int u = max( G.id( G.v( G.edgeFromId(i) ) ), G.id( G.u( G.edgeFromId(i) ) )  );
+				cout << "----------- " << i << ' ' << v << ' ' << u << endl; 
 				// map<pair<int, int>, bool> in_cut;
 
 				// find_cut(i, G, multi, in_cut);
