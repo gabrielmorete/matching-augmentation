@@ -22,7 +22,7 @@
 #include <lemon/nauty_reader.h>
 #include "gurobi_c++.h"
 
-#define NUM_THEADS 16
+#define NUM_THEADS 1
 
 
 using namespace std;
