@@ -187,11 +187,14 @@ void find_cut(int rem, ListGraph &G, map<pair<int, int>, int> &multi, map<pair<i
 
 	ListGraph::NodeMap<bool> ones(G, 1);
 
+	// mark pair
+
+
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
 		int v = min( G.id( G.v( e ) ), G.id( G.u( e ) )  );
 		int u = max( G.id( G.v( e ) ), G.id( G.u( e ) )  );
 
-		cout << "----- " << multi[{v, u}] << endl;
+		// cout << "----- " << multi[{v, u}] << endl;
 
 		if (multi[{v, u}] > 1){
 			ListGraph::EdgeMap<bool> sub(G, 1);
@@ -208,10 +211,8 @@ void find_cut(int rem, ListGraph &G, map<pair<int, int>, int> &multi, map<pair<i
 			}
 
 			SubGraph<ListGraph> H(G, ones, sub);
-			if (!biEdgeConnected(H)){ // pair is contained
-				cout << "oi" << endl;
+			if (!biEdgeConnected(H)) // pair is contained in a 3-cut of G-e
 				in_cut[{v, u}] = 1;
-			}	
 		}
 	}
 }
@@ -382,21 +383,21 @@ signed main(int argc, char *argv[]){
 	
 
 			for (int i = 0; i < m; i++){
-				cout << "----------- " << i << endl; 
-				map<pair<int, int>, bool> in_cut;
+				// cout << "----------- " << i << endl; 
+				// map<pair<int, int>, bool> in_cut;
 
-				find_cut(i, G, multi, in_cut);
+				// find_cut(i, G, multi, in_cut);
 
-				for (auto z : in_cut)
-					cout << "~~~~~" << z.first.first << ' ' << z.first.second << endl;
+				// for (auto z : in_cut)
+				// 	cout << "~~~~~" << z.first.first << ' ' << z.first.second << endl;
 
-				// auto comb = ConvexComb(i, G, multi);
-				// for (auto x : comb){
-				// 	cout << "\t\t"; 
-				// 	for (auto y : x)
-				// 		cout << y.first << ' ' << y.second << ", ";
-				// 	cout << endl;
-				// }
+				auto comb = ConvexComb(i, G, multi);
+				for (auto x : comb){
+					cout << "\t\t"; 
+					for (auto y : x)
+						cout << y.first << ' ' << y.second << ", ";
+					cout << endl;
+				}
 			}		
 		}
 	}
