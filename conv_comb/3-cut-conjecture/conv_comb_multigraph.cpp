@@ -300,7 +300,7 @@ vector< vector<pair<int, int>> > ConvexComb(int e, ListGraph &G, map<pair<int, i
 			print(G);
 			int v = min( G.id( G.v( G.edgeFromId(e) ) ), G.id( G.u( G.edgeFromId(e) ) )  );
 			int u = max( G.id( G.v( G.edgeFromId(e) ) ), G.id( G.u( G.edgeFromId(e) ) )  );
-			cout << "edge :" << e << ' ' << v << ' ' << u << endl;
+			cout << "edge : (" << e << ") " << v << ' ' << u << endl;
 			exit(0);
 		}
 
