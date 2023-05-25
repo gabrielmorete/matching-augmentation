@@ -204,7 +204,7 @@ void find_cut(int rem, ListGraph &G, map<pair<int, int>, int> &multi, map<pair<i
 
 			}
 
-			SubGraph<ListGraph> H(G, ones, rem);
+			SubGraph<ListGraph> H(G, ones, sub);
 			if (!biEdgeConnected(H)) // pair is contained
 				in_cut[{v, u}] = 1;
 		}
