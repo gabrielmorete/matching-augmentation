@@ -382,7 +382,7 @@ signed main(int argc, char *argv[]){
 				cout << "----------- " << i << endl; 
 				map<pair<int, int>, bool> in_cut;
 
-				find_cut(e, G, multi, in_cut);
+				find_cut(i, G, multi, in_cut);
 
 				for (auto z : in_cut)
 					cout << "~~~~~" << z.first.first << ' ' << z.first.second << endl;
