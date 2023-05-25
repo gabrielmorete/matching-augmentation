@@ -181,20 +181,19 @@ class MinimumCut: public GRBCallback {
 		}
 };
 
+
+/*
+	Mark the doubled edges contained in a 3-cut og G-e.
+*/
 void find_cut(int rem, ListGraph &G, map<pair<int, int>, int> &multi, map<pair<int, int>, bool> &in_cut){
 	// if a doubled edge {f_1, f_2} is contained in a 3-cut
 	// of G - e then G-e-{f_1, f_2} is not 2-edge connected.
 
 	ListGraph::NodeMap<bool> ones(G, 1);
 
-	// mark pair
-
-
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
 		int v = min( G.id( G.v( e ) ), G.id( G.u( e ) )  );
 		int u = max( G.id( G.v( e ) ), G.id( G.u( e ) )  );
-
-		// cout << "----- " << multi[{v, u}] << endl;
 
 		if (multi[{v, u}] > 1){
 			ListGraph::EdgeMap<bool> sub(G, 1);
@@ -251,6 +250,11 @@ vector< vector<pair<int, int>> > ConvexComb(int e, ListGraph &G, map<pair<int, i
 			for (int j = 0; j < m; j++)
 				x[i][j] = model.addVar(0.0, 1.0, 0.0, GRB_BINARY, "X_" + to_string(i) + "_" + to_string(j));
 
+
+		int v_e = min( G.id( G.v( G.edgeFromId(e) ) ), G.id( G.u( G.edgeFromId(e) ) )  );
+		int u_e = max( G.id( G.v( G.edgeFromId(e) ) ), G.id( G.u( G.edgeFromId(e) ) )  );
+		multi[{v_e, u_e}]--;
+
 		set<pair<int, int>> used;
 		for (int j = 0; j < m; j++){	
 			GRBLinExpr conv = 0;
@@ -278,15 +282,16 @@ vector< vector<pair<int, int>> > ConvexComb(int e, ListGraph &G, map<pair<int, i
 					if (multi[{v, u}] > 1)
 						f = 3;
 
-					// cout << v << ' ' << u << ":" << f << endl;
-
 					model.addConstr(conv <= f, "e_" + to_string(j) + "<= " + to_string(f)); // each edge appers at most twice
 				}
 			}
-			else
+			else // j was removed
 				model.addConstr(conv <= 0, "e_" + to_string(j) + "<= 2"); // removed edge
 		}		
-		
+
+		multi[{v_e, u_e}]++;
+
+
 		model.optimize();
 
 		if (model.get(GRB_IntAttr_SolCount) == 0){
