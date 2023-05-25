@@ -182,7 +182,7 @@ class MinimumCut: public GRBCallback {
 
 
 /*
-	Mark the doubled edges contained in a 3-cut og G-e.
+	Mark the doubled edges contained in a 3-cut of G-e.
 */
 void find_cut(int rem, ListGraph &G, map<pair<int, int>, int> &multi, map<pair<int, int>, bool> &in_cut){
 	// if a doubled edge {f_1, f_2} is contained in a 3-cut
@@ -250,6 +250,7 @@ vector< vector<pair<int, int>> > ConvexComb(int e, ListGraph &G, map<pair<int, i
 				x[i][j] = model.addVar(0.0, 1.0, 0.0, GRB_BINARY, "X_" + to_string(i) + "_" + to_string(j));
 
 
+		// If rem is a doubled edge, them its copy must be treated as a simple edge
 		int v_e = min( G.id( G.v( G.edgeFromId(e) ) ), G.id( G.u( G.edgeFromId(e) ) )  );
 		int u_e = max( G.id( G.v( G.edgeFromId(e) ) ), G.id( G.u( G.edgeFromId(e) ) )  );
 		multi[{v_e, u_e}]--;
@@ -265,13 +266,14 @@ vector< vector<pair<int, int>> > ConvexComb(int e, ListGraph &G, map<pair<int, i
 				int u = max( G.id( G.v( G.edgeFromId(j) ) ), G.id( G.u( G.edgeFromId(j) ) )  );
 
 				if (in_cut[{v, u}] == 1)
-					model.addConstr(conv <= 2, "e_" + to_string(j) + "<= 2"); //allowing doubled edges
+					model.addConstr(conv <= 2, "e_" + to_string(j) + "<= 2"); // allowing doubled edges in a 3-cut of G-e
 
 				else{
 					if (used.count({v, u}) > 0){
 						for (int i = 0; i < 3; i++)
-							x[i][j].set(GRB_DoubleAttr_UB, 0.0); // dont allow copies
-
+							x[i][j].set(GRB_DoubleAttr_UB, 0.0); 
+							// dont allow doubled edges if not on a 3 cut
+							// but one of the copies can be present in every graph
 						continue;
 					}
 
@@ -281,7 +283,7 @@ vector< vector<pair<int, int>> > ConvexComb(int e, ListGraph &G, map<pair<int, i
 					if (multi[{v, u}] > 1)
 						f = 3;
 
-					model.addConstr(conv <= f, "e_" + to_string(j) + "<= " + to_string(f)); // each edge appers at most twice
+					model.addConstr(conv <= f, "e_" + to_string(j) + "<= " + to_string(f));
 				}
 			}
 			else // j was removed
