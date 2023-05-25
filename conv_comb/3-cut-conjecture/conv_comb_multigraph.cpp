@@ -281,8 +281,11 @@ vector< vector<pair<int, int>> > ConvexComb(int e, ListGraph &G, map<pair<int, i
 		model.optimize();
 
 		if (model.get(GRB_IntAttr_SolCount) == 0){
+			cout << "Conjecture is false with 3 graphs" << endl;
 			print(G);
-			cout << "Conjecture is false" << endl;
+			int v = min( G.id( G.v( G.edgeFromId(e) ) ), G.id( G.u( G.edgeFromId(e) ) )  );
+			int u = max( G.id( G.v( G.edgeFromId(e) ) ), G.id( G.u( G.edgeFromId(e) ) )  );
+			cout << "edge :" << e << ' ' << v << ' ' << u << endl;
 			exit(0);
 		}
 
@@ -370,8 +373,16 @@ signed main(int argc, char *argv[]){
 			int m = countEdges(G);
 	
 
-			for (int i = 0; i < m; i++)
+			for (int i = 0; i < m; i++){
+				cout << "----------- " << i << endl; 
 				auto comb = ConvexComb(i, G, multi);
+				for (auto x : comb){
+					cout << "\t\t"; 
+					for (auto y : x)
+						cout << y.first << ' ' << y.second << ", ";
+					cout << endl;
+				}
+			}		
 		}
 	}
 }
