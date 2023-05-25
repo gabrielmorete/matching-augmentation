@@ -1,7 +1,7 @@
 /*
-	Test test strong combination locating doubled edges in the 3 cuts.
+	Test test strong combination allowing doubled edges in 3-cuts of G-e.
 
-	tests with 3 graphs
+	Trying to decompose in 3 graphs.
 
 	Author : Gabriel Morete	
 */
@@ -23,7 +23,6 @@
 #include "gurobi_c++.h"
 
 #define NUM_THEADS 1
-
 
 using namespace std;
 using namespace lemon;
@@ -52,11 +51,11 @@ void print(ListGraph &G, long long int msk){
 // Checks if the graph is 4-ec
 bool check(ListGraph &G){
 	int m = countEdges(G);
-	// for (ListGraph::NodeIt v(G); v != INVALID; ++v)
-	// 	if (countIncEdges(G, v) != 4){
-	// 		// cout << "Not 4-regular" << endl;
-	// 		return 0;
-	// 	}
+	for (ListGraph::NodeIt v(G); v != INVALID; ++v)
+		if (countIncEdges(G, v) != 4){
+			// cout << "Not 4-regular" << endl;
+			return 0;
+		}
 
 
 	// Check 4-edge connected by definition
@@ -392,13 +391,7 @@ signed main(int argc, char *argv[]){
 				int v = min( G.id( G.v( G.edgeFromId(i) ) ), G.id( G.u( G.edgeFromId(i) ) )  );
 				int u = max( G.id( G.v( G.edgeFromId(i) ) ), G.id( G.u( G.edgeFromId(i) ) )  );
 				cout << "----------- " << i << ' ' << v << ' ' << u << endl; 
-				// map<pair<int, int>, bool> in_cut;
-
-				// find_cut(i, G, multi, in_cut);
-
-				// for (auto z : in_cut)
-				// 	cout << "~~~~~" << z.first.first << ' ' << z.first.second << endl;
-
+				
 				auto comb = ConvexComb(i, G, multi);
 				for (auto x : comb){
 					cout << "\t\t"; 
