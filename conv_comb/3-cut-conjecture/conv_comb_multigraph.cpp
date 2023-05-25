@@ -380,13 +380,20 @@ signed main(int argc, char *argv[]){
 
 			for (int i = 0; i < m; i++){
 				cout << "----------- " << i << endl; 
-				auto comb = ConvexComb(i, G, multi);
-				for (auto x : comb){
-					cout << "\t\t"; 
-					for (auto y : x)
-						cout << y.first << ' ' << y.second << ", ";
-					cout << endl;
-				}
+				map<pair<int, int>, bool> in_cut;
+
+				find_cut(e, G, multi, in_cut);
+
+				for (auto z : in_cut)
+					cout << "~~~~~" << z.first.first << ' ' << z.first.second << endl;
+
+				// auto comb = ConvexComb(i, G, multi);
+				// for (auto x : comb){
+				// 	cout << "\t\t"; 
+				// 	for (auto y : x)
+				// 		cout << y.first << ' ' << y.second << ", ";
+				// 	cout << endl;
+				// }
 			}		
 		}
 	}
