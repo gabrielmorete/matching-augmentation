@@ -224,7 +224,7 @@ vector< vector<pair<int, int>> > ConvexComb(int e, ListGraph &G, map<pair<int, i
 	find_cut(e, G, multi, in_cut);
 
 	for (auto z : in_cut)
-		cout << "~~~~~" << z.first << ' ' << z.second << endl;
+		cout << "~~~~~" << z.first.first << ' ' << z.first.second << endl;
 
 	try{
 		GRBModel model(env);
