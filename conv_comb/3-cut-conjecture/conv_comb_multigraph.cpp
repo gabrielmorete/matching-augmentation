@@ -185,6 +185,8 @@ void find_cut(int rem, ListGraph &G, map<pair<int, int>, int> &multi, map<pair<i
 	// if a doubled edge {f_1, f_2} is contained in a 3-cut
 	// of G - e then G-e-{f_1, f_2} is not 2-edge connected.
 
+	ListGraph::NodeMap<bool> ones(G, 1);
+
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
 		int v = min( G.id( G.v( e ) ), G.id( G.u( e ) )  );
 		int u = max( G.id( G.v( e ) ), G.id( G.u( e ) )  );
@@ -193,7 +195,6 @@ void find_cut(int rem, ListGraph &G, map<pair<int, int>, int> &multi, map<pair<i
 
 		if (multi[{v, u}] > 1){
 			ListGraph::EdgeMap<bool> sub(G, 1);
-			ListGraph::NodeMap<bool> ones(G, 1);
 
 			sub[ G.edgeFromId(rem) ] = 0;
 
@@ -202,7 +203,7 @@ void find_cut(int rem, ListGraph &G, map<pair<int, int>, int> &multi, map<pair<i
 				int u_f = max( G.id( G.v( e ) ), G.id( G.u( e ) )  );
 			
 				if (v_f == v and u_f == u)
-					sub[f] == 0;
+					sub[f] = 0;
 
 			}
 
