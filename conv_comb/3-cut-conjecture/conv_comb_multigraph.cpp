@@ -388,7 +388,7 @@ signed main(int argc, char *argv[]){
 	
 
 			for (int i = 0; i < m; i++){
-				// cout << "----------- " << i << endl; 
+				cout << "----------- " << i << endl; 
 				// map<pair<int, int>, bool> in_cut;
 
 				// find_cut(i, G, multi, in_cut);
