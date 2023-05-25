@@ -223,6 +223,9 @@ vector< vector<pair<int, int>> > ConvexComb(int e, ListGraph &G, map<pair<int, i
 
 	find_cut(e, G, multi, in_cut);
 
+	for (auto z : in_cut)
+		cout << "~~~~~" << z.first << ' ' << z.second << endl;
+
 	try{
 		GRBModel model(env);
 		model.set(GRB_IntParam_LazyConstraints, 1); // Allow callback constraints
