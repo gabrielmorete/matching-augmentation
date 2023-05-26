@@ -332,7 +332,7 @@ vector< vector<pair<int, int>> > ConvexComb(int e, ListGraph &G, map<pair<int, i
 	return {};
 }
 
-bool ReadGraph(ListGraph &G, map<pair<int, int>, int> &multi){
+bool ReadGraph(ListGraph &G, map<pair<int, int>, int> &multi, int &cnt){
 	bool ok = 1;
 	#pragma omp critical 
 	{ 
@@ -374,7 +374,7 @@ signed main(int argc, char *argv[]){
 	env.start();
 
 	int cnt = 0;
-	#pragma omp parallel num_threads(10)\
+	#pragma omp parallel num_threads(10)/
 	shared(cnt)
 	{
 		ListGraph G;
