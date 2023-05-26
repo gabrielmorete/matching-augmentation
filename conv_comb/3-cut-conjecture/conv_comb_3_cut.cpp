@@ -390,18 +390,18 @@ signed main(int argc, char *argv[]){
 
 			print(G);
 			for (int i = 0; i < m; i++){
-				int v = min( G.id( G.v( G.edgeFromId(i) ) ), G.id( G.u( G.edgeFromId(i) ) )  );
-				int u = max( G.id( G.v( G.edgeFromId(i) ) ), G.id( G.u( G.edgeFromId(i) ) )  );
-				cout << "----------- " << i << ' ' << v << ' ' << u << endl; 
+				// int v = min( G.id( G.v( G.edgeFromId(i) ) ), G.id( G.u( G.edgeFromId(i) ) )  );
+				// int u = max( G.id( G.v( G.edgeFromId(i) ) ), G.id( G.u( G.edgeFromId(i) ) )  );
+				// cout << "----------- " << i << ' ' << v << ' ' << u << endl; 
 				
-				auto comb = ConvexComb(i, G, multi);
-				for (auto x : comb){
-					cout << "\t\t"; 
-					for (auto y : x)
-						cout << y.first << ' ' << y.second << ", ";
-					cout << endl;
-				}
-			}
+			// 	auto comb = ConvexComb(i, G, multi);
+			// 	for (auto x : comb){
+			// 		cout << "\t\t"; 
+			// 		for (auto y : x)
+			// 			cout << y.first << ' ' << y.second << ", ";
+			// 		cout << endl;
+			// 	}
+			// }
 			if (cnt % 100 == 0)
 				cout << "-----" << cnt << endl;
 		}
