@@ -210,7 +210,7 @@ void find_cut(int rem, ListGraph &G, map<pair<int, int>, int> &multi, map<pair<i
 
 			SubGraph<ListGraph> H(G, ones, sub);
 			if (!biEdgeConnected(H)) // pair is contained in a 3-cut of G - e
-				in_cut[{v, u}] = 1;
+				in_cut[{v_e, u_e}] = 1;
 		}
 	}
 }
