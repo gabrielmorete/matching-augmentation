@@ -400,7 +400,7 @@ signed main(int argc, char *argv[]){
 				// 	cout << endl;
 				// }
 			}
-			if (cnt % 100)
+			if (cnt % 100 == 0)
 				cout << "-----" << cnt << endl;
 		}
 	}
