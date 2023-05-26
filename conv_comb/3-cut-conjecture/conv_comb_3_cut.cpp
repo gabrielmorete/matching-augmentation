@@ -374,7 +374,7 @@ signed main(int argc, char *argv[]){
 	env.start();
 
 	int cnt = 0;
-	#pragma omp parallel num_threads(10)/
+	#pragma omp parallel num_threads(10) \
 	shared(cnt)
 	{
 		ListGraph G;
