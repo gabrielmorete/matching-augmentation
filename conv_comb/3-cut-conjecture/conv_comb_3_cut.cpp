@@ -22,7 +22,7 @@
 #include <lemon/nauty_reader.h>
 #include "gurobi_c++.h"
 
-#define NUM_THEADS 12
+#define NUM_THREADS 20
 
 using namespace std;
 using namespace lemon;
@@ -192,8 +192,8 @@ void find_cut(int rem, ListGraph &G, map<pair<int, int>, int> &multi, map<pair<i
 	in_cut.clear();
 
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
-		int v = min( G.id( G.v( e ) ), G.id( G.u( e ) ) );
-		int u = max( G.id( G.v( e ) ), G.id( G.u( e ) ) );
+		int v_e = min( G.id( G.v( e ) ), G.id( G.u( e ) ) );
+		int u_e = max( G.id( G.v( e ) ), G.id( G.u( e ) ) );
 
 		if (multi[{v, u}] > 1){ // Test multiedge
 			ListGraph::EdgeMap<bool> sub(G, 1);
@@ -204,7 +204,7 @@ void find_cut(int rem, ListGraph &G, map<pair<int, int>, int> &multi, map<pair<i
 				int v_f = min( G.id( G.v( f ) ), G.id( G.u( f ) ) );
 				int u_f = max( G.id( G.v( f ) ), G.id( G.u( f ) ) );
 			
-				if (v_f == v and u_f == u) // Remove copie from the graph
+				if (v_f == v_e and u_f == u_e) // Remove copie from the graph
 					sub[f] = 0;
 			}
 
@@ -376,7 +376,7 @@ signed main(int argc, char *argv[]){
 	env.start();
 
 	int cnt = 0;
-	#pragma omp parallel num_threads(10) \
+	#pragma omp parallel num_threads(NUM_THREADS) \
 	shared(cnt)
 	{
 		ListGraph G;
