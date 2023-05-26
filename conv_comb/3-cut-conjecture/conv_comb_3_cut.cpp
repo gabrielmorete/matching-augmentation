@@ -347,6 +347,7 @@ bool ReadGraph(ListGraph &G, map<pair<int, int>, int> &multi){
 			ok = 0;
 
 		if (ok){
+			cnt++;
 			multi.clear();
 			G.clear();
 
@@ -372,11 +373,13 @@ signed main(int argc, char *argv[]){
 	env.set(GRB_IntParam_OutputFlag, 0);
 	env.start();
 
-	#pragma omp parallel num_threads(10)
+	int cnt = 0;
+	#pragma omp parallel num_threads(10)\
+	shared(cnt)
 	{
 		ListGraph G;
 		map<pair<int, int>, int> multi;
-		while (ReadGraph(G, multi)){
+		while (ReadGraph(G, multi, cnt)){
 			if (check(G) == 0)
 				continue;
 	
@@ -396,7 +399,9 @@ signed main(int argc, char *argv[]){
 				// 		cout << y.first << ' ' << y.second << ", ";
 				// 	cout << endl;
 				// }
-			}		
+			}
+			if (cnt % 100)
+				cout << "-----" << cnt << endl;
 		}
 	}
 }
