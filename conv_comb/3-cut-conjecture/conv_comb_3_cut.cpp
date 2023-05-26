@@ -372,7 +372,7 @@ signed main(int argc, char *argv[]){
 	env.set(GRB_IntParam_OutputFlag, 0);
 	env.start();
 
-	#pragma omp parallel num_threads(NUM_THEADS)
+	#pragma omp parallel num_threads(10)
 	{
 		ListGraph G;
 		map<pair<int, int>, int> multi;
