@@ -194,7 +194,7 @@ void find_cut(int rem, ListGraph &G, map<pair<int, int>, int> &multi, map<pair<i
 		int v = min( G.id( G.v( e ) ), G.id( G.u( e ) )  );
 		int u = max( G.id( G.v( e ) ), G.id( G.u( e ) )  );
 
-		if (multi[{v, u}] > 1){
+		if (multi[{v, u}] > 1){ // Test multiedge
 			ListGraph::EdgeMap<bool> sub(G, 1);
 
 			sub[ G.edgeFromId(rem) ] = 0;
@@ -217,18 +217,13 @@ void find_cut(int rem, ListGraph &G, map<pair<int, int>, int> &multi, map<pair<i
 
 
 /*
-	coefficient is fixed to be 2/3.  model finds the combination with the minimum number of elements
+	coefficient is fixed to be 2/3.  model finds the combination with 3 elements
 */
 vector< vector<pair<int, int>> > ConvexComb(int e, ListGraph &G, map<pair<int, int>, int> &multi){
-
 	// Must identify the edges on the 3-cut
-
 	map<pair<int, int>, bool> in_cut;
 
 	find_cut(e, G, multi, in_cut);
-
-	// for (auto z : in_cut)
-	// 	cout << "~~~~~" << z.first.first << ' ' << z.first.second << endl;
 
 	try{
 		GRBModel model(env);
@@ -253,7 +248,7 @@ vector< vector<pair<int, int>> > ConvexComb(int e, ListGraph &G, map<pair<int, i
 		// If rem is a doubled edge, them its copy must be treated as a simple edge
 		int v_e = min( G.id( G.v( G.edgeFromId(e) ) ), G.id( G.u( G.edgeFromId(e) ) )  );
 		int u_e = max( G.id( G.v( G.edgeFromId(e) ) ), G.id( G.u( G.edgeFromId(e) ) )  );
-		multi[{v_e, u_e}]--;
+		multi[{v_e, u_e}]--; // Lower the multiplicity
 
 		set<pair<int, int>> used;
 		for (int j = 0; j < m; j++){	
@@ -290,7 +285,7 @@ vector< vector<pair<int, int>> > ConvexComb(int e, ListGraph &G, map<pair<int, i
 				model.addConstr(conv <= 0, "e_" + to_string(j) + "<= 2"); // removed edge
 		}		
 
-		multi[{v_e, u_e}]++;
+		multi[{v_e, u_e}]++; //reestablish the multiplicity
 
 
 		model.optimize();
