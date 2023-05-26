@@ -186,13 +186,14 @@ class MinimumCut: public GRBCallback {
 */
 void find_cut(int rem, ListGraph &G, map<pair<int, int>, int> &multi, map<pair<int, int>, bool> &in_cut){
 	// if a doubled edge {f_1, f_2} is contained in a 3-cut
-	// of G - e then G-e-{f_1, f_2} is not 2-edge connected.
+	// of G - e then G - e - {f_1, f_2} is not 2-edge connected.
 
 	ListGraph::NodeMap<bool> ones(G, 1);
+	in_cut.clear();
 
 	for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
-		int v = min( G.id( G.v( e ) ), G.id( G.u( e ) )  );
-		int u = max( G.id( G.v( e ) ), G.id( G.u( e ) )  );
+		int v = min( G.id( G.v( e ) ), G.id( G.u( e ) ) );
+		int u = max( G.id( G.v( e ) ), G.id( G.u( e ) ) );
 
 		if (multi[{v, u}] > 1){ // Test multiedge
 			ListGraph::EdgeMap<bool> sub(G, 1);
@@ -200,16 +201,15 @@ void find_cut(int rem, ListGraph &G, map<pair<int, int>, int> &multi, map<pair<i
 			sub[ G.edgeFromId(rem) ] = 0;
 
 			for (ListGraph::EdgeIt f(G); f != INVALID; ++f){
-				int v_f = min( G.id( G.v( f ) ), G.id( G.u( f ) )  );
-				int u_f = max( G.id( G.v( f ) ), G.id( G.u( f ) )  );
+				int v_f = min( G.id( G.v( f ) ), G.id( G.u( f ) ) );
+				int u_f = max( G.id( G.v( f ) ), G.id( G.u( f ) ) );
 			
-				if (v_f == v and u_f == u)
+				if (v_f == v and u_f == u) // Remove copie from the graph
 					sub[f] = 0;
-
 			}
 
 			SubGraph<ListGraph> H(G, ones, sub);
-			if (!biEdgeConnected(H)) // pair is contained in a 3-cut of G-e
+			if (!biEdgeConnected(H)) // pair is contained in a 3-cut of G - e
 				in_cut[{v, u}] = 1;
 		}
 	}
@@ -265,10 +265,12 @@ vector< vector<pair<int, int>> > ConvexComb(int e, ListGraph &G, map<pair<int, i
 
 				else{
 					if (used.count({v, u}) > 0){
-						for (int i = 0; i < 3; i++)
-							x[i][j].set(GRB_DoubleAttr_UB, 0.0); 
-							// dont allow doubled edges if not on a 3 cut
-							// but one of the copies can be present in every graph
+						model.addConstr(conv <= 0, "e_" + to_string(j) + "<= 0"); // Will allow only one of the copies
+
+						// for (int i = 0; i < 3; i++)
+						// 	x[i][j].set(GRB_DoubleAttr_UB, 0.0); 
+						// 	// dont allow doubled edges if not on a 3 cut
+						// 	// but one of the copies can be present in every graph
 						continue;
 					}
 
