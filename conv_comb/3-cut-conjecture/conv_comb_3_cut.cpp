@@ -200,8 +200,8 @@ void find_cut(int rem, ListGraph &G, map<pair<int, int>, int> &multi, map<pair<i
 			sub[ G.edgeFromId(rem) ] = 0;
 
 			for (ListGraph::EdgeIt f(G); f != INVALID; ++f){
-				int v_f = min( G.id( G.v( e ) ), G.id( G.u( e ) )  );
-				int u_f = max( G.id( G.v( e ) ), G.id( G.u( e ) )  );
+				int v_f = min( G.id( G.v( f ) ), G.id( G.u( f ) )  );
+				int u_f = max( G.id( G.v( f ) ), G.id( G.u( f ) )  );
 			
 				if (v_f == v and u_f == u)
 					sub[f] = 0;
