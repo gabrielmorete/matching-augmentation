@@ -195,7 +195,7 @@ void find_cut(int rem, ListGraph &G, map<pair<int, int>, int> &multi, map<pair<i
 		int v_e = min( G.id( G.v( e ) ), G.id( G.u( e ) ) );
 		int u_e = max( G.id( G.v( e ) ), G.id( G.u( e ) ) );
 
-		if (multi[{v, u}] > 1){ // Test multiedge
+		if (multi[{v_e, u_e}] > 1){ // Test multiedge
 			ListGraph::EdgeMap<bool> sub(G, 1);
 
 			sub[ G.edgeFromId(rem) ] = 0;
