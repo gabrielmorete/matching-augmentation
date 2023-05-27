@@ -404,7 +404,7 @@ signed main(int argc, char *argv[]){
 			for (int eid : matched){
 				int v = min( G.id( G.v( G.edgeFromId(eid) ) ), G.id( G.u( G.edgeFromId(eid) ) )  );
 				int u = max( G.id( G.v( G.edgeFromId(eid) ) ), G.id( G.u( G.edgeFromId(eid) ) )  );
-				G.addEdge(v, u);
+				G.addEdge(G.nodeFromId(v), G.nodeFromId(u));
 			}	
 
 
