@@ -385,6 +385,8 @@ signed main(int argc, char *argv[]){
 		map<pair<int, int>, int> multi;
 		while (ReadGraph(G, multi, cnt)){
 
+			print(G);
+
 			int m = countEdges(G);
 
 
