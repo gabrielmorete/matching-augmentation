@@ -336,38 +336,12 @@ vector< vector<pair<int, int>> > ConvexComb(int e, ListGraph &G, map<pair<int, i
 	return {};
 }
 
-bool ReadGraph(ListGraph &G, map<pair<int, int>, int> &multi, int &cnt){
+bool ReadGraph(ListGraph &G, int &cnt){
 	bool ok = 1;
 	#pragma omp critical 
 	{ 
-		// Multigraph output from multig		
-		// n m a_1 b_1 c_1 ... a_m b_m c_m (an edge from a_i to b_i with multiplicity c_i)	
-
-		int n, m;
-		
-		if (cin >> n >> m)
-			ok = 1;
-		else
-			ok = 0;
-
-		if (ok){
-			cnt++;
-			multi.clear();
-			G.clear();
-
-			for (int i = 0; i < n; i++)
-				ListGraph::Node v = G.addNode();
-
-			for (int i = 0; i < m; i++){
-				int a, b, c;
-				cin>>a>>b>>c;
-
-				multi[{a, b}] = c;
-
-				for (int j = 0; j < c; j++)
-					G.addEdge(G.nodeFromId(a), G.nodeFromId(b));
-			}
-		}
+		ok = (bool)(readNautyGraph(G, cin));
+		cnt += ok;
 	}
 	return ok;
 }
@@ -383,11 +357,17 @@ signed main(int argc, char *argv[]){
 	{
 		ListGraph G;
 		map<pair<int, int>, int> multi;
-		while (ReadGraph(G, multi, cnt)){
+		while (ReadGraph(G, cnt)){
 
 			print(G);
 
 			int m = countEdges(G);
+
+			for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
+				int v = min( G.id( G.v( G.edgeFromId(eid) ) ), G.id( G.u( G.edgeFromId(eid) ) )  );
+				int u = max( G.id( G.v( G.edgeFromId(eid) ) ), G.id( G.u( G.edgeFromId(eid) ) )  );
+				multi[{v, u}] = 1;
+			}
 
 
 			// step 1, find a matching
@@ -404,6 +384,7 @@ signed main(int argc, char *argv[]){
 			for (int eid : matched){
 				int v = min( G.id( G.v( G.edgeFromId(eid) ) ), G.id( G.u( G.edgeFromId(eid) ) )  );
 				int u = max( G.id( G.v( G.edgeFromId(eid) ) ), G.id( G.u( G.edgeFromId(eid) ) )  );
+				multi[{v, u}]++;
 				G.addEdge(G.nodeFromId(v), G.nodeFromId(u));
 			}	
 
