@@ -384,9 +384,7 @@ signed main(int argc, char *argv[]){
 		ListGraph G;
 		map<pair<int, int>, int> multi;
 		while (ReadGraph(G, multi, cnt)){
-			if (check(G) == 0)
-				continue;
-	
+
 			int m = countEdges(G);
 
 
@@ -407,8 +405,11 @@ signed main(int argc, char *argv[]){
 				G.addEdge(G.nodeFromId(v), G.nodeFromId(u));
 			}	
 
-
 			print(G);
+
+			if (check(G) == 0)
+				continue;
+
 			for (int i = 0; i < m; i++){
 				// int v = min( G.id( G.v( G.edgeFromId(i) ) ), G.id( G.u( G.edgeFromId(i) ) )  );
 				// int u = max( G.id( G.v( G.edgeFromId(i) ) ), G.id( G.u( G.edgeFromId(i) ) )  );
