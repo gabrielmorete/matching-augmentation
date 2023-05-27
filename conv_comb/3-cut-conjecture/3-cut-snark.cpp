@@ -364,8 +364,8 @@ signed main(int argc, char *argv[]){
 			int m = countEdges(G);
 
 			for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
-				int v = min( G.id( G.v( G.edgeFromId(eid) ) ), G.id( G.u( G.edgeFromId(eid) ) )  );
-				int u = max( G.id( G.v( G.edgeFromId(eid) ) ), G.id( G.u( G.edgeFromId(eid) ) )  );
+				int v = min( G.id( G.v( G.edgeFromId(e) ) ), G.id( G.u( G.edgeFromId(e) ) )  );
+				int u = max( G.id( G.v( G.edgeFromId(e) ) ), G.id( G.u( G.edgeFromId(e) ) )  );
 				multi[{v, u}] = 1;
 			}
 
