@@ -395,7 +395,7 @@ signed main(int argc, char *argv[]){
 			Blossom.run();
 
 			vector<int> matched;
-			for (ListGraph::EdgeIt e(G); e != INVALID; e++)
+			for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
 				if (Blossom.matching(e) == 1) // edge is on the matching
 					matched.push_back(G.id(e));
 
@@ -404,7 +404,7 @@ signed main(int argc, char *argv[]){
 			for (int eid : matched){
 				int v = min( G.id( G.v( G.edgeFromId(eid) ) ), G.id( G.u( G.edgeFromId(eid) ) )  );
 				int u = max( G.id( G.v( G.edgeFromId(eid) ) ), G.id( G.u( G.edgeFromId(eid) ) )  );
-				G.addEdge({v, u});
+				G.addEdge(v, u);
 			}	
 
 
