@@ -359,7 +359,7 @@ signed main(int argc, char *argv[]){
 		map<pair<int, int>, int> multi;
 		while (ReadGraph(G, cnt)){
 
-			print(G);
+			// print(G);
 
 			int m = countEdges(G);
 
@@ -406,7 +406,7 @@ signed main(int argc, char *argv[]){
 			// 	}
 			}
 			if (cnt % 100 == 0)
-				cout << "-----" << cnt << endl;
+					cout << "-----" << cnt << endl;
 		}
 	}
 }
