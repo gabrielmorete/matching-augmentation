@@ -1,0 +1,1 @@
+geng 12 -C -d3 -D6| ./main -support -all_matchings -maximum -threads 80 &
