@@ -204,7 +204,7 @@ void find_cut(int rem, ListGraph &G, map<pair<int, int>, int> &multi, map<pair<i
 				int v_f = min( G.id( G.v( f ) ), G.id( G.u( f ) ) );
 				int u_f = max( G.id( G.v( f ) ), G.id( G.u( f ) ) );
 			
-				if (v_f == v_e and u_f == u_e) // Remove copie from the graph
+				if (v_f == v_e and u_f == u_e) // Remove copy from the graph
 					sub[f] = 0;
 			}
 
@@ -217,7 +217,8 @@ void find_cut(int rem, ListGraph &G, map<pair<int, int>, int> &multi, map<pair<i
 
 
 /*
-	coefficient is fixed to be 2/3.  model finds the combination with 3 elements
+	Coefficient is fixed to be 2/3. 
+	Model finds the combination with 3 elements.
 */
 vector< vector<pair<int, int>> > ConvexComb(int e, ListGraph &G, map<pair<int, int>, int> &multi){
 	// Must identify the edges on the 3-cut
@@ -232,7 +233,7 @@ vector< vector<pair<int, int>> > ConvexComb(int e, ListGraph &G, map<pair<int, i
 		int n = countNodes(G);
 		int m = countEdges(G); // Not all edges will be used, gurobi will preprocess
 
-		GRBVar **x = new GRBVar*[3]; // used to minimize number of positive variables
+		GRBVar **x = new GRBVar*[3];
 
 		for (int i = 0; i < 3; i++)
 			x[i] = new GRBVar[m];
@@ -246,8 +247,8 @@ vector< vector<pair<int, int>> > ConvexComb(int e, ListGraph &G, map<pair<int, i
 
 
 		// If rem is a doubled edge, them its copy must be treated as a simple edge
-		int v_e = min( G.id( G.v( G.edgeFromId(e) ) ), G.id( G.u( G.edgeFromId(e) ) )  );
-		int u_e = max( G.id( G.v( G.edgeFromId(e) ) ), G.id( G.u( G.edgeFromId(e) ) )  );
+		int v_e = min( G.id( G.v( G.edgeFromId(e) ) ), G.id( G.u( G.edgeFromId(e) ) ) );
+		int u_e = max( G.id( G.v( G.edgeFromId(e) ) ), G.id( G.u( G.edgeFromId(e) ) ) );
 		multi[{v_e, u_e}]--; // Lower the multiplicity
 
 		set<pair<int, int>> used;
@@ -257,14 +258,16 @@ vector< vector<pair<int, int>> > ConvexComb(int e, ListGraph &G, map<pair<int, i
 				conv += x[i][j];
 
 			if (j != e){
-				int v = min( G.id( G.v( G.edgeFromId(j) ) ), G.id( G.u( G.edgeFromId(j) ) )  );
-				int u = max( G.id( G.v( G.edgeFromId(j) ) ), G.id( G.u( G.edgeFromId(j) ) )  );
+				int v = min( G.id( G.v( G.edgeFromId(j) ) ), G.id( G.u( G.edgeFromId(j) ) ) );
+				int u = max( G.id( G.v( G.edgeFromId(j) ) ), G.id( G.u( G.edgeFromId(j) ) ) );
 
 				if (in_cut[{v, u}] == 1)
 					model.addConstr(conv <= 2, "e_" + to_string(j) + "<= 2"); // allowing doubled edges in a 3-cut of G-e
 
+				// both copied of the doubled edge in the 3-cut will fall in this condition
+
 				else{
-					if (used.count({v, u}) > 0){
+					if (used.count({v, u}) > 0){ // {v, u} is a doubled edge and I've already added one copy
 						model.addConstr(conv <= 0, "e_" + to_string(j) + "<= 0"); // Will allow only one of the copies
 
 						// for (int i = 0; i < 3; i++)
@@ -277,14 +280,14 @@ vector< vector<pair<int, int>> > ConvexComb(int e, ListGraph &G, map<pair<int, i
 					used.insert({v, u});
 
 					int f = 2;
-					if (multi[{v, u}] > 1)
+					if (multi[{v, u}] > 1) // Will treat a doubled edge as a single edge with no restrictions
 						f = 3;
 
 					model.addConstr(conv <= f, "e_" + to_string(j) + "<= " + to_string(f));
 				}
 			}
 			else // j was removed
-				model.addConstr(conv <= 0, "e_" + to_string(j) + "<= 2"); // removed edge
+				model.addConstr(conv <= 0, "e_" + to_string(j) + "0, removed edge"); // removed edge
 		}		
 
 		multi[{v_e, u_e}]++; //reestablish the multiplicity
@@ -295,8 +298,8 @@ vector< vector<pair<int, int>> > ConvexComb(int e, ListGraph &G, map<pair<int, i
 		if (model.get(GRB_IntAttr_SolCount) == 0){
 			cout << "Conjecture is false with 3 graphs" << endl;
 			print(G);
-			int v = min( G.id( G.v( G.edgeFromId(e) ) ), G.id( G.u( G.edgeFromId(e) ) )  );
-			int u = max( G.id( G.v( G.edgeFromId(e) ) ), G.id( G.u( G.edgeFromId(e) ) )  );
+			int v = min( G.id( G.v( G.edgeFromId(e) ) ), G.id( G.u( G.edgeFromId(e) ) ) );
+			int u = max( G.id( G.v( G.edgeFromId(e) ) ), G.id( G.u( G.edgeFromId(e) ) ) );
 			cout << "edge : (" << e << ") " << v << ' ' << u << endl;
 			exit(0);
 		}
@@ -387,8 +390,6 @@ signed main(int argc, char *argv[]){
 	
 			int m = countEdges(G);
 	
-
-			// print(G);
 			for (int i = 0; i < m; i++){
 				// int v = min( G.id( G.v( G.edgeFromId(i) ) ), G.id( G.u( G.edgeFromId(i) ) )  );
 				// int u = max( G.id( G.v( G.edgeFromId(i) ) ), G.id( G.u( G.edgeFromId(i) ) )  );
