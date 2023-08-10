@@ -1,13 +1,11 @@
 #include "bits/stdc++.h"
 using namespace std;
 
-
 int n;
 vector<int> deg, lft, rgt, max_deg;
 vector< vector<int> > adj;
 
 vector<array<int, 3>> edges;
-
 
 void add_edge(int u, int v, int c){
 	edges.push_back({u, v, c});
@@ -29,15 +27,16 @@ bool check(){
 	return true;	
 }
 
+int cnt;
+
 void print(){
 	cout << n << ' ' << edges.size() << endl;
 	for (auto x : edges){
-		cout << x[0] << ' ' << x[1] << ' ' << x[2] << endl;
+		cout << x[0] - 1<< ' ' << x[1] - 1<< ' ' << x[2] << endl;
 	}
-	cout << endl;
+	cout << cnt++ << endl << endl;
 }
 
-int cnt;
 
 vector<int> order;
 void run(int p, int q){
@@ -45,7 +44,7 @@ void run(int p, int q){
 	
 	if (p == order.size()){
 		if (check())
-			cnt++;// print();
+			print();
 		return;
 	}
 
@@ -112,55 +111,70 @@ signed main(int argc, char *argv[]){
 	add_edge(2, n, 1);
 
 	// generate marks
+
 	for (int i = 8; i < n; i += 8)
 		lft[i] = 1;
 
 	for (int i = 12; i < n; i += 8)
 		rgt[i] = 1;
+
+
+	// speedup, fix first left and right
+
+	add_edge(8, 3, 1);
+	add_edge(8, 5, 1);
+
+	add_edge(16, 7, 1);
+	add_edge(16, 13, 1);
+
+
+
+	add_edge(12, 2, 1);
+	add_edge(12, 4, 1);
+	add_edge(12, 6, 1);
 	
 	// build adjacency
-
-	for (int i = 3; i < n; i++)
+	for (int i = 9; i < n; i++)
 		if (lft[i] == 0 and rgt[i] == 0)
-			adj[1].push_back(i);
+			adj[1].push_back(i); // adjacent to 1
 
-	for (int i = 8; i < n; i += 8)
-		for (int j = 2; j < i - 2; j++)
+	for (int i = 16; i < n; i += 8)
+		for (int j = 7; j < i - 2; j++)
 			if (lft[j] == 0 and rgt[j] == 0)
 				adj[i].push_back(j);
 
-	for (int i = 12; i < n; i += 8)
-		for (int j = 2; j < i - 2; j++)
+	for (int i = 20; i < n; i += 8)
+		for (int j = 7; j < i - 2; j++)
 			if (lft[j] == 0 and rgt[j] == 0)
 				adj[i].push_back(j);
 
-	for (int i = 2; i < n - 3; i++)
+	for (int i = 7; i < n - 3; i++)
 		if (lft[i] == 0 and rgt[i] == 0)
 			adj[n - 1].push_back(i);	
 
-	for (int i = 3; i < n - 3; i++)
+	for (int i = 7; i < n - 3; i++)
 		if (lft[i] == 0 and rgt[i] == 0)
 			adj[n].push_back(i);
 
-	fill(max_deg.begin(), max_deg.end(), 3);
+	fill(max_deg.begin(), max_deg.end(), 4);
 
+
+	// for (int i = 16; i < n; i += 8){
+	// 	order.push_back(i);
+	// }
+
+	for (int i = 20; i < n; i += 8){
+		order.push_back(i);
+		// max_deg[i]= 4;
+	}
 
 	order.push_back(1);
 	order.push_back(n - 1);
 	order.push_back(n);
 
-	for (int i = 8; i < n; i += 8){
-		order.push_back(i);
-	}
-
-	for (int i = 12; i < n; i += 8){
-		order.push_back(i);
-		max_deg[i]= 4;
-	}
-
-	max_deg[1] = max_deg[2] = 4;
-	for (int i = 7; i < 4; i += 4)
-		max_deg[i] = 4;
+	// max_deg[1] = max_deg[2] = 4;
+	// for (int i = 7; i < 4; i += 4)
+	// 	max_deg[i] = 4;
 
 	run(0, 0);
 
