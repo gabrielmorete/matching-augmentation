@@ -412,7 +412,6 @@ int SolveMapInstance(
 
 signed main(int argc, char *argv[]){
 	// Start a global gurobi enviroment
-	cout << "AHHHHHHHH" << endl;
 	env.set(GRB_IntParam_OutputFlag, 0);
 	env.start();
 

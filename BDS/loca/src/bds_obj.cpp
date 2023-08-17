@@ -235,6 +235,7 @@ void BDSAlgorithm::Run(ListGraph::EdgeMap<int> &_cost,
 		for (int i = 0; i < m; i++)
 			cur += in_sol[i];
 
+		// Return the worst solution, to check the worst case
 		if (cur > wrst){
 			wrst = cur;
 			for (int i = 0; i < m; i++){

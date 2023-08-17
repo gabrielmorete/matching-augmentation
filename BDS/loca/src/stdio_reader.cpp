@@ -14,9 +14,13 @@
 		...
 		a_m b_m c_m 
 */
-void ReadStdioInput(ListGraph::EdgeMap<int> &cost, ListGraph &G){
-	cout << "CCCCCCCCCCC" << endl;
+bool ReadStdioInput(ListGraph::EdgeMap<int> &cost, ListGraph &G){
+	G.clear();
 	int n, m;
+
+	if (cin.eof())
+		return false;
+
 	cin>>n>>m;
 	
 	assert(n >= 3);
@@ -33,6 +37,11 @@ void ReadStdioInput(ListGraph::EdgeMap<int> &cost, ListGraph &G){
 		int a, b, c;
 		cin>>a>>b>>c;
 
+		if (a >= n or b >= n){
+			cout << "Error : not zero indexed" << endl;
+			exit(1);
+		}
+
 		ListGraph::Edge e = G.addEdge(G.nodeFromId(a), G.nodeFromId(b));
 		cost[e] = c;
 	}
@@ -43,7 +52,8 @@ void ReadStdioInput(ListGraph::EdgeMap<int> &cost, ListGraph &G){
 
 	assert(q.size() == m);
 	assert(*q.rbegin() == m - 1);
-	cout << "BBBBBBBBB" << endl;
+
+	return true;
 }
 
 
@@ -73,6 +83,12 @@ void ReadStdioGraph(ListGraph &G){
 		int a, b, c;
 		cin>>a>>b;
 
+		if (a >= n or b >= n){
+			cout << "Error : not zero indexed" << endl;
+			exit(1);
+		}
+
+
 		ListGraph::Edge e = G.addEdge(G.nodeFromId(a), G.nodeFromId(b));
 	}
 
@@ -88,7 +104,6 @@ void ReadStdioGraph(ListGraph &G){
 void RunStdioInput(){
 	ListGraph G;
 	ListGraph::EdgeMap<int> cost(G);
-	cout << "ZZZZZZZZZZZZ" << endl;
 
 	if (__all_matchings){
 		
@@ -111,94 +126,99 @@ void RunStdioInput(){
 		PrintLogProgress(n, 0, 0);
 	}
 	else {
-		cout << "FFFFFFFFFFFFFFFFF" << endl;
-		ReadStdioInput(cost, G);
+		while(ReadStdioInput(cost, G)){
+			assert(biEdgeConnected(G) == 1);
 
-		assert(biEdgeConnected(G) == 1);
+			int n = countNodes(G);
+			int m = countEdges(G);
 
-		int n = countNodes(G);
-		int m = countEdges(G);
+			ListGraph::EdgeMap<int> IntSol(G);
+			ListGraph::EdgeMap<double> FracSol(G);
+			ListGraph::EdgeMap<bool> BDSSol(G);
 
-		ListGraph::EdgeMap<int> IntSol(G);
-		ListGraph::EdgeMap<double> FracSol(G);
-		ListGraph::EdgeMap<bool> BDSSol(G);
+			GRBModel frac_model(env);
+			GRBVar frac_vars[m];
+			BuildFractional(frac_model, frac_vars, G);
 
-		GRBModel frac_model(env);
-		GRBVar frac_vars[m];
-		BuildFractional(frac_model, frac_vars, G);
+			GRBModel int_model(env);
+			GRBVar int_vars[m];
+			BuildIntegral(int_model, int_vars, G);
+			MinimumCut cb = MinimumCut(int_vars, n, m, G);
+			int_model.setCallback(&cb);
 
-		GRBModel int_model(env);
-		GRBVar int_vars[m];
-		BuildIntegral(int_model, int_vars, G);
-		MinimumCut cb = MinimumCut(int_vars, n, m, G);
-		int_model.setCallback(&cb);
+			BDSAlgorithm BDS(G);
 
-		BDSAlgorithm BDS(G);
 
-		cout << "AHHHHHHHHHHHHHH" << endl;
+			SolveMapInstance(cost, FracSol, IntSol, BDSSol, frac_model, frac_vars, int_model, int_vars, G, BDS);
+			int cost_Int = 0;
+			int cost_BDS = 0;
+			double cost_Frac = 0;
 
-		SolveMapInstance(cost, FracSol, IntSol, BDSSol, frac_model, frac_vars, int_model, int_vars, G, BDS);
-		int cost_Int = 0;
-		int cost_BDS = 0;
-		double cost_Frac = 0;
+			for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
+				int u = G.id(G.u(e));
+				int v = G.id(G.v(e));
 
-		for (ListGraph::EdgeIt e(G); e != INVALID; ++e){
-			int u = G.id(G.u(e));
-			int v = G.id(G.v(e));
+				cost_Int +=  IntSol[e] * cost[e];
+				cost_Frac +=  FracSol[e] * cost[e];
+				cost_BDS +=  BDSSol[e] * cost[e];
 
-			cost_Int +=  IntSol[e] * cost[e];
-			cost_Frac +=  FracSol[e] * cost[e];
-			cost_BDS +=  BDSSol[e] * cost[e];
-
-			// cout << u << ' ' << v<< ' ' << FracSol[e] << ' ' << IntSol[e] << ' ' << BDSSol[e] << endl;
-		}
-
-		int id;
-		cin >> id;
-
-		// create file "g"+cnt
-		ofstream g_out("g" + to_string(id));
-		
-		g_out << countNodes(G) <<' ' << countEdges(G) << endl << endl;
-		
-		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
-			g_out << G.id(G.u(e)) << ' ' << G.id(G.v(e)) << endl;
-		
-		g_out << "----------" << endl << endl;
-		
-		g_out << 0 << ": ";
-
-		bool first = 1;
-		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
-			if (cost[e] == 0){
-				if (!first)
-					g_out << ", ";
-
-				g_out << G.id(G.u(e)) << " " << G.id(G.v(e));
-				first = 0;
+				// cout << u << ' ' << v<< ' ' << FracSol[e] << ' ' << IntSol[e] << ' ' << BDSSol[e] << endl;
 			}
 
-		g_out<<endl;	
+			int id;
+			cin >> id;
 
-		g_out << "Frc: " << cost_Frac << " | ";
-		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
-			g_out << FracSol[e] << ' ';
-		g_out << endl;
+			if (id % 100000 == 0)
+				cout << id << endl;
 
-		g_out << "Int: " << cost_Int << " | ";
-		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
-			g_out << IntSol[e] << ' ';
-		g_out << endl;
+			if (sign( cost_Int/cost_Frac - 1.4) <= 0)
+				continue;
 
-		g_out << "BDS: " << cost_BDS << " | ";
-		for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
-			g_out << BDSSol[e] << ' ';
-		g_out << endl << endl;
 
-		g_out.close();
+			// create file "g"+cnt
+			ofstream g_out("g" + to_string(id));
+			
+			g_out << countNodes(G) <<' ' << countEdges(G) << endl << endl;
+			
+			for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+				g_out << G.id(G.u(e)) << ' ' << G.id(G.v(e)) << endl;
+			
+			g_out << "----------" << endl << endl;
+			
+			g_out << 0 << ": ";
 
-		// cout << "Cost Fractional " << cost_Frac << endl;
-		// cout << "Cost Integral " << cost_Int << endl;
-		// cout << "Cost BDS " << cost_BDS << endl;
+			bool first = 1;
+			for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+				if (cost[e] == 0){
+					if (!first)
+						g_out << ", ";
+
+					g_out << G.id(G.u(e)) << " " << G.id(G.v(e));
+					first = 0;
+				}
+
+			g_out<<endl;	
+
+			g_out << "Frc: " << cost_Frac << " | ";
+			for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+				g_out << FracSol[e] << ' ';
+			g_out << endl;
+
+			g_out << "Int: " << cost_Int << " | ";
+			for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+				g_out << IntSol[e] << ' ';
+			g_out << endl;
+
+			g_out << "BDS: " << cost_BDS << " | ";
+			for (ListGraph::EdgeIt e(G); e != INVALID; ++e)
+				g_out << BDSSol[e] << ' ';
+			g_out << endl << endl;
+
+			g_out.close();
+
+			// cout << "Cost Fractional " << cost_Frac << endl;
+			// cout << "Cost Integral " << cost_Int << endl;
+			// cout << "Cost BDS " << cost_BDS << endl;
+		}
 	}
 }
