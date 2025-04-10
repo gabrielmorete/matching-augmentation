@@ -1,12 +1,16 @@
-### Instructions to run the code
+### Testing decompositions of half-integral solutions
 
-On pegasus, type on the terminal
+#### Instructions to run the code
+
+On pegasus, load gurobi libraries with
 
 $ module load gurobi
 
-to load gurobi libraries. To compile the code use
+To compile the code use
 
 $ make main
+
+Due to the limitations of Waterloo's computation infrastructure, the code runs on C++11.
 
 ##### Usage
 To run the algorithm, type on the terminal

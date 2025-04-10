@@ -29,6 +29,7 @@ Int he ```BDS```folder, is the implementation of the BDS algorithm and a framewo
 In the ```conv_comb``` folder is an implementation of an algorithm to test the decomposition of half-integral solutions into 2-edge-connected spanning subgraphs.
 
 Each implementation contains separate documentation of its readme file.
+For specific details, each function (on most cases) has documentation with usage, behavior, and complexity on the source files (check the src folder).
 
 ## Results obtained
 We give a summary of the results derived from the code. The complete results are contained in the following:
@@ -41,7 +42,7 @@ We present counterexamples to two conjectures posed by Bamas, Drygala, and Svens
 
 Moreover, we proposed the first infinity family of instances attaining the integrality gap (some instances were known before, but we were able to find new ones using exploratory research with nauty). Given the efficiency of the code, we tested a core family of graphs (quartic 4-edge-connected graphs) up to 18 vertices, even with the combinatorial explosion.
 
-Finally, tested the conjectures posed in the thesis (see Chapters 5.5 and 3.4) in a vast set of instances. 
+Finally, we tested the conjectures posed in the thesis (see Chapters 5.5 and 3.4) in a vast set of instances. 
 
 * Every 4-regular 4-edge-connected multigraph up to 15 vertices;
 * 4-regular 4-edge-connected graphs from House of Graphs;
