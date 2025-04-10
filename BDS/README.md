@@ -3,6 +3,7 @@
 The matching augmentation problem is defined as follows.
 
 Given : A graph G=(V, E) and a matching M of G
+
 Goal  : Find a set of edges F such that H=(V, F) is 2-edge-connected and |F\M| is minimized
 
 This code is a C++ implementation of the primal LP-round scheme described in:
