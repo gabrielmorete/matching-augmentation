@@ -40,7 +40,7 @@ We briefly summarize the computation results.
 
 We present counterexamples to two conjectures posed by Bamas, Drygala, and Svensson, regarding the performance of the primal rounding algorithm in the half-integral case. Notably, we posed the first family of 'hard to approximate' instances for the problem, which is connected to non-planar graphs.
 
-Moreover, we proposed the first infinity family of instances attaining the integrality gap (some instances were known before, but we were able to find new ones using exploratory research with nauty). Given the efficiency of the code, we tested a core family of graphs (quartic 4-edge-connected graphs) up to 18 vertices, even with the combinatorial explosion.
+Moreover, we proposed an infinity family of instances attaining the integrality gap (some instances were known before, but we were able to find new ones using exploratory research with nauty). We tested a core family of graphs (quartic 4-edge-connected graphs) up to 15 vertices.
 
 Finally, we tested the conjectures posed in the thesis (see Chapters 5.5 and 3.4) in a vast set of instances. 
 
